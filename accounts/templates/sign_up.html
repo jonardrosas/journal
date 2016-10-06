@@ -1,0 +1,260 @@
+{% extends "base.html" %}
+
+{% load staticfiles %}
+
+{% block content %}
+
+<div class="row" ng-controller="signUpMainCtrl">
+
+    <div class="col-md-12">
+        <h2 style="color: #999;font-family: Courier New, Courier, monospace;">W.E.D - The safest place for your thoughts</h2>
+    </div>
+
+    <div class="col-md-12">
+        <div class="row">
+            <div class="col-md-7">
+                    <div class="col-md-4">
+                        <img src="{% static 'img/pencil.png' %}" width="175" height="175" alt="">
+                        <p style="font-size: 14px;"><b>Keep an online journal</b></p>
+                        <div class="col-md-12 no-padding h3_class" align="center" style="font-size: 14px;">
+                            You want to keep your thoughts in a place where no one can find them?
+                            Or capture great ideas so they do not get lost?
+                            The online diary W.E.D offers you a safe place for your very personal topics.
+                        </div>
+
+                    </div>
+                    <div class="col-md-4 no-padding">
+                            <img src="{% static 'img/private.png' %}" width="175" height="175" alt="">
+                            <p style="font-size: 14px;"><b>Secret and private</b></p>
+                            <div class="col-md-12 no-padding h3_class" align="center" style="font-size: 14px;">
+                                The use of W.E.D is private only. There is no feature to make entries publicly viewable.
+                                This ensures that your secret diary remains safe from prying eyes.
+                                Just like in a good old paper diary.
+                            </div>
+
+                    </div>
+                    <div class="col-md-4 no-padding">
+                            <img src="{% static 'img/cloud.png' %}" width="175" height="175" alt="">
+                            <p style="font-size: 14px;"><b>Access via Internet</b></p>
+                            <div class="col-md-12 no-padding h3_class" align="center" style="font-size: 14px;">
+                                To use W.E.D all you need is a computer with Internet access.
+                                Whether you are at home or on the move – if you have a sudden urge to write,
+                                you can access your data at any time and from anywhere.
+                            </div>
+
+                    </div>
+            </div>
+            {% verbatim %}
+            <div class="col-md-5">
+                <div class="row">
+                    <div class="col-md-4">
+                        <h3 class="h3_class">Create an account</h3>
+                    </div>
+                    <div class="col-md-4 pull-right"> or&nbsp;
+                        <a href="{{ login_url }}">Log in</a>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <a href="#login1"> Signup </a> |
+                        <a href="#login2"> Signup2 </a> |
+                        <a href="#login3"> Signup3 </a>
+                    </div>
+                </div>
+                <div class="row">
+                    <div ng-view></div>
+                </div>
+            </div>
+
+            <script type="text/ng-template" id="signUp.html">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-md-7 custom-padding-5" ng-show="alerts">
+                            <div class="alert alert-warning" uib-alert ng-repeat="alert in alerts" close="closeAlert($index)">{{alert.msg}}</div>
+                        </div>
+                    </div>
+                    <div class="row" ng-if="responseData.msg">
+                        <div class="col-md-7 custom-padding-5" ng-show="alerts">
+                            <div class="alert alert-{{ responseData.msg.cls }}" uib-alert><b>{{  responseData.msg.type }}:<b/></div>
+                        </div>
+                    </div>
+                    <div class="row" ng-repeat="(f, v) in data">
+                        <div class="col-md-12 custom-padding-5">
+                            <input ng-if="hasMeter && f=='password'" type="text" ng-model="data[f]" class="form-control" placeholder="{{ f }}"
+                                uib-popover="Use at least 8 characters long or more
+                                Add a lowercase character
+                                Add an uppercase character
+                                Add a number
+                                Add a special character (e.g., ?, %, &)
+                                Avoid common passwords
+                                Avoid something too obvious like your pet’s name
+                                Following these simple recommendations will make your"
+                                popover-trigger="'focus'"
+                                popover-placement="left">
+                            <input ng-hide="hasMeter && f=='password'" type="text" ng-model="data[f]" class="form-control" placeholder="{{ f }}" ><br/><br/>
+                            <span class="text-danger">{{ responseData[f].msg }}</span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12 custom-padding-5">
+                            <input ng-click="authenticate()" type="submit" class="btn btn-sm btn-primary" value="Create an account" />
+                        </div>
+                    </div>
+                </div>
+            </script>
+
+            {% endverbatim %}
+        </div>
+    </div>
+
+</div>
+{% endblock %}
+
+
+{% block extrascript %}
+
+{{ ngapp }}.config(['$routeProvider', function($routeProvider){
+    $routeProvider
+        .when('/',{
+            templateUrl: 'signUp.html',
+            controller: 'signUpMainCtrl'
+        })
+        .when('/login2', {
+            templateUrl: 'signUp.html',
+            controller: 'signUpCtrl'
+        })
+        .when('/login3', {
+            templateUrl: 'signUp.html',
+            controller: 'signUpCtrl2'
+        })
+        .otherwise({redirectTo:'/'});
+}]);
+
+
+{{ ngapp }}.factory('signUpFactory', function($http, $q){
+    var data = {};
+    data.post = function(url, data){
+        var deferred = $q.defer();
+        $http.post(url, data).then(function(data){
+            return deferred.resolve(data);
+        });
+        return deferred.promise;
+    };
+    return data;
+
+});
+
+
+{{ ngapp }}.controller('signUpMainCtrl', function($scope, signUpFactory){
+
+    $scope.login_url = "{%  url 'login' %}";
+    $scope.signup_authenticate = "{%  url 'signup_authenticate' %}";
+    $scope.alerts = [];
+    $scope.warning = {};
+    $scope.hasMeter = false;
+
+
+    $scope.data = {
+        first_name: '',
+        last_name: '',
+        username: '',
+        email: '',
+        password: '',
+        confirm_password: '',
+    };
+
+
+    $scope.authenticate = function(){
+        $scope.warning = {};
+        signUpFactory.post($scope.signup_authenticate , $scope.data).then(function(response){
+            $scope.responseData = response.data;
+        });
+    };
+
+    $scope.closeAlert = function(index) {
+        $scope.alerts.splice(index, 1);
+    };
+
+    $scope.validate = function(){
+        console.log('nothign to do');
+    };
+
+
+});
+
+
+{{ ngapp }}.controller('signUpCtrl', function($scope, signUpFactory){
+     $scope.signup_authenticate = "{%  url 'signup_authenticate2' %}";
+    $scope.hasMeter = true;
+
+    $scope.data = {
+        first_name: '',
+        last_name: '',
+        username: '',
+        email: '',
+        password: '',
+        confirm_password: '',
+    };
+
+    $scope.navBugTip = true;
+    setTimeout(function () { $scope.navBugTip = true; $scope.$apply() }, 2000);
+
+
+    $scope.authenticate = function(){
+        $scope.openMeter = false;
+        signUpFactory.post($scope.signup_authenticate , $scope.data).then(function(response){
+            $scope.responseData = response.data;
+            if($scope.responseData['password2']){
+                $scope.openMeter = true;
+            }
+
+        });
+    };
+
+    $scope.validate = function(){
+        console.log('nothign to do');
+    };
+
+    $scope.closeAlert = function(index) {
+        $scope.alerts.splice(index, 1);
+    };
+
+
+});
+
+
+{{ ngapp }}.controller('signUpCtrl2', function($scope, signUpFactory){
+
+    $scope.data = {
+        first_name: '',
+        last_name: '',
+        username: '',
+        email: '',
+        password: '',
+        confirm_password: '',
+    };
+    $scope.signup_authenticate = "{%  url 'signup_authenticate3' %}";
+
+    $scope.authenticate = function(){
+        $scope.openMeter = false;
+        signUpFactory.post($scope.signup_authenticate , $scope.data);
+        if($scope.responseData['password2']){
+            $scope.openMeter = true;
+        }
+    };
+
+    $scope.validate = function(){
+        $scope.openMeter = false;
+        signUpFactory.post($scope.signup_authenticate , $scope.data).then(function(response){
+            $scope.responseData = response.data;
+            if($scope.responseData['password2']){
+                $scope.openMeter = true;
+            }
+
+        });
+    };
+
+});
+
+
+{% endblock %}

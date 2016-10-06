@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}Welcome to W.E.D{% endblock %}
+
+
+{% block navbar %}
+    <div class="row">
+        <div class="col-md-12" style="height: 10px;"></div>
+        <div class="col-md-12">
+            <div class="col-md-6" align="left">
+                    <a href="/home/" class="btn btn-danger btn-sm">
+                    <h4><b>W.E.D</b></h4>
+                        </a>
+            </div>
+            <div class="col-md-6" style="padding-right: 10px;" align="right">
+                Welcome <b>{{ user.username }}</b>!&nbsp;&nbsp;
+                <a href="/logout/" class="btn btn-sm btn-info">Logout
+                    <span class="glyphicon glyphicon-off"></span>
+                </a>
+            </div>
+        </div>
+        <div class="col-md-12" style="height: 10px;"></div>
+    </div>
+{% endblock %}
+
+{% block content %}
+    <form action="/journal_entries/create/" method="POST">{% csrf_token %}
+            <div class="col-md-12">
+                <b>Select Journal:</b> {{ form.journal_id }}</div>
+            <div class="col-md-12" style="height: 15px;"></div>
+            <div class="col-md-12">{{ form.title }}</div><br>
+            <div class="col-md-12" style="height: 15px;"></div>
+            <div class="col-md-12">{{ form.description }}</div>
+            <div class="col-md-12" style="height: 15px;"></div>
+            <div class="col-md-12">
+                <a class="btn btn-default btn-sm" href="/home/">Cancel</a>
+                <input class="btn btn-success btn-sm" type="submit" name="submit" value="Create Journal Entry">
+            </div>
+    </form>
+<div class="col-md-12" id="footer" style="height: 10px;background-color: #d9534f;"></div>
+{% endblock %}

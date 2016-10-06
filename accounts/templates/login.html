@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% load staticfiles %}
+
+{% block content %}
+{% verbatim %}
+
+<div class="row" ng-controller="LoginCtrl">
+    <div class="col-md-2"></div>
+    <div class="col-md-5 well custom-margin-top">
+        <div class="row ">
+            <div class="col-md-6">
+                <h3 class="h3_class">Log in</h3>
+            </div>
+            <div class="col-md-6 text-right">
+                or <a href="{{ login_register }} ">Register</a>
+            </div>
+         </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="alert alert-warning" uib-alert ng-repeat="alert in alerts" close="closeAlert($index)">{{alert.msg}}</div>
+                <table class="table">
+                    <tr>
+                        <td><input id="id_username" ng-model="data.username" type="text" class="form-control" placeholder="Username"
+                            style="height:40px;font-family: Courier New, Courier, monospace;font-size:20px;width:100%"></td>
+                    </tr>
+                    <tr>
+                        <td><input id="id_password" ng-model="data.password" type="password" class="form-control" placeholder="Password"
+                            style="height:40px;font-family: Courier New, Courier, monospace;font-size:20px;width:100%;"></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+               <input type="submit" value="Login" ng-click="login ()" class="btn btn-success pull-right" style="width: 100%;font-size: 17px;" value="Login" />
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endverbatim %}
+{% endblock %}
+
+
+{% block extrascript %}
+
+{{ ngapp }}.controller('LoginCtrl', function($scope, $http){
+
+    $scope.login_register = "{%  url 'login_register' %}";
+    $scope.alerts = [];
+    $scope.data = {
+        username: '',
+        password: ''
+    };
+    var LOGINURL = "{%  url 'login_authenticate' %}";
+    console.log('login controller');
+
+    $scope.login = function(){
+
+        if(!$scope.data.username){
+            $scope.alerts.push({msg: 'Username is required'})
+            return;
+        }
+
+        if(!$scope.data.password){
+            $scope.alerts.push({msg: 'Password is required'})
+            return;
+        }
+
+        $http.post(LOGINURL, $scope.data).then(
+            function(response){
+                $scope.alerts.push({msg: response.data.msg})
+                console.log(response);
+            }, function(){
+                alert('Internal Error');
+            }
+        );
+
+        $scope.closeAlert = function(index) {
+            $scope.alerts.splice(index, 1);
+        };
+
+    };
+
+});
+
+{% endblock %}

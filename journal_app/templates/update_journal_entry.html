@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block title %}Welcome to W.E.D{% endblock %}
+
+{% block navbar %}
+	<div class="row">
+        <div class="col-md-12" style="height: 10px;"></div>
+        <div class="col-md-12">
+            <div class="col-md-6" align="left">
+                    <a href="/home/" class="btn btn-danger btn-sm">
+                    <h4><b>W.E.D</b></h4>
+                        </a>
+            </div>
+            <div class="col-md-6" style="padding-right: 10px;" align="right">
+                Welcome <b>{{ user.username }}</b>!&nbsp;&nbsp;
+                <a href="/logout/" class="btn btn-sm btn-info">Logout
+                <span class="glyphicon glyphicon-off"></span>
+                </a>
+            </div>
+        </div>
+        <div class="col-md-12" style="height: 10px;"></div>
+    </div>
+{% endblock %}
+{% block content %}
+    <div class="col-md-12 well">
+        <div class="col-md-12">
+            <input type="text" value="{{ journal_entry.title }}" class="form-control" style="width: 40%;font-size: 30px;">
+        </div><br><br><br>
+
+        <div class="col-md-12">
+            <textarea class="tinymce">
+                {{ journal_entry.description }}
+            </textarea><br>
+        </div>
+        <div class="col-md-12">
+            <a href="like/{{ journal_entry.id }}" class="btn btn-warning">Update</a>
+            <a class="btn btn-default" href="/home/">Cancel</a>
+        </div>
+    </div>
+
+<div class="col-md-12" id="footer" style="height: 10px;background-color: #d9534f;"></div>
+{% endblock %}
+

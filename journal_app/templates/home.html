@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+
+{% block title %}-Home{% endblock %}
+{% load staticfiles %}
+
+{% block navbar %}
+
+    <div class="row">
+        <div class="col-md-12" style="height: 10px;"></div>
+        <div class="col-md-12">
+            <div class="col-md-6" align="left">
+                    <a href="/home/" class="btn btn-danger btn-sm">
+                    <h4><b>W.E.D</b></h4>
+                        </a>
+            </div>
+            <div class="col-md-6" style="padding-right: 10px;" align="right">
+                Welcome <b>{{ user.username }}</b>!&nbsp;&nbsp;
+                <a href="/logout/" class="btn btn-sm btn-info">Logout
+                <span class="glyphicon glyphicon-off"></span>
+                </a>
+            </div>
+        </div>
+        <div class="col-md-12" style="height: 10px;"></div>
+    </div>
+{% endblock %}
+
+
+
+{% block content %}
+    <div class="col-md-12" align="right">
+        <a href="{% url 'create_journal_entry' %}">
+        <img src="{% static 'img/add.png' %}" width="50" height="50" alt=""></a>
+    </div>
+    <div class="col-md-12" style="height: 10px;"></div>
+
+{%  verbatim  %}
+    <div class="container">
+        <div class="row" ng-app="journalApp" ng-controller="myCtrl">
+            <div class="col-md-12">
+                <div ng-repeat="o in journals" class="col-md-4">
+                    <div class="col-md-12" align="center" style="font-family: Courier New, Courier, monospace;">
+                        <div class="col-md-12" style="background-color: #c1c1c1">
+                            <h3><b>{{ o.name }}</b></h3>
+                        </div>
+                        <div class="col-md-12" style="border: solid 1px">{{ o.type }}</div>
+                        <div class="col-md-12" align="right"><a href="/journal_entries/get/{{ o.id }}/">View</a></div>
+                    </div>
+                    <div class="col-md-12" style="height: 25px;"></div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+{%  endverbatim  %}
+
+<div class="col-md-12" id="footer" style="height: 10px;background-color: #d9534f;"></div>
+<script>
+   var app = angular.module("journalApp", []);
+    app.controller("myCtrl", function($scope, $http) {
+
+    var url = "http://127.0.0.1:8000/journal_view/";
+
+    $scope.initData = function(){
+        $http.get(url).then(function(data){
+            $scope.journals = data.data.response.data;
+            console.log($scope.journals);
+        })
+    };
+
+    $scope.passPassword = function(){
+        $http.post(url, {password: $scope.password }).then(function(data){
+            $scope.journal_data = data.data.response.data;
+            console.log($scope.journal_data);
+        })
+    };
+    $scope.initData();
+
+    app.directive('addASpaceBetween', [function () {
+        'use strict';
+        return function (scope, element) {
+            if(!scope.$last){
+                element.after('&#32;');
+            }
+        }
+    }
+]);
+});
+
+
+
+</script>
+
+{% endblock %}
+
+
+

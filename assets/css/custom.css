@@ -1,0 +1,114 @@
+.h3_class {
+    font-size: 18px;
+    line-height: 1.4em;
+    margin: 0 auto;
+   	font-weight: 300;
+    text-align:left;
+}
+
+/*.nav_class{*/
+    /*font-family: Papyrus,fantasy; */
+/*}*/
+
+.form-control {
+    display: block;
+    max-width:100%;
+    width: 75%;
+    height: 35px;
+    padding: 8px 10px;
+    line-height: 1.4em;
+    color: #555555;
+    background-color: #ffffff;
+    background-image: none;
+    border: 1px solid #cccccc;
+    border-radius: 4px;
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.090);
+    transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+    font-family: "Open Sans","lucida grande","Segoe UI",arial,verdana,"lucida sans unicode",tahoma,sans-serif;
+    font-size: 13px;
+    color: #3d464d;
+    font-weight: normal;
+}
+
+.table > thead > tr > td, .table > tbody > tr > td, .table > tfoot > tr > td {
+    padding: 8px;
+    line-height: 1.42857143;
+    vertical-align: top;
+    border-top: 0px;
+}
+
+.table > thead > tr > th, .table > tbody > tr > th, .table > tfoot > tr > th, .table > thead > tr > td, .table > tbody > tr > td, .table > tfoot > tr > td {
+    padding: 8px;
+    line-height: 1.42857143;
+    vertical-align: top;
+    border-top: 1px solid rgb(255, 255, 255);
+}
+
+
+.a {
+    color: #2895F1;
+    text-decoration: none;
+    font-family: Papyrus,fantasy; 
+}
+
+
+
+footer .navbar-collapse.in {
+    bottom: 70px;
+    position: absolute;
+    background-color:#333;
+    width:100%;
+}
+
+
+.btn-outline-info {
+    color: #5bc0de;
+    background-image: none;
+    background-color: transparent;
+    border-color: #5bc0de;
+}
+.no-padding {
+    padding:0;
+}
+
+.entry_rows{
+    font-family:Courier New, Courier, monospace;
+    color: #a4a4a4;
+}
+.entry_rows:hover{
+   background-color:#e7e7e7;
+    color: black;
+}
+
+.btn-warning-custom {
+    color: #fff;
+    background-color: #c0c0c0;
+    border-color: black;
+}
+.btn-warning-custom:hover{
+   background-color:#ffba00;
+}
+
+
+.btn-danger-custom {
+    color: #fff;
+    background-color: #c0c0c0;
+    border-color: black;
+}
+.btn-danger-custom:hover{
+    color: white;
+    background-color: #d9534f;
+    border-color: #d43f3a;
+}
+
+#empty-message { float: left; }
+input { float: left }
+
+#footer {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    position: absolute;
+}
+
+

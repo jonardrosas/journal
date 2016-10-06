@@ -1,0 +1,12 @@
+{% if journal_entries %}
+
+    {% for entry in journal_entries %}
+        <div><a href="/journal_entry/get/{{ entry.id }}/">{{ entry.title }}</a></div>
+    {% endfor %}
+
+{% elif journal_entries == 0 %}
+    <div>Nothing to show!</div>
+
+{% else %}
+    <div>Nothing to show!</div>
+{% endif %}
