@@ -48,6 +48,10 @@
               </button>
              <a href="#" class="btn btn-danger navbar-btn"><b>W.E.D</b></a>
             </div>
+            <ul class="nav navbar-nav navbar-right">
+               <li>Welcome {{ user.username }}</li>
+               <li><a href="/logout">Logout <span class="glyphicon glyphicon-off"></span></a></li>
+             </ul>
           </div><!-- /.container-fluid -->
         </nav>
         {% endblock %}

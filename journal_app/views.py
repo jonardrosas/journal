@@ -15,8 +15,23 @@ import json
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 
-from django.views.generic import View
+from django.utils.decorators import method_decorator
+from django.contrib.auth.decorators import login_required, permission_required
 
+from django.views.generic import View, TemplateView
+
+
+class JournalHomveView(TemplateView):
+    template_name = "home.html"
+
+    @method_decorator(login_required())
+    def dispatch(self, *args, **kwargs):
+        return super(JournalHomveView, self).dispatch(*args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super(JournalHomveView, self).get_context_data(**kwargs)
+        context['ngapp'] = "homeMod"
+        return context
 
 
 class JSONResponseMixin(object):
@@ -35,7 +50,7 @@ class JSONResponseMixin(object):
         """
         return context
 
- 
+
 @csrf_protect
 def register(request):
     if request.method == 'POST':
@@ -54,16 +69,16 @@ def register(request):
         variables = RequestContext(request, {
         'form': form
     })
- 
+
     return render_to_response('registration/signUp.html', variables,)
- 
+
 def register_success(request):
     return render_to_response('registration/success.html', {'user': request.user})
- 
+
 def logout_page(request):
     logout(request)
     return HttpResponseRedirect('/')
- 
+
 @login_required
 def home(request):
     return render_to_response('home.html',{ 'user': request.user })
@@ -151,6 +166,3 @@ def search_titles(request):
     journal_entries = Journal_entry.objects.filter(title__contains=search_text)
 
     return render_to_response('ajax_search.html', {'journal_entries': journal_entries})
-
-
-

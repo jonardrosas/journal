@@ -1,11 +1,13 @@
 from django.conf.urls import patterns, include, url
 from accounts.views import HomePage, UserLoginView, login, SignUp, Authentincate, Authentincate2, Authentincate3
+from journal_app.views import JournalHomveView
 from django.contrib import admin
 
 
 urlpatterns = patterns('',
     url(r'^admin/', admin.site.urls),
-    url(r'^$', login),
+    url(r'^journal_app/', include('journal_app.urls')),
+    url(r'^$', JournalHomveView.as_view(), name="home"),
     url(r'^accounts/login/$', HomePage.as_view(), name='login'),
     url(r'^accounts/authenticate/$', UserLoginView.as_view(), name='login_authenticate'),
     url(r'^accounts/register/$', SignUp.as_view(), name='login_register'),

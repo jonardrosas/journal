@@ -75,7 +75,7 @@
                     </div>
                     <div class="row" ng-if="responseData.msg">
                         <div class="col-md-7 custom-padding-5" ng-show="alerts">
-                            <div class="alert alert-{{ responseData.msg.cls }}" uib-alert><b>{{  responseData.msg.type }}:<b/></div>
+                            <div class="alert alert-{{ responseData.msg.cls }}" uib-alert>{{  responseData.msg.type }}</div>
                         </div>
                     </div>
                     <div class="row" ng-repeat="(f, v) in form_field">
@@ -231,6 +231,7 @@
 
 
 {{ ngapp }}.controller('signUpCtrl2', function($scope, signUpFactory){
+    $scope.hasMeter = true;
 
     $scope.data = {
         first_name: '',

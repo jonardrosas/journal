@@ -1,11 +1,13 @@
 import json
 import pdb
+import re
 
 from django.shortcuts import render
 from django.views.generic import TemplateView, View
 from django.contrib.auth.views import login as django_login
 from django.contrib.auth.forms import authenticate
 from django.contrib.auth import get_user_model
+from django.contrib.auth import login as login3
 
 from utils.views import JSONResponseMixin
 
@@ -59,6 +61,16 @@ class AuthenticationBase(JSONResponseMixin, View):
                 'type': self.METER[2],
             }
         return context_dict
+
+    def is_valid_email(self, email):
+        context_dict = {}
+        if not re.match(r"[^@]+@[^@]+\.[^@]+", email):
+            context_dict['email'] = {
+                'status': 'error',
+                'msg': 'Invalid email address'
+            }
+        return context_dict
+
 
     def has_empty_fields(self, **kwargs):
         context_dict = {}
@@ -119,6 +131,9 @@ class Authentincate(AuthenticationBase):
             context_dict.update(self.has_empty_fields(**post_body))
         elif self.is_password_match(password, confirm_password):
             context_dict.update(self.is_password_match(password, confirm_password))
+        elif self.is_valid_email(email):
+            print "ere"
+            context_dict.update(self.is_valid_email(email))
         elif self.is_exist_user(username):
             context_dict.update(self.is_exist_user(username))
         else:
@@ -150,6 +165,8 @@ class Authentincate2(AuthenticationBase):
             context_dict.update(self.has_empty_fields(**post_body))
         elif self.is_password_match(password, confirm_password):
             context_dict.update(self.is_password_match(password, confirm_password))
+        elif self.is_valid_email(email):
+            context_dict.update(self.is_valid_email(email))
         elif self.is_exist_user(username):
             context_dict.update(self.is_exist_user(username))
         elif self.password_strength(password):
@@ -185,7 +202,6 @@ class UserLoginView(JSONResponseMixin, View):
 
     def post(self, request, *args, **kwargs):
         post_body = json.loads(self.request.body)
-        print post_body
         username = post_body['username']
         password = post_body['password']
 
@@ -209,5 +225,4 @@ class UserLoginView(JSONResponseMixin, View):
                 'msg': 'Please enter a correct username and password',
                 'username': username
             }
-
         return self.render_to_json_response(context_dict)
