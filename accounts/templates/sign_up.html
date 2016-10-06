@@ -78,9 +78,9 @@
                             <div class="alert alert-{{ responseData.msg.cls }}" uib-alert><b>{{  responseData.msg.type }}:<b/></div>
                         </div>
                     </div>
-                    <div class="row" ng-repeat="(f, v) in data">
+                    <div class="row" ng-repeat="(f, v) in form_field">
                         <div class="col-md-12 custom-padding-5">
-                            <input ng-if="hasMeter && f=='password'" type="text" ng-model="data[f]" class="form-control" placeholder="{{ f }}"
+                            <input ng-if="hasMeter && f=='password'" type="{{ v.type }}" ng-model="data[f]" class="form-control" placeholder="{{ f }}"
                                 uib-popover="Use at least 8 characters long or more
                                 Add a lowercase character
                                 Add an uppercase character
@@ -91,7 +91,7 @@
                                 Following these simple recommendations will make your"
                                 popover-trigger="'focus'"
                                 popover-placement="left">
-                            <input ng-hide="hasMeter && f=='password'" type="text" ng-model="data[f]" class="form-control" placeholder="{{ f }}" ><br/><br/>
+                            <input ng-hide="hasMeter && f=='password'" type="{{ v.type }}" ng-model="data[f]" class="form-control" placeholder="{{ f }}" ><br/><br/>
                             <span class="text-danger">{{ responseData[f].msg }}</span>
                         </div>
                     </div>
@@ -140,6 +140,16 @@
         });
         return deferred.promise;
     };
+
+    data.form_field = {
+        first_name: { type: 'text', value: ''},
+        last_name: { type: 'text', value: ''},
+        username: { type: 'text', value: ''},
+        email: { type: 'text', value: ''},
+        password: { type: 'password', value: ''},
+        confirm_password: { type: 'password', value: ''},
+    };
+
     return data;
 
 });
@@ -162,10 +172,11 @@
         password: '',
         confirm_password: '',
     };
-
+    $scope.form_field = signUpFactory.form_field;
 
     $scope.authenticate = function(){
         $scope.warning = {};
+        console.log($scope.data);
         signUpFactory.post($scope.signup_authenticate , $scope.data).then(function(response){
             $scope.responseData = response.data;
         });
@@ -195,18 +206,14 @@
         password: '',
         confirm_password: '',
     };
-
-    $scope.navBugTip = true;
-    setTimeout(function () { $scope.navBugTip = true; $scope.$apply() }, 2000);
+    $scope.form_field = signUpFactory.form_field;
 
 
     $scope.authenticate = function(){
         $scope.openMeter = false;
         signUpFactory.post($scope.signup_authenticate , $scope.data).then(function(response){
             $scope.responseData = response.data;
-            if($scope.responseData['password2']){
-                $scope.openMeter = true;
-            }
+            console.log(response.data);
 
         });
     };
@@ -233,6 +240,8 @@
         password: '',
         confirm_password: '',
     };
+    $scope.form_field = signUpFactory.form_field;
+
     $scope.signup_authenticate = "{%  url 'signup_authenticate3' %}";
 
     $scope.authenticate = function(){

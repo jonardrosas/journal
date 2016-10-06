@@ -127,6 +127,7 @@ class Authentincate(AuthenticationBase):
                 'status': 'success',
                 'cls': 'success',
                 'msg': 'Successfully Create Username %s' % username,
+                'type': 'Successfully Create Username %s' % username,
             }
         print context_dict
         return self.render_to_json_response(context_dict)
@@ -157,7 +158,9 @@ class Authentincate2(AuthenticationBase):
             self.create_user(username, email, password, last_name=last_name, first_name=first_name)
             context_dict['msg'] = {
                 'status': 'success',
+                'cls': 'success',
                 'msg': 'Successfully Create Username %s' % username,
+                'type': 'Successfully Create Username %s' % username,
             }
         print context_dict
         return self.render_to_json_response(context_dict)
