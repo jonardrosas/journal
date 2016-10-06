@@ -1,0 +1,6 @@
+*.log
+*.pyc
+media/                                                                                                                                                                                                                                    
+celerybeat-schedule
+celerybeat.pid
+ASE_DIR.child('journal_app', 'templates'),
