@@ -81,14 +81,7 @@
                     <div class="row" ng-repeat="(f, v) in form_field">
                         <div class="col-md-12 custom-padding-5">
                             <input ng-if="hasMeter && f=='password'" type="{{ v.type }}" ng-model="data[f]" class="form-control" placeholder="{{ f }}"
-                                uib-popover="Use at least 8 characters long or more
-                                Add a lowercase character
-                                Add an uppercase character
-                                Add a number
-                                Add a special character (e.g., ?, %, &)
-                                Avoid common passwords
-                                Avoid something too obvious like your pet’s name
-                                Following these simple recommendations will make your"
+                                uib-popover-html="htmlPopover"
                                 popover-trigger="'focus'"
                                 popover-placement="left"
                                 ng-change="validate()">
@@ -132,7 +125,7 @@
 }]);
 
 
-{{ ngapp }}.factory('signUpFactory', function($http, $q){
+{{ ngapp }}.factory('signUpFactory', function($http, $q, $sce){
     var data = {};
     data.post = function(url, data){
         var deferred = $q.defer();
@@ -151,6 +144,7 @@
         confirm_password: { type: 'password', value: ''},
     };
 
+    data.htmlPopover3 = $sce.trustAsHtml("Use at least 8 characters long or more<br/> a lowercase character<br/> Add an uppercase character<br/> Add a number<br/> Add a special character (e.g., ?, %, &)<br/> ");
     return data;
 
 });
@@ -195,9 +189,10 @@
 });
 
 
-{{ ngapp }}.controller('signUpCtrl', function($scope, signUpFactory){
-     $scope.signup_authenticate = "{%  url 'signup_authenticate2' %}";
+{{ ngapp }}.controller('signUpCtrl', function($scope, signUpFactory, $sce){
+    $scope.signup_authenticate = "{%  url 'signup_authenticate2' %}";
     $scope.hasMeter = true;
+    $scope.validationResponse  = {};
 
     $scope.data = {
         first_name: '',
@@ -207,21 +202,41 @@
         password: '',
         confirm_password: '',
     };
+
     $scope.form_field = signUpFactory.form_field;
 
+
+    $scope.getValidationResponseCls =function(criteria){
+        if($scope.validationResponse.hasOwnProperty(criteria)){
+            return "text-success glyphicon-ok";
+        }else{
+            return "text-danger glyphicon-remove";
+        }
+    };
+
+    $scope.htmlPopover = $sce.trustAsHtml("<i class='glyphicon "+$scope.getValidationResponseCls('length')+ "'></i>: Use at least 8 characters long or more<br/> <i class='glyphicon "+$scope.getValidationResponseCls('lower')+ "'></i> : a lowercase character<br/> <i class='glyphicon "+$scope.getValidationResponseCls('upper')+ "'></i> : Add an uppercase character<br/> <i class='glyphicon "+$scope.getValidationResponseCls('number')+ "'></i> : Add a number<br/> <i class='glyphicon "+$scope.getValidationResponseCls('special')+ "'></i> : Add a special character (e.g., ?, %, &)<br/>");
+
+
+
+    $scope.validate = function(){
+        $scope.validationResponse  = {};
+        signUpFactory.post($scope.validation_url, $scope.data).then(function(response){
+            $scope.validationResponse = response.data;
+            $scope.htmlPopover = $sce.trustAsHtml("<i class='glyphicon "+$scope.getValidationResponseCls('length')+ "'></i>: Use at least 8 characters long or more<br/> <i class='glyphicon "+$scope.getValidationResponseCls('lower')+ "'></i> : a lowercase character<br/> <i class='glyphicon "+$scope.getValidationResponseCls('upper')+ "'></i> : Add an uppercase character<br/> <i class='glyphicon "+$scope.getValidationResponseCls('number')+ "'></i> : Add a number<br/> <i class='glyphicon "+$scope.getValidationResponseCls('special')+ "'></i> : Add a special character (e.g., ?, %, &)<br/>");
+            console.log(response.data);
+        });
+    };
 
     $scope.authenticate = function(){
         $scope.openMeter = false;
         signUpFactory.post($scope.signup_authenticate , $scope.data).then(function(response){
             $scope.responseData = response.data;
+            $scope.validate();
             console.log(response.data);
-
         });
     };
 
-    $scope.validate = function(){
-        console.log('nothign to do');
-    };
+
 
     $scope.closeAlert = function(index) {
         $scope.alerts.splice(index, 1);
@@ -231,8 +246,9 @@
 });
 
 
-{{ ngapp }}.controller('signUpCtrl2', function($scope, signUpFactory){
+{{ ngapp }}.controller('signUpCtrl2', function($scope, $sce, signUpFactory){
     $scope.hasMeter = true;
+    $scope.validationResponse  = {};
 
     $scope.data = {
         first_name: '',
@@ -242,7 +258,16 @@
         password: '',
         confirm_password: '',
     };
+    $scope.getValidationResponseCls =function(criteria){
+        if($scope.validationResponse.hasOwnProperty(criteria)){
+            return "text-success glyphicon-ok";
+        }else{
+            return "text-danger glyphicon-remove";
+        }
+    };
+
     $scope.form_field = signUpFactory.form_field;
+        $scope.htmlPopover = $sce.trustAsHtml("<i class='glyphicon "+$scope.getValidationResponseCls('length')+ "'></i>: Use at least 8 characters long or more<br/> <i class='glyphicon "+$scope.getValidationResponseCls('lower')+ "'></i> : a lowercase character<br/> <i class='glyphicon "+$scope.getValidationResponseCls('upper')+ "'></i> : Add an uppercase character<br/> <i class='glyphicon "+$scope.getValidationResponseCls('number')+ "'></i> : Add a number<br/> <i class='glyphicon "+$scope.getValidationResponseCls('special')+ "'></i> : Add a special character (e.g., ?, %, &)<br/>");
 
     $scope.signup_authenticate = "{%  url 'signup_authenticate2' %}";
     $scope.validation_url = "{%  url 'password_validate' %}";
@@ -251,16 +276,22 @@
         $scope.openMeter = false;
         signUpFactory.post($scope.signup_authenticate , $scope.data).then(function(response){
             $scope.responseData = response.data;
+            $scope.validationResponse  = {
+                lower: {cls : 'well' }
+            };
             console.log(response.data);
 
         });
     };
 
     $scope.validate = function(){
+        $scope.validationResponse  = {};
         signUpFactory.post($scope.validation_url, $scope.data).then(function(response){
-            $scope.responseData = response.data;
+            $scope.validationResponse = response.data;
+            $scope.htmlPopover = $sce.trustAsHtml("<i class='glyphicon "+$scope.getValidationResponseCls('length')+ "'></i>: Use at least 8 characters long or more<br/> <i class='glyphicon "+$scope.getValidationResponseCls('lower')+ "'></i> : a lowercase character<br/> <i class='glyphicon "+$scope.getValidationResponseCls('upper')+ "'></i> : Add an uppercase character<br/> <i class='glyphicon "+$scope.getValidationResponseCls('number')+ "'></i> : Add a number<br/> <i class='glyphicon "+$scope.getValidationResponseCls('special')+ "'></i> : Add a special character (e.g., ?, %, &)<br/>");
+            console.log(response.data);
         });
-    };$
+    };
 
 });
 

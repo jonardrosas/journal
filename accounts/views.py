@@ -1,6 +1,7 @@
 import json
 import pdb
 import re
+import string
 
 from django.shortcuts import render
 from django.views.generic import TemplateView, View
@@ -44,6 +45,40 @@ class AuthenticationBase(JSONResponseMixin, View):
         3: 'Good',
         4: 'Strong',
     }
+
+    def password_validation_criteria(self, password):
+        context_dict = {}
+        if len(password) > 8:
+            context_dict['length'] = {
+                'status': 'pass',
+                'cls': 'glyphicon-ok',
+                'points': 1
+            }
+        if len(set(string.ascii_lowercase).intersection(password)) > 0:
+            context_dict['lower'] = {
+                'status': 'pass',
+                'cls': 'glyphicon-ok',
+                'points': 1
+            }
+        if len(set(string.ascii_uppercase).intersection(password)) > 0:
+            context_dict['upper'] = {
+                'status': 'pass',
+                'cls': 'glyphicon-ok',
+                'points': 1
+            }
+        if len(set(string.digits).intersection(password)) > 0:
+            context_dict['number'] = {
+                'status': 'pass',
+                'cls': 'glyphicon-ok',
+                'points': 1
+            }
+        if len(set(string.punctuation).intersection(password)) > 0:
+            context_dict['special'] = {
+                'status': 'pass',
+                'cls': 'glyphicon-ok',
+                'points': 1
+            }
+        return context_dict
 
     def password_strength(self, password):
         context_dict = {}
@@ -175,7 +210,6 @@ class Authentincate2(AuthenticationBase):
                 'msg': 'Successfully Create Username %s' % username,
                 'type': 'Successfully Create Username %s' % username,
             }
-        print context_dict
         return self.render_to_json_response(context_dict)
 
 
@@ -187,14 +221,8 @@ class Authentincate3(AuthenticationBase):
         status = 'error'
         post_body = json.loads(self.request.body)
         password = post_body['password']
-        if self.password_strength(password):
-            context_dict.update(self.password_strength(password))
-        else:
-            context_dict['msg'] = {
-                'status': 'error',
-                'cls': 'success',
-                'type': self.METER[4],
-            }
+        if self.password_validation_criteria(password):
+            context_dict.update(self.password_validation_criteria(password))
         return self.render_to_json_response(context_dict)
 
 
