@@ -25,7 +25,7 @@ DEBUG = True
 
 TEMPLATE_DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -56,10 +56,6 @@ ROOT_URLCONF = 'OnlineJournal.urls'
 WSGI_APPLICATION = 'OnlineJournal.wsgi.application'
 
 # django.contrib.auth.LOGIN_URL = '/'
-
-import django.contrib.auth
-django.contrib.auth.LOGIN_URL = '/'
-
 
 # Database
 # https://docs.djangoproject.com/en/1.7/ref/settings/#databases
@@ -99,4 +95,3 @@ TEMPLATE_DIRS = (
     BASE_DIR +  '/journal_app/templates',
     BASE_DIR +  '/templates',
 )
-

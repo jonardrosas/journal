@@ -45,7 +45,7 @@
 
 {% block extrascript %}
 
-{{ ngapp }}.controller('LoginCtrl', function($scope, $http){
+{{ ngapp }}.controller('LoginCtrl', function($scope, $http, $window){
 
     $scope.login_register = "{%  url 'login_register' %}";
     $scope.alerts = [];
@@ -68,9 +68,28 @@
             return;
         }
 
+        /* The function that get url parameters */
+        function getParameterByName(name, url) {
+            if (!url) url = window.location.href;
+            name = name.replace(/[\[\]]/g, "\\$&");
+            var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+                results = regex.exec(url);
+            if (!results) return null;
+            if (!results[2]) return '';
+            return decodeURIComponent(results[2].replace(/\+/g, " "));
+        }
+
         $http.post(LOGINURL, $scope.data).then(
             function(response){
-                $scope.alerts.push({msg: response.data.msg})
+                if(response.data.status == 'success'){
+                    if(getParameterByName('next') != null){
+                        $window.location.href = getParameterByName('next');
+                    }else{
+                        $window.location.href = '/';
+                    }
+                }else{
+                    $scope.alerts.push({msg: response.data.msg})
+                }
                 console.log(response);
             }, function(){
                 alert('Internal Error');

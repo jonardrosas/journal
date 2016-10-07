@@ -90,7 +90,8 @@
                                 Avoid something too obvious like your pet’s name
                                 Following these simple recommendations will make your"
                                 popover-trigger="'focus'"
-                                popover-placement="left">
+                                popover-placement="left"
+                                ng-change="validate()">
                             <input ng-hide="hasMeter && f=='password'" type="{{ v.type }}" ng-model="data[f]" class="form-control" placeholder="{{ f }}" ><br/><br/>
                             <span class="text-danger">{{ responseData[f].msg }}</span>
                         </div>
@@ -243,26 +244,23 @@
     };
     $scope.form_field = signUpFactory.form_field;
 
-    $scope.signup_authenticate = "{%  url 'signup_authenticate3' %}";
+    $scope.signup_authenticate = "{%  url 'signup_authenticate2' %}";
+    $scope.validation_url = "{%  url 'password_validate' %}";
 
     $scope.authenticate = function(){
         $scope.openMeter = false;
-        signUpFactory.post($scope.signup_authenticate , $scope.data);
-        if($scope.responseData['password2']){
-            $scope.openMeter = true;
-        }
-    };
-
-    $scope.validate = function(){
-        $scope.openMeter = false;
         signUpFactory.post($scope.signup_authenticate , $scope.data).then(function(response){
             $scope.responseData = response.data;
-            if($scope.responseData['password2']){
-                $scope.openMeter = true;
-            }
+            console.log(response.data);
 
         });
     };
+
+    $scope.validate = function(){
+        signUpFactory.post($scope.validation_url, $scope.data).then(function(response){
+            $scope.responseData = response.data;
+        });
+    };$
 
 });
 

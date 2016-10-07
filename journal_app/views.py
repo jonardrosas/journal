@@ -1,4 +1,5 @@
 from journal_app.forms import *
+import pdb
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
 from django.views.decorators.csrf import csrf_protect
@@ -15,10 +16,12 @@ import json
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 
+
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required, permission_required
-
 from django.views.generic import View, TemplateView
+
+from utils.views import JSONResponseMixin
 
 
 class JournalHomveView(TemplateView):
@@ -34,56 +37,40 @@ class JournalHomveView(TemplateView):
         return context
 
 
-class JSONResponseMixin(object):
-    # """
-    # A mixin that can be used to render a JSON response.
-    # """
-    def render_to_json_response(self, context, **response_kwargs):
-        #  """
-        # Returns a JSON response, transforming 'context' to make the payload.
-        # """
-        return JsonResponse(self.get_data(context), **response_kwargs)
+# To display all the journals created by the user logged in
+class JournalView(JSONResponseMixin, View):
+    response_data ={}
 
-    def get_data(self, context):
-        """
-        Returns an object that will be serialized as JSON by json.dumps().
-        """
-        return context
+    def get(self, request, *args, **kwargs):
+        response_data ={}
+        journal_list = []
+        journal_qlist = Journal.objects.filter(created_by=self.request.user).values()
+        for journal in journal_qlist:
+            journal_list.append(journal)
+        response_data['data'] = journal_list
+        print response_data
+        return self.render_to_json_response(dict(response_data))
 
 
-@csrf_protect
-def register(request):
-    if request.method == 'POST':
-        form = RegistrationForm(request.POST)
-        if form.is_valid():
-            user = User.objects.create_user(
-            first_name = form.cleaned_data['first_name'],
-            last_name=form.cleaned_data['last_name'],
-            username=form.cleaned_data['username'],
-            password=form.cleaned_data['password1'],
-            email=form.cleaned_data['email']
+# To display all the journals created by the user logged in
+class SaveJournalView(JSONResponseMixin, View):
+    response_data ={}
+
+    def post(self, request, *args, **kwargs):
+        print "fff"
+        response_data ={}
+        post_body = json.loads(self.request.body)
+        name = post_body['name']
+        journal_type = post_body['type']
+        if not name or not journal_type:
+            response_data = {'msg': 'Name cannot be empty', 'status': 'error'}
+        else:
+            journal_qlist = Journal.objects.create(
+                created_by=self.request.user,
+                name=name
             )
-            return HttpResponseRedirect('/registration/success/')
-    else:
-        form = RegistrationForm()
-        variables = RequestContext(request, {
-        'form': form
-    })
-
-    return render_to_response('registration/signUp.html', variables,)
-
-def register_success(request):
-    return render_to_response('registration/success.html', {'user': request.user})
-
-def logout_page(request):
-    logout(request)
-    return HttpResponseRedirect('/')
-
-@login_required
-def home(request):
-    return render_to_response('home.html',{ 'user': request.user })
-
-
+            response_data = {'msg': 'Successfully Created', 'status': 'success'}
+        return self.render_to_json_response(dict(response_data))
 # To get all journal entries
 @login_required
 def get_all_journal_entries(request, journal_id=1):
@@ -125,19 +112,6 @@ def create_journal_entry(request, journal_id=None):
     return render_to_response('create_journal_entry.html', args)
 
 
-# To display all the journals created by the user logged in
-class JournalView(JSONResponseMixin, View):
-    response_data ={}
-
-    def get(self, request, *args, **kwargs):
-        y = []
-        x = Journal.objects.filter(created_by=self.request.user).values()
-        for k in x:
-            y.append(k)
-        self.response_data['data'] = y
-        return self.render_to_json_response(dict(response=self.response_data))
-
-
 class JournalEntryUpdateView(JSONResponseMixin, View):
 
     def post(self, request, *args, **kwargs):
@@ -154,7 +128,6 @@ class JournalEntryUpdateView(JSONResponseMixin, View):
             journal_entry_object.title = title
             journal_entry_object.description=description
             journal_entry_object.save()
-
 
 
 @login_required

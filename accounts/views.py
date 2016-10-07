@@ -183,18 +183,22 @@ class Authentincate2(AuthenticationBase):
         return self.render_to_json_response(context_dict)
 
 
-class Authentincate3(JSONResponseMixin, View):
+class Authentincate3(AuthenticationBase):
 
     def post(self, request, *args, **kwargs):
         post_body = json.loads(self.request.body)
-        for f in post_body:
-            print f
-        context_dict = {
-            'status': 'error',
-            'msg': 'Please enter a correct username and password',
-            'username': 'test'
-        }
-
+        context_dict = {}
+        status = 'error'
+        post_body = json.loads(self.request.body)
+        password = post_body['password']
+        if self.password_strength(password):
+            context_dict.update(self.password_strength(password))
+        else:
+            context_dict['msg'] = {
+                'status': 'error',
+                'cls': 'success',
+                'type': self.METER[4],
+            }
         return self.render_to_json_response(context_dict)
 
 
