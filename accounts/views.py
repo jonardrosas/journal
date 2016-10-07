@@ -94,10 +94,6 @@ class AuthenticationBase(JSONResponseMixin, View):
     def is_password_match(self, password, confirm_password):
         context_dict = {}
         if password != confirm_password:
-            context_dict['password'] = {
-                'status': 'error',
-                'msg': 'Your password does not match!',
-            }
             context_dict['confirm_password'] = {
                 'status': 'error',
                 'msg': 'Your password does not match!',

@@ -48,7 +48,7 @@
 .a {
     color: #2895F1;
     text-decoration: none;
-    font-family: Papyrus,fantasy; 
+    font-family: Papyrus,fantasy;
 }
 
 
@@ -110,5 +110,16 @@ input { float: left }
     width: 100%;
     position: absolute;
 }
+
+.wall {
+background-image:url('{{ STATIC_URL }}img/wall.jpg');
+background-repeat:no-repeat;
+background-size:100%;
+}
+
+.app-modal-window .modal-dialog {
+  width: 400px;
+}
+
 
 
