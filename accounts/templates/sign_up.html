@@ -191,6 +191,7 @@
 
 {{ ngapp }}.controller('signUpCtrl', function($scope, signUpFactory, $sce){
     $scope.signup_authenticate = "{%  url 'signup_authenticate2' %}";
+    $scope.validation_url = "{%  url 'password_validate' %}";
     $scope.hasMeter = true;
     $scope.validationResponse  = {};
 
@@ -218,7 +219,7 @@
 
 
 
-    $scope.validate = function(){
+    $scope.meterMessage = function(){
         $scope.validationResponse  = {};
         signUpFactory.post($scope.validation_url, $scope.data).then(function(response){
             $scope.validationResponse = response.data;
@@ -231,11 +232,10 @@
         $scope.openMeter = false;
         signUpFactory.post($scope.signup_authenticate , $scope.data).then(function(response){
             $scope.responseData = response.data;
-            $scope.validate();
+            $scope.meterMessage();
             console.log(response.data);
         });
     };
-
 
 
     $scope.closeAlert = function(index) {
