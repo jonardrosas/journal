@@ -267,7 +267,9 @@
     };
 
     $scope.form_field = signUpFactory.form_field;
-        $scope.htmlPopover = $sce.trustAsHtml("<i class='glyphicon "+$scope.getValidationResponseCls('length')+ "'></i>: Use at least 8 characters long or more<br/> <i class='glyphicon "+$scope.getValidationResponseCls('lower')+ "'></i> : a lowercase character<br/> <i class='glyphicon "+$scope.getValidationResponseCls('upper')+ "'></i> : Add an uppercase character<br/> <i class='glyphicon "+$scope.getValidationResponseCls('number')+ "'></i> : Add a number<br/> <i class='glyphicon "+$scope.getValidationResponseCls('special')+ "'></i> : Add a special character (e.g., ?, %, &)<br/>");
+    var contents = $sce.trustAsHtml("<i class='glyphicon "+$scope.getValidationResponseCls('hacker_list')+ "'></i> : Not in a hackers list<br/><i class='glyphicon "+$scope.getValidationResponseCls('dictionary_word')+ "'></i> : Not a dictionary word<br/> <i class='glyphicon "+$scope.getValidationResponseCls('length')+ "'></i>: Use at least 8 characters long or more<br/> <i class='glyphicon "+$scope.getValidationResponseCls('lower')+ "'></i> : a lowercase character<br/> <i class='glyphicon "+$scope.getValidationResponseCls('upper')+ "'></i> : Add an uppercase character<br/> <i class='glyphicon "+$scope.getValidationResponseCls('number')+ "'></i> : Add a number<br/> <i class='glyphicon "+$scope.getValidationResponseCls('special')+ "'></i> : Add a special character (e.g., ?, %, &)<br/>");
+    $scope.htmlPopover = contents;
+    $scope.strength = "Too short";
 
     $scope.signup_authenticate = "{%  url 'signup_authenticate2' %}";
     $scope.validation_url = "{%  url 'password_validate' %}";
@@ -288,7 +290,7 @@
         $scope.validationResponse  = {};
         signUpFactory.post($scope.validation_url, $scope.data).then(function(response){
             $scope.validationResponse = response.data;
-            $scope.htmlPopover = $sce.trustAsHtml("<i class='glyphicon "+$scope.getValidationResponseCls('length')+ "'></i>: Use at least 8 characters long or more<br/> <i class='glyphicon "+$scope.getValidationResponseCls('lower')+ "'></i> : a lowercase character<br/> <i class='glyphicon "+$scope.getValidationResponseCls('upper')+ "'></i> : Add an uppercase character<br/> <i class='glyphicon "+$scope.getValidationResponseCls('number')+ "'></i> : Add a number<br/> <i class='glyphicon "+$scope.getValidationResponseCls('special')+ "'></i> : Add a special character (e.g., ?, %, &)<br/>");
+            $scope.htmlPopover = $sce.trustAsHtml("<div class='progress'> <div class='progress-bar progress-bar-"+$scope.validationResponse.msg.cls+"' role='progressbar' aria-valuenow='40' aria-valuemin='0' aria-valuemax='100' style='width:"+ $scope.validationResponse.msg.percent +"'>"+ $scope.validationResponse.msg.msg +"</div> </div><i class='glyphicon "+$scope.getValidationResponseCls('hacker_list')+ "'></i> : Not in a hackers list<br/><i class='glyphicon "+$scope.getValidationResponseCls('dictionary_word')+ "'></i> : Not a dictionary word<br/> <i class='glyphicon "+$scope.getValidationResponseCls('length')+ "'></i>: Use at least 8 characters long or more<br/> <i class='glyphicon "+$scope.getValidationResponseCls('lower')+ "'></i> : a lowercase character<br/> <i class='glyphicon "+$scope.getValidationResponseCls('upper')+ "'></i> : Add an uppercase character<br/> <i class='glyphicon "+$scope.getValidationResponseCls('number')+ "'></i> : Add a number<br/> <i class='glyphicon "+$scope.getValidationResponseCls('special')+ "'></i> : Add a special character (e.g., ?, %, &)<br/>");
             console.log(response.data);
         });
     };
