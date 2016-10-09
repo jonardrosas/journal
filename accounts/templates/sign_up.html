@@ -69,11 +69,11 @@
             <script type="text/ng-template" id="signUp.html">
                 <div class="container-fluid">
                     <div class="row">
-                        <div class="col-md-7 custom-padding-5" ng-show="alerts">
-                            <div class="alert alert-warning" uib-alert ng-repeat="alert in alerts" close="closeAlert($index)">{{alert.msg}}</div>
+                        <div class="col-md-7 custom-padding-5" ng-show="validationResponse.msg">
+                            <div class='progress'> <div class='progress-bar progress-bar-{{ validationResponse.msg.cls }}' role='progressbar' aria-valuenow='40' aria-valuemin='0' aria-valuemax='100' style='width:{{ validationResponse.msg.percent }}'>{{ validationResponse.msg.msg }}</div> </div>
                         </div>
                     </div>
-                    <div class="row" ng-if="responseData.msg">
+                    <div class="row" ng-if="responseData.msg.cls == 'success'">
                         <div class="col-md-7 custom-padding-5" ng-show="alerts">
                             <div class="alert alert-{{ responseData.msg.cls }}" uib-alert>{{  responseData.msg.type }}</div>
                         </div>
@@ -246,9 +246,10 @@
 });
 
 
-{{ ngapp }}.controller('signUpCtrl2', function($scope, $sce, signUpFactory){
+{{ ngapp }}.controller('signUpCtrl2', function($scope, $sce, $timeout, signUpFactory){
     $scope.hasMeter = true;
     $scope.validationResponse  = {};
+    $scope.requesting = false;
 
     $scope.data = {
         first_name: '',
@@ -287,12 +288,21 @@
     };
 
     $scope.validate = function(){
-        $scope.validationResponse  = {};
-        signUpFactory.post($scope.validation_url, $scope.data).then(function(response){
-            $scope.validationResponse = response.data;
-            $scope.htmlPopover = $sce.trustAsHtml("<div class='progress'> <div class='progress-bar progress-bar-"+$scope.validationResponse.msg.cls+"' role='progressbar' aria-valuenow='40' aria-valuemin='0' aria-valuemax='100' style='width:"+ $scope.validationResponse.msg.percent +"'>"+ $scope.validationResponse.msg.msg +"</div> </div><i class='glyphicon "+$scope.getValidationResponseCls('hacker_list')+ "'></i> : Not in a hackers list<br/><i class='glyphicon "+$scope.getValidationResponseCls('dictionary_word')+ "'></i> : Not a dictionary word<br/> <i class='glyphicon "+$scope.getValidationResponseCls('length')+ "'></i>: Use at least 8 characters long or more<br/> <i class='glyphicon "+$scope.getValidationResponseCls('lower')+ "'></i> : a lowercase character<br/> <i class='glyphicon "+$scope.getValidationResponseCls('upper')+ "'></i> : Add an uppercase character<br/> <i class='glyphicon "+$scope.getValidationResponseCls('number')+ "'></i> : Add a number<br/> <i class='glyphicon "+$scope.getValidationResponseCls('special')+ "'></i> : Add a special character (e.g., ?, %, &)<br/>");
-            console.log(response.data);
-        });
+       if(!$scope.requesting){
+
+            $scope.requesting = true;
+            $timeout(
+                function(){
+                    $scope.validationResponse  = {};
+                    signUpFactory.post($scope.validation_url, $scope.data).then(function(response){
+                        $scope.validationResponse = response.data;
+                        $scope.htmlPopover = $sce.trustAsHtml("<div class='progress'> <div class='progress-bar progress-bar-"+$scope.validationResponse.msg.cls+"' role='progressbar' aria-valuenow='40' aria-valuemin='0' aria-valuemax='100' style='width:"+ $scope.validationResponse.msg.percent +"'>"+ $scope.validationResponse.msg.msg +"</div> </div><i class='glyphicon "+$scope.getValidationResponseCls('hacker_list')+ "'></i> : Not in a hackers list<br/><i class='glyphicon "+$scope.getValidationResponseCls('dictionary_word')+ "'></i> : Not a dictionary word<br/> <i class='glyphicon "+$scope.getValidationResponseCls('length')+ "'></i>: Use at least 8 characters long or more<br/> <i class='glyphicon "+$scope.getValidationResponseCls('lower')+ "'></i> : a lowercase character<br/> <i class='glyphicon "+$scope.getValidationResponseCls('upper')+ "'></i> : Add an uppercase character<br/> <i class='glyphicon "+$scope.getValidationResponseCls('number')+ "'></i> : Add a number<br/> <i class='glyphicon "+$scope.getValidationResponseCls('special')+ "'></i> : Add a special character (e.g., ?, %, &)<br/>");
+                        $scope.requesting = false;
+                        console.log(response.data);
+                    });
+                }, 1000
+            );
+        }
     };
 
 });

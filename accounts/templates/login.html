@@ -45,7 +45,7 @@
 
 {% block extrascript %}
 
-{{ ngapp }}.controller('LoginCtrl', function($scope, $http, $window){
+{{ ngapp }}.controller('LoginCtrl', function($scope, $http, $window, $cookies){
 
     $scope.login_register = "{%  url 'login_register' %}";
     $scope.alerts = [];
@@ -55,8 +55,11 @@
     };
     var LOGINURL = "{%  url 'login_authenticate' %}";
     console.log('login controller');
+    var allCookies = $cookies.getAll();
+    console.log(allCookies) ;
 
     $scope.login = function(){
+        $scope.alerts = [];
 
         if(!$scope.data.username){
             $scope.alerts.push({msg: 'Username is required'})

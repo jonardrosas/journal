@@ -10,7 +10,7 @@ from django.contrib.auth.forms import authenticate
 from django.contrib.auth import get_user_model
 from django.contrib.auth import login as login3
 
-import enchant
+#import enchant
 
 from utils.views import JSONResponseMixin
 
@@ -73,15 +73,15 @@ class AuthenticationBase(JSONResponseMixin, View):
 
     def password_validation_criteria(self, password):
         context_dict = {}
-        dictionary_ins = enchant.Dict("en_US")
+        #dictionary_ins = enchant.Dict("en_US")
         points = 0
 
-        if not dictionary_ins.check(password):
-            context_dict['dictionary_word'] = {
-                'status': 'pass',
-                'cls': 'glyphicon-ok',
-                'points': 1
-            }
+        #if not dictionary_ins.check(password):
+        #    context_dict['dictionary_word'] = {
+        #        'status': 'pass',
+        #        'cls': 'glyphicon-ok',
+        #        'points': 1
+        #    }
 
         if not password in self.HACKERS_LIST:
             context_dict['hacker_list'] = {
