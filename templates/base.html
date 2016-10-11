@@ -134,10 +134,10 @@
 
             {{ ngapp }}.run(function run( $http, $cookies ){
                 var allCookies = $cookies.getAll();
-                if(!allCookies.hasOwnProperty('csrftoken')){                                                                                                           │····································································
-                    var token = "{{ csrf_token }}";                                                                                                                    │····································································
-                    console.log(token);                                                                                                                                │····································································
-                }               
+                if(!allCookies.hasOwnProperty('csrftoken')){
+                    var token = "{{ csrf_token }}";
+                    console.log(token);
+                }
                 $http.defaults.headers.common["X-CSRFTOKEN"] = allCookies.csrftoken;
             });
 
