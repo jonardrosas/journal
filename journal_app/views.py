@@ -1,4 +1,5 @@
 from journal_app.forms import *
+import datetime
 import pdb
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
@@ -71,6 +72,49 @@ class SaveJournalView(JSONResponseMixin, View):
             )
             response_data = {'msg': 'Successfully Created', 'status': 'success'}
         return self.render_to_json_response(dict(response_data))
+
+
+class JournalEntryDetailView(JSONResponseMixin, View):
+
+    def post(self, request, *args, **kwargs):
+        context_dict = {}
+        post_body = json.loads(self.request.body)
+        journal_id = post_body['journal_id']
+        journal_ins = Journal.objects.get(id=int(journal_id))
+        entries = journal_ins.journal_entry.values()
+        final_list = []
+        for entry in entries:
+            initial_data = {}
+            for k, v in entry.items():
+                if k in ['date_created', 'date_modified']:
+                    initial_data[k] = str(datetime.datetime.strftime(v, '%c'))
+                else:
+                    initial_data[k] = str(v)
+            final_list.append(initial_data)
+        context_dict['data'] = final_list
+        context_dict['journal_name'] = journal_ins.name;
+        return self.render_to_json_response(context_dict)
+
+
+class JournalEntryCreateView(JSONResponseMixin, View):
+
+    def post(self, request, *args, **kwargs):
+        context_dict = {}
+        post_body = json.loads(self.request.body)
+        journal_id = post_body['journal_id']
+        title = post_body['title']
+        description = post_body['description']
+        journal_ins = Journal.objects.get(id=int(journal_id))
+        entry_ins = journal_ins.journal_entry.create(
+            title=title,
+            description=description
+        )
+        context_dict['data'] = {
+            'msg': 'Successfully Created Entry'
+        }
+        return self.render_to_json_response(context_dict)
+
+
 # To get all journal entries
 @login_required
 def get_all_journal_entries(request, journal_id=1):

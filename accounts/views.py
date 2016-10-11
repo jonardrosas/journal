@@ -132,7 +132,7 @@ class AuthenticationBase(JSONResponseMixin, View):
                 'status': 'error',
                 'type': self.METER[1],
                 'cls': 'danger',
-                'percent': '20%',
+                'percent': '50%',
                 'msg': 'Too short',
             }
         elif 'lower' in context_dict and 'upper' in context_dict and 'number' in context_dict and 'special' in context_dict:
@@ -149,7 +149,7 @@ class AuthenticationBase(JSONResponseMixin, View):
                 'status': 'success',
                 'type': self.METER[3],
                 'cls': 'info',
-                'percent': '60%',
+                'percent': '80%',
                 'msg': 'Good Password',
             }
         elif 'number' in context_dict and ('upper' in context_dict or 'lower' in context_dict or 'special' in context_dict):
@@ -157,7 +157,7 @@ class AuthenticationBase(JSONResponseMixin, View):
                 'status': 'success',
                 'type': self.METER[3],
                 'cls': 'info',
-                'percent': '60%',
+                'percent': '80%',
                 'msg': 'Good Password',
             }
         elif 'lower' in context_dict and ('upper' in context_dict or 'number' in context_dict or 'special' in context_dict):
@@ -165,7 +165,7 @@ class AuthenticationBase(JSONResponseMixin, View):
                 'status': 'success',
                 'type': self.METER[3],
                 'cls': 'info',
-                'percent': '60%',
+                'percent': '80%',
                 'msg': 'Good Password',
             }
         elif 'special' in context_dict and ('upper' in context_dict or 'number' in context_dict or 'lower' in context_dict):
@@ -173,7 +173,7 @@ class AuthenticationBase(JSONResponseMixin, View):
                 'status': 'success',
                 'type': self.METER[3],
                 'cls': 'info',
-                'percent': '60%',
+                'percent': '80%',
                 'msg': 'Good Password',
             }
         else:
@@ -181,7 +181,7 @@ class AuthenticationBase(JSONResponseMixin, View):
                 'status': 'success',
                 'type': self.METER[2],
                 'cls': 'warning',
-                'percent': '40%',
+                'percent': '60%',
                 'msg': 'Weak Password',
             }
         return context_dict

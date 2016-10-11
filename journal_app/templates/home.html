@@ -3,68 +3,198 @@
 {% load staticfiles %}
 {% block content %}
 {%  verbatim  %}
-<div class="row" ng-controller="myCtrl">
-    <div class="col-md-12" align="right">
-        <a href="#" ng-click="createJournal()"><img src="{{ plusImg }}" width="50" height="50" alt=""></a>
-    </div>
-    <div class="col-md-12">
-        <script type="text/ng-template" id="createJournal.html">
-            <div class="modal-header" align="center" style="background-color:#f8de00;font-family: Courier New, Courier, monospace;">
-                <h3 class="modal-title" id="modal-title">Create your Journal</h3>
-            </div>
-            <div class="modal-body" id="modal-body">
-                <div class="row" ng-repeat="(f, v) in form_fields">
-                    <div class="col-md-12 custom-padding-5">
-                        <label>{{ f }}</label><br/>
-                        <input class="form-control" ng-if="v.type!='select'" type="{{ v.type }}" ng-model="data[f]" class="form-control" placeholder="{{ f }}" >
-                        <select ng-if="v.type=='select'" ng-model="data[f]" class="form-control" ><option ng-repeat="x in v.val">{{ x.name }}</option></select>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-primary" ng-click="saveJournal()" type="button">Save</button>
-                <button class="btn btn-primary" ng-click="cancel()" type="button">Cancel</button>
-            </div>
-        </script>
-        <div class="row" >
-            <div class="col-md-12">
-                <div ng-repeat="o in journals track by $index" class="col-md-4">
-                    <div class="col-md-12" align="center" style="font-family: Courier New, Courier, monospace;">
-                        <div class="col-md-12" style="background-color: #c1c1c1">
-                            <h3><b>{{ o.name }}</b></h3>
-                        </div>
-                        <div class="col-md-12" style="border: solid 1px">{{ o.type }}</div>
-                        <div class="col-md-12" align="right"><a href="/journal_entries/get/{{ o.id }}/">View</a></div>
-                    </div>
-                    <div class="col-md-12" style="height: 25px;"></div>
 
-                </div>
-            </div>
-        </div>
-        <div class="row" ng-if="journals.length < 1">
-            <div class="col-md-7 custom-padding-5">
-                <div class="alert alert-warning" uib-alert close="closeAlert($index)">No Journals Available!</div>
+<!------------------ Pop up ------------------->
+<script type="text/ng-template" id="createJournal.html">
+    <div class="modal-header" align="center" style="background-color:#f8de00;font-family: Courier New, Courier, monospace;">
+        <h3 class="modal-title" id="modal-title">Create your Journal</h3>
+    </div>
+    <div class="modal-body" id="modal-body">
+        <div class="row" ng-repeat="(f, v) in form_fields">
+            <div class="col-md-12 custom-padding-5">
+                <label>{{ f }}</label><br/>
+                <input class="form-control" ng-if="v.type!='select'" type="{{ v.type }}" ng-model="data[f]" class="form-control" placeholder="{{ f }}" >
+                <select ng-if="v.type=='select'" ng-model="data[f]" class="form-control" ><option ng-repeat="x in v.val">{{ x.name }}</option></select>
             </div>
         </div>
     </div>
+    <div class="modal-footer">
+        <button class="btn btn-primary" ng-click="saveJournal()" type="button">Save</button>
+        <button class="btn btn-primary" ng-click="cancel()" type="button">Cancel</button>
+    </div>
+</script>
+<!------------------ Pop up ------------------->
+
+
+<!------------------ Start Create Entry ------------------->
+<script type="text/ng-template" id="createJournalEntry.html">
+    <div class="row">
+        <div class="col-md-2 col-sm-2">
+            <h2>{{ journal_name }} </h2>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-2 col-sm-2">
+            <div class="side-bar">
+                <div class="panel-body">
+                    <ul class="list-group">
+                      <li class="list-group-item" ng-repeat="entry in entries"><a href="#/">{{ entry.title }}</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-10 main-section col-sm-10">
+            <div class="container-fluid">
+            <form >
+              <div class="form-group">
+                <label for="title">Title:</label><br/>
+                <input type="text" ng-model="data.title" class="form-control col-md-2" id="title" name="title">
+              </div><br/><br/>
+              <div class="form-group">
+                    <label for="description">Description:</label<br/>
+                    <textarea ng-change="descriptionChange()" ui-tinymce="tinymceOptions" ng-model="data.description" class="tiny-mce" cols="200" rows="20"></textarea>
+              </div>
+              <div class="checkbox">
+              <button ng-click="saveEntry()" type="submit" class="btn btn-default">Save</button>
+            </form>
+            </div>
+        </div>
+    </div>
+</script>
+<!------------------ End Create Entry ------------------->
+
+
+
+
+<!------------------ Start of Jouranl Detail Page ------------------->
+<script type="text/ng-template" id="journal_detail.html">
+
+    <div class="row row-break">
+        <div class="col-md-12">
+            <div class="container">
+                <a href="#create/1" class="btn btn-info pull-right"><i class="glyphicon glyphicon-plus"></i> New Entry</a>
+            </div>
+        </div>
+    </div>
+    <div class="row row-break">
+        <div class="col-md-12">
+            <div class="container well">
+                Filter here...
+            </div>
+        </div>
+    </div>
+    <div class="row row-break" ng-show="gridOptions.data.length > 0">
+        <div class="col-md-12">
+            <div class="container well">
+                <a href="" title="Delete Selected"><i class="pull-right glyphicon glyphicon-trash"> Delete</i></a>
+            </div>
+        </div>
+    </div>
+    <div class="row row-break">
+        <div class="col-md-12">
+            <div class="container well">
+                <div class="panel-body">
+                    <div ui-grid="gridOptions" ui-grid-selection  class="myGrid" ng-if="gridOptions.data.length > 0"></div>
+                    <div ng-hide="gridOptions.data.length > 0" class="alert alert-warning"> No Entries Available.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</script>
+<!------------------ End of Jouranl Detail Page ------------------->
+
+<!------------------ Start of Main  ------------------->
+<script type="text/ng-template" id="homeCtrl.html" >
+    <div class="row">
+        <div class="col-md-12" align="right">
+            <a href="#/" ng-click="createJournal()"><img src="{{ plusImg }}" width="50" height="50" alt=""></a>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div ng-repeat="o in journals track by $index" class="col-md-4">
+                <div class="col-md-12" align="center" style="font-family: Courier New, Courier, monospace;">
+                    <div class="col-md-12" style="background-color: #c1c1c1">
+                        <h3><b>{{ o.name }}</b></h3>
+                    </div>
+                    <div class="col-md-12" style="border: solid 1px">{{ o.type }}</div>
+                    <div class="col-md-12" align="right"><a href="#journal/{{ o.id }}/">View</a></div>
+                </div>
+                <div class="col-md-12" style="height: 25px;"></div>
+
+            </div>
+        </div>
+    </div>
+    <div class="row" ng-if="journals.length < 1">
+        <div class="col-md-7 custom-padding-5">
+            <div class="alert alert-warning" uib-alert close="closeAlert($index)">No Journals Available!</div>
+        </div>
+    </div>
+
+
+</script>
+<!------------------ End of Main ------------------->
+
+<div class="row" ng-controller="mainCtrl">
+    <div ng-view></div>
     {%  endverbatim  %}
-
 </div>
+
 {% endblock %}
 
     {% block extrascript %}
-    {{ ngapp }}.controller("myCtrl", function($scope, $http, $uibModal) {
+
+
+
+
+    {{ ngapp }}.config(['$routeProvider', function($routeProvider){
+        $routeProvider
+            .when('/',{
+                templateUrl: 'homeCtrl.html',
+                controller: 'mainCtrl'
+            })
+            .when('/journal/:journal_id', {
+                templateUrl: 'journal_detail.html',
+                controller: 'journalDetailCtrl'
+            })
+            .when('/create/:journal_id', {
+                templateUrl: 'createJournalEntry.html',
+                controller: 'createJournalEntryCtrl'
+            })
+            .otherwise({redirectTo:'/'});
+    }]);
+
+    {{ ngapp }}.factory('journalFactory', function($http, $q, $sce){
+
+        var data = {};
+
+        data.getEntries = function(url, data){
+            var deferred = $q.defer();
+             $http.post(url, data).then(function(response){
+                 return deferred.resolve(response.data);
+            }, function(){
+                alert('Internal Error');
+            });
+            return deferred.promise;
+        }
+        return data;
+
+    });
+
+
+    {{ ngapp }}.controller("mainCtrl", function($scope, $http, $uibModal) {
 
          var url = "{% url 'journal_vew' %}";
          $scope.plusImg = "{% static 'img/add.png' %}"
          $scope.journals = [];
 
-         $scope.initData = function(){
+        $scope.initData = function(){
              $http.get(url).then(function(response){
                  $scope.journals = response.data.data;
                  console.log($scope.journals);
              });
-         };
+        };
+        $scope.initData();
 
         $scope.createJournal = function (size) {
             var modalInstance = $uibModal.open({
@@ -78,20 +208,121 @@
             modalInstance.result.then(function (result) {
                 if(result == 'success'){
                     $scope.initData();
+                    console.log(1);
+                }else{
+                    console.log(2);
                 }
             }, function () {
                 $scope.hovering = false;
+                console.log(3);
             });
 
         };
-         $scope.initData();
+    });
+
+    {{ ngapp }}.controller("journalDetailCtrl", function($scope, $http, $uibModal, $routeParams, journalFactory) {
+
+        var url = "{% url 'journal_entry' %}";
+
+        var journal_id = $routeParams.journal_id;
+
+        $scope.getEntries = function(){
+            $scope.data = {journal_id: journal_id};
+            journalFactory.getEntries(url, $scope.data).then(function(data){
+                $scope.entries = data.data;
+                $scope.gridOptions.data = data.data;
+            });
+            console.log('geting entries');
+        }
+
+        $scope.getEntries();
+
+
+        $scope.gridOptions = {
+            //enableGridMenu: true,
+            //showGridFooter: true,
+            enableColumnResizing: true,
+            data: [],
+            columnDefs: [
+                {
+                    field: 'title',
+                    width: '*',
+                },
+                {field: 'date_created', width: '*' },
+                {field: 'date_modified', width: '*' },
+                /*{
+                    field: 'Edit',
+                    width: '80',
+                    cellTemplate: " <button class='btn btn-xs btn-default' ><i class='glyphicon glyphicon-edit'></i> Edit</button>"
+                },
+                {
+                    field: 'delete',
+                    width: '80',
+                    cellTemplate: " <button class='btn btn-xs btn-danger' ><i class='glyphicon glyphicon-trash'></i> Delete</button>"
+                },*/
+            ],
+            onRegisterApi: function(gridApi){
+              $scope.gridApi = gridApi;
+            },
+        };
+        console.log('entries CTRL');
+    });
+
+    {{ ngapp }}.controller('createJournalEntryCtrl', function ($scope, $http, $routeParams, journalFactory) {
+        $scope.journal_id = $routeParams.journal_id;
+        var url = "{% url 'journal_entry' %}";
+        var save_entry_url = "{% url 'journal_create_entry' %}";
+        $scope.data = {journal_id: $scope.journal_id};
+
+        $scope.getEntries = function(){
+            var entry_data = {journal_id: $scope.journal_id};
+            journalFactory.getEntries(url, entry_data).then(function(data){
+                $scope.entries = data.data;
+                $scope.journal_name = data.journal_name;
+            });
+        }
+        $scope.getEntries();
+
+        $scope.form_fields = {
+            'Title': {val: '', type: 'text'},
+            'Description': {val: '', type: 'textarea'}
+        };
+
+        $scope.data.description = "";
+
+        $scope.getContent = function() {
+          console.log('Editor content:', $scope.data.description);
+        };
+
+        $scope.setContent = function() {
+           $scope.data.description = 'Time: ' + (new Date());
+        };
+
+        $scope.saveEntry = function(){
+            console.log('Saving data');
+            console.log($scope.data);
+            journalFactory.getEntries(save_entry_url,  $scope.data).then(function(data){
+                $scope.entry = data;
+                $scope.getEntries();
+                console.log(data);
+            });
+        }
+
+        $scope.tinymceOptions = {
+          plugins: 'link image code',
+          toolbar: 'undo redo | bold italic | alignleft aligncenter alignright | code',
+          width: '900px'
+        };
+
+
     });
 
 
-    {{ ngapp }}.controller('createJournalCtrl', function ($scope, $uibModalInstance, $http) {
+    {{ ngapp }}.controller('createJournalCtrl', function ($scope, $uibModalInstance, $http, $routeParams) {
 
         $scope.data = {};
         var url = "{% url 'create_journal' %}";
+        $scope.journal_id = $routeParams.journal_id;
 
         $scope.form_fields = {
             'name': {val: '', type: 'text'},
@@ -101,7 +332,7 @@
                           ],
                         type: 'select'
                     },
-        }
+        };
 
         $scope.closeAlert = function(index) {
         };
