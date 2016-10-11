@@ -1,6 +1,16 @@
 {% extends "base.html" %}
 
 {% load staticfiles %}
+{% block additional_styles %}
+<style>
+   body {
+        background-image: url({% static 'img/wall5.jpg'%});
+        background-size: 100% 100vh;
+        background-repeat: no-repeat;
+       }
+</style>
+{% endblock %}
+
 {% block content %}
 {%  verbatim  %}
 
