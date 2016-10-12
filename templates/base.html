@@ -34,8 +34,6 @@
             }
             body {
                 background-image: url({% static 'img/wall6.jpg'%});
-                background-size: 100% 100vh;
-                background-repeat: no-repeat;
            }
         </style>
     {% endblock %}
@@ -55,11 +53,12 @@
         }
         .side-bar {
             background: #3F454F;
-            min-height: 2000px;
+            min-height: 100vh;
             z-index: 200;
         }
         .main-section{
-            min-height: 2000px;
+            min-height: 100vh;
+            background: #FFF;
         }
         .dark-bg {
             background: #3F454F;
@@ -67,6 +66,11 @@
         .side-bar-btn{
             background: #3498DB;
         }
+        .light-bg {
+            background: #FFF;
+            min-height: 100vh;
+        }
+
 
 
     </style>

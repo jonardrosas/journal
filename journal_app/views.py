@@ -16,6 +16,7 @@ from .models import Journal_entry, Journal
 import json
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
+from django.forms.models import model_to_dict
 
 
 from django.utils.decorators import method_decorator
@@ -111,6 +112,20 @@ class JournalEntryCreateView(JSONResponseMixin, View):
         )
         context_dict['data'] = {
             'msg': 'Successfully Created Entry'
+        }
+        return self.render_to_json_response(context_dict)
+
+
+class JournalEntryEditView(JSONResponseMixin, View):
+
+    def post(self, request, *args, **kwargs):
+        context_dict = {}
+        post_body = json.loads(self.request.body)
+        entry_id = post_body['entry_id']
+        entry_ins = Journal_entry.objects.get(id=int(entry_id))
+        context_dict['data'] = {
+            'data': model_to_dict(entry_ins),
+            'msg': 'Pull succesfull'
         }
         return self.render_to_json_response(context_dict)
 

@@ -14,108 +14,9 @@
 {% block content %}
 {%  verbatim  %}
 
-<!------------------ Pop up ------------------->
-<script type="text/ng-template" id="createJournal.html">
-    <div class="modal-header" align="center" style="background-color:#f8de00;font-family: Courier New, Courier, monospace;">
-        <h3 class="modal-title" id="modal-title">Create your Journal</h3>
-    </div>
-    <div class="modal-body" id="modal-body">
-        <div class="row" ng-repeat="(f, v) in form_fields">
-            <div class="col-md-12 custom-padding-5">
-                <label>{{ f }}</label><br/>
-                <input class="form-control" ng-if="v.type!='select'" type="{{ v.type }}" ng-model="data[f]" class="form-control" placeholder="{{ f }}" >
-                <select ng-if="v.type=='select'" ng-model="data[f]" class="form-control" ><option ng-repeat="x in v.val">{{ x.name }}</option></select>
-            </div>
-        </div>
-    </div>
-    <div class="modal-footer">
-        <button class="btn btn-primary" ng-click="saveJournal()" type="button">Save</button>
-        <button class="btn btn-primary" ng-click="cancel()" type="button">Cancel</button>
-    </div>
-</script>
-<!------------------ Pop up ------------------->
-
-
-<!------------------ Start Create Entry ------------------->
-<script type="text/ng-template" id="createJournalEntry.html">
-    <div class="row">
-        <div class="col-md-2 col-sm-2">
-            <h2>{{ journal_name }} </h2>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-2 col-sm-2">
-            <div class="side-bar">
-                <div class="panel-body">
-                    <ul class="list-group">
-                      <li class="list-group-item" ng-repeat="entry in entries"><a href="#/">{{ entry.title }}</a></li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-10 main-section col-sm-10">
-            <div class="container-fluid">
-            <form >
-              <div class="form-group">
-                <label for="title">Title:</label><br/>
-                <input type="text" ng-model="data.title" class="form-control col-md-2" id="title" name="title">
-              </div><br/><br/>
-              <div class="form-group">
-                    <label for="description">Description:</label<br/>
-                    <textarea ng-change="descriptionChange()" ui-tinymce="tinymceOptions" ng-model="data.description" class="tiny-mce" cols="200" rows="20"></textarea>
-              </div>
-              <div class="checkbox">
-              <button ng-click="saveEntry()" type="submit" class="btn btn-default">Save</button>
-            </form>
-            </div>
-        </div>
-    </div>
-</script>
-<!------------------ End Create Entry ------------------->
-
-
-
-
-<!------------------ Start of Jouranl Detail Page ------------------->
-<script type="text/ng-template" id="journal_detail.html">
-
-    <div class="row row-break">
-        <div class="col-md-12">
-            <div class="container">
-                <a href="#create/1" class="btn btn-info pull-right"><i class="glyphicon glyphicon-plus"></i> New Entry</a>
-            </div>
-        </div>
-    </div>
-    <div class="row row-break">
-        <div class="col-md-12">
-            <div class="container well">
-                Filter here...
-            </div>
-        </div>
-    </div>
-    <div class="row row-break" ng-show="gridOptions.data.length > 0">
-        <div class="col-md-12">
-            <div class="container well">
-                <a href="" title="Delete Selected"><i class="pull-right glyphicon glyphicon-trash"> Delete</i></a>
-            </div>
-        </div>
-    </div>
-    <div class="row row-break">
-        <div class="col-md-12">
-            <div class="container well">
-                <div class="panel-body">
-                    <div ui-grid="gridOptions" ui-grid-selection  class="myGrid" ng-if="gridOptions.data.length > 0"></div>
-                    <div ng-hide="gridOptions.data.length > 0" class="alert alert-warning"> No Entries Available.</div>
-                </div>
-            </div>
-        </div>
-    </div>
-</script>
-<!------------------ End of Jouranl Detail Page ------------------->
-
 <!------------------ Start of Main  ------------------->
 <script type="text/ng-template" id="homeCtrl.html" >
-    <div class="row">
+    <div class="row ">
         <div class="col-md-12" align="right">
             <a href="#/" ng-click="createJournal()"><img src="{{ plusImg }}" width="50" height="50" alt=""></a>
         </div>
@@ -145,6 +46,144 @@
 </script>
 <!------------------ End of Main ------------------->
 
+<!------------------ Pop up ------------------->
+<script type="text/ng-template" id="createJournal.html">
+    <div class="modal-header" align="center" style="background-color:#f8de00;font-family: Courier New, Courier, monospace;">
+        <h3 class="modal-title" id="modal-title">Create your Journal</h3>
+    </div>
+    <div class="modal-body" id="modal-body">
+        <div class="row" ng-repeat="(f, v) in form_fields">
+            <div class="col-md-12 custom-padding-5">
+                <label>{{ f }}</label><br/>
+                <input class="form-control" ng-if="v.type!='select'" type="{{ v.type }}" ng-model="data[f]" class="form-control" placeholder="{{ f }}" >
+                <select ng-if="v.type=='select'" ng-model="data[f]" class="form-control" ><option ng-repeat="x in v.val">{{ x.name }}</option></select>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-primary" ng-click="saveJournal()" type="button">Save</button>
+        <button class="btn btn-primary" ng-click="cancel()" type="button">Cancel</button>
+    </div>
+</script>
+<!------------------ Pop up ------------------->
+
+
+
+<!------------------ Start of Entries list Page ------------------->
+<script type="text/ng-template" id="journal_detail.html">
+    <div class="row">
+        <div class="container light-bg well">
+            <div class="col-md-11">
+                    <a href="#create/1" class="btn btn-info pull-right"><i class="glyphicon glyphicon-plus"></i> New Entry</a>
+            </div>
+            <div class="col-md-11">
+                <div class=" well">
+                    Filter here...
+                </div>
+            </div>
+            <div class="col-md-11" ng-show="gridOptions.data.length > 0">
+                <div class=" well">
+                    <a href="" title="Delete Selected"><i class="pull-right glyphicon glyphicon-trash"> Delete</i></a>
+                </div>
+            </div>
+            <div class="col-md-11">
+                <div class=" well">
+                    <div class="panel-body">
+                        <div ui-grid="gridOptions" ui-grid-selection  class="myGrid" ng-if="gridOptions.data.length > 0"></div>
+                        <div ng-hide="gridOptions.data.length > 0" class="alert alert-warning"> No Entries Available.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</script>
+<!------------------ End of of Entries list Page  ------------------->
+
+
+<!------------------ Start Create Entry ------------------->
+<script type="text/ng-template" id="createJournalEntry.html">
+    <div class="row">
+        <div class="col-md-2 col-sm-2">
+            <div class="side-bar">
+                <div class="panel-body">
+                    <ul class="list-group">
+                      <li class="list-group-item" ng-repeat="entry in entries"><a href="#/journal_id/{{ journal_id }}/edit/{{ entry.id }}">{{ entry.title }}</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="well col-md-5 main-section col-sm-5 col-md-offset-2 col-sm-offset-2">
+            <div class="row well text-align">
+                <div>
+                    <h2>{{ journal_name }} </h2>
+                </div>
+            </div>
+            <div class="row">
+                <div class="container-fluid">
+                    <form >
+                      <div class="form-group">
+                        <label for="title">Title:</label><br/>
+                        <input type="text" ng-model="data.title" class="form-control col-md-2" id="title" name="title">
+                      </div><br/><br/>
+                      <div class="form-group">
+                            <label for="description">Description:</label<br/>
+                            <textarea ng-change="descriptionChange()" ui-tinymce="tinymceOptions" ng-model="data.description" class="tiny-mce" rows="20"></textarea>
+                      </div>
+                      <div class="checkbox">
+                      <button ng-click="saveEntry()" type="submit" class="btn btn-default">Save</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</script>
+<!------------------ End Create Entry ------------------->
+
+<!------------------ Start Edit Entry ------------------->
+<script type="text/ng-template" id="editJournalEntry.html">
+    <div class="row">
+        <div class="col-md-2 col-sm-2">
+            <div class="side-bar">
+                <div class="panel-body">
+                    <ul class="list-group">
+                      <li class="list-group-item" ng-repeat="entry in entries"><a href="#/journal_id/{{ journal_id }}/edit/{{ entry.id }}">{{ entry.title }}</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="well col-md-5 main-section col-sm-5 col-md-offset-2 col-sm-offset-2">
+            <div class="row well text-align">
+                <div>
+                    <h2>{{ journal_name }} </h2>
+                </div>
+            </div>
+            <div class="row">
+                <div class="container-fluid">
+                    <form >
+                      <div class="form-group">
+                        <label for="title">Title:</label><br/>
+                        <input type="text" ng-model="data.title" class="form-control col-md-2" id="title" name="title">
+                      </div><br/><br/>
+                      <div class="form-group">
+                            <label for="description">Description:</label<br/>
+                            <textarea ng-change="descriptionChange()" ui-tinymce="tinymceOptions" ng-model="data.description" class="tiny-mce" rows="20"></textarea>
+                      </div>
+                      <div class="checkbox">
+                      <button ng-click="saveEntry()" type="submit" class="btn btn-default">Save</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</script>
+<!------------------ End  Edit Entry  ------------------->
+
+
+
+
+
+
+
 <div class="row" ng-controller="mainCtrl">
     <div ng-view></div>
     {%  endverbatim  %}
@@ -171,6 +210,10 @@
                 templateUrl: 'createJournalEntry.html',
                 controller: 'createJournalEntryCtrl'
             })
+            .when('/journal_id/:journal_id/edit/:entry_id', {
+                templateUrl: 'editJournalEntry.html',
+                controller: 'editEntryCtrl'
+            })
             .otherwise({redirectTo:'/'});
     }]);
 
@@ -188,6 +231,56 @@
             return deferred.promise;
         }
         return data;
+
+    });
+
+    {{ ngapp }}.controller("editEntryCtrl", function($scope, $http, $routeParams, journalFactory) {
+
+
+        $scope.journal_id = $routeParams.journal_id;
+        $scope.entry_id = $routeParams.entry_id;
+        console.log('J:'+$scope.journal_id);
+        console.log('E:'+$scope.entry_id);
+        var url = "{% url 'journal_entry' %}";
+        var save_entry_url = "{% url 'journal_create_entry' %}";
+        var update_entry_url = "{% url 'journal_edit_entry' %}";
+        $scope.data = {journal_id: $scope.journal_id};
+
+        $scope.getEntries = function(){
+            var entry_data = {journal_id: $scope.journal_id};
+            journalFactory.getEntries(url, entry_data).then(function(data){
+                $scope.entries = data.data;
+                $scope.journal_name = data.journal_name;
+            });
+        }
+        $scope.getEntries();
+        $scope.data.title = 'this is a dummy title';
+
+        $scope.updateEntry = function(){
+            journalFactory.getEntries(update_entry_url,  {entry_id: $scope.entry_id}).then(function(data){
+                $scope.data.title = data.data.data.title;
+                $scope.data.description = data.data.data.description;
+                $scope.getEntries();
+            });
+
+        };
+        $scope.updateEntry();
+
+        $scope.saveEntry = function(){
+            console.log('Saving data');
+            console.log($scope.data);
+            journalFactory.getEntries(save_entry_url,  $scope.data).then(function(data){
+                $scope.entry = data;
+                $scope.getEntries();
+                console.log(data);
+            });
+        }
+
+        $scope.tinymceOptions = {
+          plugins: 'link image code',
+          toolbar: 'undo redo | bold italic | alignleft aligncenter alignright | code',
+          width: '150%'
+        };
 
     });
 
@@ -321,7 +414,7 @@
         $scope.tinymceOptions = {
           plugins: 'link image code',
           toolbar: 'undo redo | bold italic | alignleft aligncenter alignright | code',
-          width: '900px'
+          width: '150%'
         };
 
 
