@@ -106,6 +106,9 @@
         <div class="col-md-2 col-sm-2">
             <div class="side-bar">
                 <div class="panel-body">
+                    <div class="row" align="center">
+                        <h3 style="color:white;">{{ journal_name }} </h3>
+                    </div><hr>
                     <ul class="list-group">
                       <li class="list-group-item" ng-repeat="entry in entries"><a href="#/journal_id/{{ journal_id }}/edit/{{ entry.id }}">{{ entry.title }}</a></li>
                     </ul>
@@ -113,11 +116,6 @@
             </div>
         </div>
         <div class="well col-md-5 main-section col-sm-5 col-md-offset-2 col-sm-offset-2">
-            <div class="row well text-align">
-                <div>
-                    <h2>{{ journal_name }} </h2>
-                </div>
-            </div>
             <div class="row">
                 <div class="container-fluid">
                     <form >
@@ -145,6 +143,9 @@
         <div class="col-md-2 col-sm-2">
             <div class="side-bar">
                 <div class="panel-body">
+                    <div class="row" align="center">
+                        <h3 style="color:white;">{{ journal_name }} </h3>
+                    </div><hr>
                     <ul class="list-group">
                       <li class="list-group-item" ng-repeat="entry in entries"><a href="#/journal_id/{{ journal_id }}/edit/{{ entry.id }}">{{ entry.title }}</a></li>
                     </ul>
@@ -152,11 +153,6 @@
             </div>
         </div>
         <div class="well col-md-5 main-section col-sm-5 col-md-offset-2 col-sm-offset-2">
-            <div class="row well text-align">
-                <div>
-                    <h2>{{ journal_name }} </h2>
-                </div>
-            </div>
             <div class="row">
                 <div class="container-fluid">
                     <form >
@@ -254,7 +250,6 @@
             });
         }
         $scope.getEntries();
-        $scope.data.title = 'this is a dummy title';
 
         $scope.updateEntry = function(){
             journalFactory.getEntries(update_entry_url,  {entry_id: $scope.entry_id}).then(function(data){
@@ -279,7 +274,7 @@
         $scope.tinymceOptions = {
           plugins: 'link image code',
           toolbar: 'undo redo | bold italic | alignleft aligncenter alignright | code',
-          width: '150%'
+          width: '200%'
         };
 
     });
@@ -414,7 +409,7 @@
         $scope.tinymceOptions = {
           plugins: 'link image code',
           toolbar: 'undo redo | bold italic | alignleft aligncenter alignright | code',
-          width: '150%'
+          width: '200%'
         };
 
 
