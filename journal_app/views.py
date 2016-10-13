@@ -105,13 +105,27 @@ class JournalEntryCreateView(JSONResponseMixin, View):
         journal_id = post_body['journal_id']
         title = post_body['title']
         description = post_body['description']
-        journal_ins = Journal.objects.get(id=int(journal_id))
-        entry_ins = journal_ins.journal_entry.create(
-            title=title,
-            description=description
-        )
+        data = None
+        status = 'error'
+        try:
+            journal_ins = Journal.objects.get(id=int(journal_id))
+        except Journal.DoesNotExist:
+            msg = "The Entry Does Exists!"
+        else:
+            if journal_ins.journal_entry.filter(title=title).exists():
+                msg = "The entry title already exists!"
+            else:
+                entry_ins = journal_ins.journal_entry.create(
+                    title=title,
+                    description=description
+                )
+                data = model_to_dict(entry_ins)
+                msg = 'Successfully Created Entry'
+                status = 'success'
         context_dict['data'] = {
-            'msg': 'Successfully Created Entry'
+            'msg': msg,
+            'data': data,
+            'status': status
         }
         return self.render_to_json_response(context_dict)
 
@@ -121,9 +135,7 @@ class JournalEntryEditView(JSONResponseMixin, View):
     def get(self, request, *args, **kwargs):
         context_dict = {}
         status = "error"
-        print self.request.body
-        post_body = json.loads(self.request.body)
-        entry_id = post_body['entry_id']
+        entry_id = self.request.GET['entry_id']
         try:
             entry_ins = Journal_entry.objects.get(id=int(entry_id))
         except Journal_entry.DoesNotExist:
@@ -144,6 +156,7 @@ class JournalEntryEditView(JSONResponseMixin, View):
         status = 'error'
         post_body = json.loads(self.request.body)
         entry_id = post_body['entry_id']
+        print entry_id
         title = post_body['title']
         description = post_body['description']
         try:
@@ -151,11 +164,12 @@ class JournalEntryEditView(JSONResponseMixin, View):
         except Journal_entry.DoesNotExist:
             msg = 'The Entry was already deleted!'
         else:
-            entry_ins.title = description
-            entry_ins.description = description
-            entry_ins.save()
-            msg = "Successfully updated!"
-            status = 'success'
+
+                entry_ins.title = title
+                entry_ins.description = description
+                entry_ins.save()
+                msg = "Successfully updated!"
+                status = 'success'
         context_dict['data'] = {
             'data': model_to_dict(entry_ins),
             'msg': msg,

@@ -169,6 +169,7 @@
             </div>
             <div class="row">
                 <div class="container-fluid">
+                    <div class="alert alert-{{ alert.type }}" ng-repeat="alert in alerts" uib-alert>{{  alert.msg }}</div>
                     <form >
                       <div class="form-group">
                         <label for="title">Title:</label><br/>
@@ -220,6 +221,7 @@
             </div>
             <div class="row">
                 <div class="container-fluid">
+                    <div class="alert alert-{{ alert.type }}" ng-repeat="alert in alerts" uib-alert>{{  alert.msg }}</div>
                     <form >
                       <div class="form-group">
                         <label for="title">Title:</label><br/>
@@ -294,7 +296,11 @@
 
         data.getData = function(url, data){
             var deferred = $q.defer();
-             $http.get(url, data).then(function(response){
+            var config = {
+                params: data,
+                headers : {'Accept': 'application/json'}
+            };
+            $http.get(url, config).then(function(response){
                  return deferred.resolve(response.data);
             }, function(){
                 alert('Internal Error');
@@ -314,13 +320,11 @@
       }
     });
 
-    {{ ngapp }}.controller("editEntryCtrl", function($scope, $http, $routeParams, journalFactory) {
+    {{ ngapp }}.controller("editEntryCtrl", function($scope, $http, $timeout, $routeParams, journalFactory) {
 
-
+        $scope.alerts = [];
         $scope.journal_id = $routeParams.journal_id;
         $scope.entry_id = $routeParams.entry_id;
-        console.log('J:'+$scope.journal_id);
-        console.log('E:'+$scope.entry_id);
         var url = "{% url 'journal_entry' %}";
         var update_entry_url = "{% url 'journal_edit_entry' %}";
         $scope.data = {journal_id: $scope.journal_id};
@@ -338,6 +342,7 @@
         $scope.updateEntry = function(){
             journalFactory.getData(update_entry_url,  {entry_id: $scope.entry_id}).then(function(data){
                 $scope.data.title = data.data.data.title;
+                $scope.data.entry_id = data.data.data.id;
                 $scope.data.description = data.data.data.description;
                 $scope.getEntries();
             });
@@ -346,12 +351,18 @@
         $scope.updateEntry();
 
         $scope.saveEntry = function(){
-            console.log('Saving data');
-            console.log($scope.data);
             journalFactory.postData(update_entry_url,  $scope.data).then(function(data){
                 $scope.entry = data;
-                $scope.getEntries();
-                console.log(data);
+                console.log(data.data);
+                if(data.data.status == 'success'){
+                    $scope.alerts.push({msg: data.data.msg, type: 'success'});
+                    $timeout(function(){
+                        $scope.alerts = [];
+                        $scope.getEntries();
+                    }, 2000);
+                }else{
+                    $scope.alerts.push({msg: data.data.msg, type: 'danger'})
+                };
             });
         }
 
@@ -460,13 +471,20 @@
                 gridApi.selection.on.rowSelectionChanged($scope,function(row){
                    $scope.selected_cols = $scope.gridApi.selection.getSelectedRows();
                 });
+
+                gridApi.selection.on.rowSelectionChangedBatch($scope,function(rows){
+                    $scope.selected_cols = $scope.gridApi.selection.getSelectedRows();
+                });
+
             },
         };
         {% endverbatim %}
         console.log('entries CTRL');
     });
 
-    {{ ngapp }}.controller('createJournalEntryCtrl', function ($scope, $http, $routeParams, journalFactory) {
+    {{ ngapp }}.controller('createJournalEntryCtrl', function ($scope, $http, $timeout, $location, $routeParams, journalFactory) {
+
+        $scope.alerts = [];
         $scope.journal_id = $routeParams.journal_id;
         var url = "{% url 'journal_entry' %}";
         var save_entry_url = "{% url 'journal_create_entry' %}";
@@ -489,28 +507,29 @@
 
         $scope.data.description = "";
 
-        $scope.getContent = function() {
-          console.log('Editor content:', $scope.data.description);
-        };
-
-        $scope.setContent = function() {
-           $scope.data.description = 'Time: ' + (new Date());
-        };
-
         $scope.saveEntry = function(){
             console.log('Saving data');
             console.log($scope.data);
             journalFactory.postData(save_entry_url,  $scope.data).then(function(data){
-                $scope.entry = data;
-                $scope.getEntries();
-                console.log(data);
+
+                if(data.data.status == 'success'){
+                    $scope.entry = data;
+                    $scope.alerts.push({msg: data.data.msg, type: 'success'});
+                    $timeout(function(){
+                        $scope.alerts = [];
+                        $location.path('/journal_id/'+$scope.journal_id+'/edit/'+data.data.data.id);
+                        //$scope.getEntries();
+                    }, 2000);
+                }else{
+                    $scope.alerts.push({msg: data.data.msg, type: 'danger'})
+                };
             });
         }
 
         $scope.tinymceOptions = {
-          plugins: 'link image code',
-          toolbar: 'undo redo | bold italic | alignleft aligncenter alignright | code',
-          width: '200%'
+            plugins: 'link image code',
+            toolbar: 'undo redo | bold italic | alignleft aligncenter alignright | code',
+            width: '200%'
         };
 
 
