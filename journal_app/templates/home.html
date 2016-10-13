@@ -16,7 +16,7 @@
 
 <!------------------ Start of Main  ------------------->
 <script type="text/ng-template" id="homeCtrl.html" >
-    <div class="row ">
+    <div class="row row-break">
         <div class="col-md-12" align="right">
             <a href="#/" ng-click="createJournal()"><img src="{{ plusImg }}" width="50" height="50" alt=""></a>
         </div>
@@ -28,7 +28,7 @@
                     <div class="col-md-12" style="background-color: #c1c1c1">
                         <h3><b>{{ o.name }}</b></h3>
                     </div>
-                    <div class="col-md-12" style="border: solid 1px">{{ o.type }}</div>
+                    <div class="col-md-12" style="border: solid 1px">{{ o.description }}</div>
                     <div class="col-md-12" align="right"><a href="#journal/{{ o.id }}/">View</a></div>
                 </div>
                 <div class="col-md-12" style="height: 25px;"></div>
@@ -71,23 +71,29 @@
 
 <!------------------ Start of Entries list Page ------------------->
 <script type="text/ng-template" id="journal_detail.html">
-    <div class="row">
+    <div class="row row-break">
+        <div class="row entries-list-container">
+            <div class="container">
+                <div class="container">
+                    <div class="col-md-12">
+                        <h2>{{ journal_name }} </h2>
+                        <span>{{ entries.length }} total entries | Created on {{ journal_date_created }}</span>
+                        <a href="#create/{{ journal_id }}" class="btn btn-primary pull-right"><i class="glyphicon glyphicon-plus"></i> New Entry</a>
+                    </div>
+                    <div class="col-md-12">
+                        Filter here
+                    </div>
+                </div>
+            </div>
+        </div>
         <div class="container light-bg well">
-            <div class="col-md-11">
-                    <a href="#create/1" class="btn btn-info pull-right"><i class="glyphicon glyphicon-plus"></i> New Entry</a>
-            </div>
-            <div class="col-md-11">
-                <div class=" well">
-                    Filter here...
+            <div class="col-md-12 well" ng-show="selected_cols.length > 0">
+                <div>
+                    <a ng-click="deleteEntry()" class="pull-right btn btn-danger" href="" title="Delete Selected"><i class="pull-right glyphicon glyphicon-trash"></i>Delete </a>
                 </div>
             </div>
-            <div class="col-md-11" ng-show="gridOptions.data.length > 0">
-                <div class=" well">
-                    <a href="" title="Delete Selected"><i class="pull-right glyphicon glyphicon-trash"> Delete</i></a>
-                </div>
-            </div>
-            <div class="col-md-11">
-                <div class=" well">
+            <div class="col-md-12">
+                <div >
                     <div class="panel-body">
                         <div ui-grid="gridOptions" ui-grid-selection  class="myGrid" ng-if="gridOptions.data.length > 0"></div>
                         <div ng-hide="gridOptions.data.length > 0" class="alert alert-warning"> No Entries Available.</div>
@@ -102,7 +108,7 @@
 
 <!------------------ Start Create Entry ------------------->
 <script type="text/ng-template" id="createJournalEntry.html">
-    <div class="row">
+    <div class="row row-break">
         <div class="col-md-2 col-sm-2">
             <div class="side-bar">
                 <div class="panel-body">
@@ -110,12 +116,23 @@
                         <h3 style="color:white;">{{ journal_name }} </h3>
                     </div><hr>
                     <ul class="list-group">
+                      <li class="list-group-item"><a href="#/journal/{{ journal_id }}"><i class="glyphicon glyphicon-home"></i> JOURNAL HOME </a></li>
+                    </ul>
+                    <ul class="list-group">
+                      <li class="list-group-item"><a class="btn btn-primary" href="#create/{{ journal_id }}"><i class="glyphicon glyphicon-plus"></i> ADD ENTRY </a></li>
+                    </ul>
+                    <ul class="list-group">
+                      <li class="list-group-item"><i class="glyphicon glyphicon-list"></i> ENTRIES </li>
                       <li class="list-group-item" ng-repeat="entry in entries"><a href="#/journal_id/{{ journal_id }}/edit/{{ entry.id }}">{{ entry.title }}</a></li>
                     </ul>
                 </div>
             </div>
         </div>
         <div class="well col-md-5 main-section col-sm-5 col-md-offset-2 col-sm-offset-2">
+            <div class="row well text-align">
+                    <h2>{{ journal_name }} </h2>
+                    <span>{{ entries.length }} total entries | Created on {{ journal_date_created }}</span>
+            </div>
             <div class="row">
                 <div class="container-fluid">
                     <form >
@@ -139,7 +156,7 @@
 
 <!------------------ Start Edit Entry ------------------->
 <script type="text/ng-template" id="editJournalEntry.html">
-    <div class="row">
+    <div class="row row-break">
         <div class="col-md-2 col-sm-2">
             <div class="side-bar">
                 <div class="panel-body">
@@ -147,12 +164,26 @@
                         <h3 style="color:white;">{{ journal_name }} </h3>
                     </div><hr>
                     <ul class="list-group">
+                      <li class="list-group-item"><a href="#/journal/{{ journal_id }}"><i class="glyphicon glyphicon-home"></i> JOURNAL HOME </a></li>
+                    </ul>
+                    <ul class="list-group">
+                      <li class="list-group-item"><a class="btn btn-primary" href="#create/{{ journal_id }}"><i class="glyphicon glyphicon-plus"></i> ADD ENTRY </a></li>
+                    </ul>
+
+                    <ul class="list-group">
+                      <li class="list-group-item"><i class="glyphicon glyphicon-list"></i> ENTRIES </li>
                       <li class="list-group-item" ng-repeat="entry in entries"><a href="#/journal_id/{{ journal_id }}/edit/{{ entry.id }}">{{ entry.title }}</a></li>
                     </ul>
                 </div>
             </div>
         </div>
         <div class="well col-md-5 main-section col-sm-5 col-md-offset-2 col-sm-offset-2">
+            <div class="row well text-align">
+                <div>
+                    <h2>{{ journal_name }} </h2>
+                    <span>{{ entries.length }} total entries | Created on {{ journal_date_created }}</span>
+                </div>
+            </div>
             <div class="row">
                 <div class="container-fluid">
                     <form >
@@ -230,6 +261,14 @@
 
     });
 
+
+    {{ ngapp }}.filter('trusted', function($sce){
+      return function(text){
+            console.log(text);
+          return $sce.trustAsHtml(text);
+      }
+    });
+
     {{ ngapp }}.controller("editEntryCtrl", function($scope, $http, $routeParams, journalFactory) {
 
 
@@ -247,6 +286,7 @@
             journalFactory.getEntries(url, entry_data).then(function(data){
                 $scope.entries = data.data;
                 $scope.journal_name = data.journal_name;
+                $scope.journal_date_created = data.journal_date_created;
             });
         }
         $scope.getEntries();
@@ -318,24 +358,39 @@
         };
     });
 
-    {{ ngapp }}.controller("journalDetailCtrl", function($scope, $http, $uibModal, $routeParams, journalFactory) {
+    {{ ngapp }}.controller("journalDetailCtrl", function($scope, $http, $uibModal, $routeParams, $sce, journalFactory) {
 
         var url = "{% url 'journal_entry' %}";
+        var delete_entry_url = "{% url 'delete_entry_url' %}";
 
-        var journal_id = $routeParams.journal_id;
+        $scope.journal_id = $routeParams.journal_id;
 
         $scope.getEntries = function(){
-            $scope.data = {journal_id: journal_id};
+            $scope.data = {journal_id: $scope.journal_id};
             journalFactory.getEntries(url, $scope.data).then(function(data){
                 $scope.entries = data.data;
                 $scope.gridOptions.data = data.data;
+                $scope.journal_name = data.journal_name;
+                $scope.journal_date_created = data.journal_date_created;
+                console.log(data.data);
             });
-            console.log('geting entries');
         }
 
         $scope.getEntries();
 
+        $scope.deleteEntry = function(){
+            console.log("deleting entry...");
+            var entry_id_list = [];
+            angular.forEach($scope.selected_cols, function(data){
+                entry_id_list.push(data.id);
+            });
+            journalFactory.getEntries(delete_entry_url,  {entry_id: entry_id_list}).then(function(data){
+                $scope.getEntries();
+                $scope.selected_cols = [];
+            });
+        };
 
+        {% verbatim %}
         $scope.gridOptions = {
             //enableGridMenu: true,
             //showGridFooter: true,
@@ -344,25 +399,25 @@
             columnDefs: [
                 {
                     field: 'title',
-                    width: '*',
-                },
-                {field: 'date_created', width: '*' },
-                {field: 'date_modified', width: '*' },
-                /*{
-                    field: 'Edit',
-                    width: '80',
-                    cellTemplate: " <button class='btn btn-xs btn-default' ><i class='glyphicon glyphicon-edit'></i> Edit</button>"
+                    width: '200',
+                    cellTemplate: "<a href='#/journal_id/{{ row.entity.journal_id_id }}/edit/{{ row.entity.id }}'>{{ row.entity[col.field] }}</a>"
                 },
                 {
-                    field: 'delete',
-                    width: '80',
-                    cellTemplate: " <button class='btn btn-xs btn-danger' ><i class='glyphicon glyphicon-trash'></i> Delete</button>"
-                },*/
+                    field: 'description',
+                    width: '*',
+                    cellTemplate: "<span ng-bind-html='row.entity[col.field]|trusted'></span>"
+
+                },
+                {field: 'date_modified', width: '150' },
             ],
             onRegisterApi: function(gridApi){
-              $scope.gridApi = gridApi;
+                $scope.gridApi = gridApi;
+                gridApi.selection.on.rowSelectionChanged($scope,function(row){
+                   $scope.selected_cols = $scope.gridApi.selection.getSelectedRows();
+                });
             },
         };
+        {% endverbatim %}
         console.log('entries CTRL');
     });
 
@@ -377,6 +432,7 @@
             journalFactory.getEntries(url, entry_data).then(function(data){
                 $scope.entries = data.data;
                 $scope.journal_name = data.journal_name;
+                $scope.journal_date_created = data.journal_date_created;
             });
         }
         $scope.getEntries();
@@ -424,7 +480,7 @@
 
         $scope.form_fields = {
             'name': {val: '', type: 'text'},
-            'type': {val: [
+            'description': {val: [
                             {name: 'Personal'},
                             {name: 'Academic'}
                           ],

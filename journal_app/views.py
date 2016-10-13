@@ -94,6 +94,7 @@ class JournalEntryDetailView(JSONResponseMixin, View):
             final_list.append(initial_data)
         context_dict['data'] = final_list
         context_dict['journal_name'] = journal_ins.name;
+        context_dict['journal_date_created'] = str(datetime.datetime.strftime(journal_ins.date_created, '%c'));
         return self.render_to_json_response(context_dict)
 
 
@@ -126,6 +127,25 @@ class JournalEntryEditView(JSONResponseMixin, View):
         context_dict['data'] = {
             'data': model_to_dict(entry_ins),
             'msg': 'Pull succesfull'
+        }
+        return self.render_to_json_response(context_dict)
+
+
+class JournalEntryDeleteView(JSONResponseMixin, View):
+
+    def post(self, request, *args, **kwargs):
+        context_dict = {}
+        msg = ""
+        print "this is a delete"
+        post_body = json.loads(self.request.body)
+        entry_list = post_body['entry_id']
+        entry_list = [int(entry_id) for entry_id in entry_list]
+        entry_qset = Journal_entry.objects.filter(id__in=entry_list)
+        if entry_qset:
+            entry_qset.delete()
+            msg = "Successfully Deleted."
+        context_dict['data'] = {
+            'msg': msg
         }
         return self.render_to_json_response(context_dict)
 
