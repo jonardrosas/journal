@@ -100,7 +100,22 @@
                         <a href="#create/{{ journal_id }}" class="btn btn-primary pull-right"><i class="glyphicon glyphicon-plus"></i> New Entry</a>
                     </div>
                     <div class="col-md-12">
-                        Filter here
+                        <form class="form-inline">
+                          <div class="form-group">
+                            <label class="sr-only" for="exampleInputEmail3">Since</label>
+                            <select class="form-control">
+                                <option>All Time</option>
+                                <option>Today</option>
+                                <option>Yesterday</option>
+                                <option>Last Week</option>
+                                <option>This Month</option>
+                            </select>
+                          </div>
+                          <div class="form-group">
+                            <label class="sr-only" for="exampleInputPassword3">Entry Title</label>
+                            <input type="password" class="form-control" id="exampleInputPassword3" placeholder="Search Entry Title">
+                          </div>
+                        </form>
                     </div>
                 </div>
             </div>

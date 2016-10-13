@@ -16,18 +16,8 @@
                 <div class="col-md-12">
                     <div class="row">
                         <div class="col-md-12" align="center">
-                            <h3 class="h3_class">Create an account</h3>
+                            <h3 class="h3_class">Create an account </h3>
                         </div><br><br><br>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-12" align="center">
-                            <a href="#login1" class="btn btn-info btn-xs">Signup1
-                            </a>
-                            <a href="#login2" class="btn btn-info btn-xs">Signup2
-                            </a>
-                            <a href="#login3" class="btn btn-info btn-xs"> Signup3
-                            </a>
-                        </div>
                     </div>
                     <div class="row">
                         <div ng-view></div>
@@ -35,6 +25,17 @@
                 </div>
 
             <script type="text/ng-template" id="signUp.html">
+                    <div class="row">
+                        <div class="col-md-12" align="center">
+                            <a href="#login1" class="btn btn-xs" ng-class="getClass(source, 1)">Signup1
+                            </a>
+                            <a href="#login2" class="btn btn-xs" ng-class="getClass(source, 2)">Signup2
+                            </a>
+                            <a href="#login3" class="btn btn-xs" ng-class="getClass(source, 3)"> Signup3
+                            </a>
+                        </div>
+                    </div>
+
                 <div class="container-fluid">
                     <div class="row" ng-if="responseData.msg.cls == 'success'">
                         <div class="col-md-7 custom-padding-5" ng-show="alerts">
@@ -46,7 +47,8 @@
                             <input ng-if="hasMeter && f=='password'" type="{{ v.type }}" ng-model="data[f]"
                                 class="custom-input" placeholder="{{ f }}"
                                 uib-popover-html="htmlPopover"
-                                popover-trigger="'focus'"
+                                popover-trigger="'none'"
+                                popover-is-open='{{ isOpen }}'
                                 popover-placement="left"
                                 ng-change="validate()">
 
@@ -111,6 +113,14 @@
         confirm_password: { type: 'password', value: ''},
     };
 
+    data.getClass = function(val1, val2){
+        if(val1 == val2){
+            return "btn-danger";
+        }else{
+            return "btn-info";
+        }
+    };
+
     data.htmlPopover3 = $sce.trustAsHtml("Use at least 8 characters long or more<br/> a lowercase character<br/> Add an uppercase character<br/> Add a number<br/> Add a special character (e.g., ?, %, &)<br/> ");
     return data;
 
@@ -124,6 +134,8 @@
     $scope.alerts = [];
     $scope.warning = {};
     $scope.hasMeter = false;
+    $scope.source = 1;
+
 
 
     $scope.data = {
@@ -135,6 +147,9 @@
         confirm_password: '',
     };
     $scope.form_field = signUpFactory.form_field;
+    $scope.getClass = function(v1, v2){
+        return signUpFactory.getClass(v1, v2);
+    };
 
     $scope.authenticate = function(){
         $scope.warning = {};
@@ -161,6 +176,8 @@
     $scope.validation_url = "{%  url 'password_validate' %}";
     $scope.hasMeter = true;
     $scope.validationResponse  = {};
+    $scope.source = 2;
+    $scope.isOpen = true;
 
     $scope.data = {
         first_name: '',
@@ -200,6 +217,7 @@
         signUpFactory.post($scope.signup_authenticate , $scope.data).then(function(response){
             $scope.responseData = response.data;
             $scope.meterMessage();
+            $scope.isOpen = true;
             console.log(response.data);
         });
     };
@@ -217,6 +235,8 @@
     $scope.hasMeter = true;
     $scope.validationResponse  = {};
     $scope.requesting = false;
+    $scope.source = 3;
+    $scope.isOpen = true;
 
     $scope.data = {
         first_name: '',
@@ -267,7 +287,7 @@
                         $scope.requesting = false;
                         console.log(response.data);
                     });
-                }, 2000
+                }, 1000
             );
         }else{
             if($scope.data.password == '' || $scope.data.password == null){
