@@ -59,17 +59,17 @@ class SaveJournalView(JSONResponseMixin, View):
     response_data ={}
 
     def post(self, request, *args, **kwargs):
-        print "fff"
         response_data ={}
         post_body = json.loads(self.request.body)
         name = post_body['name']
-        journal_type = post_body['type']
-        if not name or not journal_type:
+        description = post_body['description']
+        if not name or not description:
             response_data = {'msg': 'Name cannot be empty', 'status': 'error'}
         else:
             journal_qlist = Journal.objects.create(
                 created_by=self.request.user,
-                name=name
+                name=name,
+                description = description
             )
             response_data = {'msg': 'Successfully Created', 'status': 'success'}
         return self.render_to_json_response(dict(response_data))

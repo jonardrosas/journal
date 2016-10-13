@@ -5,16 +5,9 @@ from django.contrib.auth.models import User
 # Create your models here.
 
 class Journal(models.Model):
-    TYPE_CHOICES = (
-        ("personal", "Personal"),
-        ("academic", "Academic"),
-    )
 
-    name = models.CharField(max_length=120)
-    description = models.CharField(
-        max_length=12,
-        choices=TYPE_CHOICES,
-        default="personal")
+    name = models.CharField(max_length=120, unique=True)
+    description = models.CharField(max_length=500)
     created_by = models.ForeignKey(User, related_name='+')
     date_created = models.DateTimeField(auto_now=False, auto_now_add=True)
     date_modified = models.DateTimeField(auto_now=True, auto_now_add=False)
@@ -30,10 +23,11 @@ class Journal_entry(models.Model):
         null=True,
         blank=True, default=None
     )
-    title = models.CharField(max_length=120)
+    title = models.CharField(max_length=120, unique=True)
     description = models.TextField(blank=True, null=True)
     date_created = models.DateTimeField(auto_now=False, auto_now_add=True)
     date_modified = models.DateTimeField(auto_now=True, auto_now_add=False)
 
     def __unicode__(self):
         return (self.title)
+
