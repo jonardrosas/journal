@@ -11,7 +11,6 @@ from journal_app.models import Journal,Journal_entry
 from django.contrib import auth
 from django.core.context_processors import csrf
 from django.contrib.auth.models import User
-from forms import JournalEntryForm
 from .models import Journal_entry, Journal
 import json
 from django.http import JsonResponse
@@ -119,14 +118,48 @@ class JournalEntryCreateView(JSONResponseMixin, View):
 
 class JournalEntryEditView(JSONResponseMixin, View):
 
-    def post(self, request, *args, **kwargs):
+    def get(self, request, *args, **kwargs):
         context_dict = {}
+        status = "error"
+        print self.request.body
         post_body = json.loads(self.request.body)
         entry_id = post_body['entry_id']
-        entry_ins = Journal_entry.objects.get(id=int(entry_id))
+        try:
+            entry_ins = Journal_entry.objects.get(id=int(entry_id))
+        except Journal_entry.DoesNotExist:
+            msg = 'The Entry was already deleted!'
+        else:
+            msg = "Pulled succesfully!"
+            status = "error"
         context_dict['data'] = {
             'data': model_to_dict(entry_ins),
-            'msg': 'Pull succesfull'
+            'msg': msg,
+            'status': status
+
+        }
+        return self.render_to_json_response(context_dict)
+
+    def post(self, request, *args, **kwargs):
+        context_dict = {}
+        status = 'error'
+        post_body = json.loads(self.request.body)
+        entry_id = post_body['entry_id']
+        title = post_body['title']
+        description = post_body['description']
+        try:
+            entry_ins = Journal_entry.objects.get(id=int(entry_id))
+        except Journal_entry.DoesNotExist:
+            msg = 'The Entry was already deleted!'
+        else:
+            entry_ins.title = description
+            entry_ins.description = description
+            entry_ins.save()
+            msg = "Successfully updated!"
+            status = 'success'
+        context_dict['data'] = {
+            'data': model_to_dict(entry_ins),
+            'msg': msg,
+            'status': status
         }
         return self.render_to_json_response(context_dict)
 

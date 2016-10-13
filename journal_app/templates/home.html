@@ -162,7 +162,7 @@
                 </div>
             </div>
         </div>
-        <div class="well col-md-5 main-section col-sm-5 col-md-offset-2 col-sm-offset-2">
+        <div class="well col-md-8 main-section col-sm-5 col-md-offset-1 col-sm-offset-2">
             <div class="row well text-align">
                     <h2>{{ journal_name }} </h2>
                     <span>{{ entries.length }} total entries | Created on {{ journal_date_created }}</span>
@@ -211,7 +211,7 @@
                 </div>
             </div>
         </div>
-        <div class="well col-md-5 main-section col-sm-5 col-md-offset-2 col-sm-offset-2">
+        <div class="well col-md-8 main-section col-sm-5 col-md-offset-1 col-sm-offset-2">
             <div class="row well text-align">
                 <div>
                     <h2>{{ journal_name }} </h2>
@@ -282,7 +282,7 @@
 
         var data = {};
 
-        data.getEntries = function(url, data){
+        data.postData = function(url, data){
             var deferred = $q.defer();
              $http.post(url, data).then(function(response){
                  return deferred.resolve(response.data);
@@ -290,7 +290,18 @@
                 alert('Internal Error');
             });
             return deferred.promise;
+        };
+
+        data.getData = function(url, data){
+            var deferred = $q.defer();
+             $http.get(url, data).then(function(response){
+                 return deferred.resolve(response.data);
+            }, function(){
+                alert('Internal Error');
+            });
+            return deferred.promise;
         }
+
         return data;
 
     });
@@ -311,13 +322,12 @@
         console.log('J:'+$scope.journal_id);
         console.log('E:'+$scope.entry_id);
         var url = "{% url 'journal_entry' %}";
-        var save_entry_url = "{% url 'journal_create_entry' %}";
         var update_entry_url = "{% url 'journal_edit_entry' %}";
         $scope.data = {journal_id: $scope.journal_id};
 
         $scope.getEntries = function(){
             var entry_data = {journal_id: $scope.journal_id};
-            journalFactory.getEntries(url, entry_data).then(function(data){
+            journalFactory.postData(url, entry_data).then(function(data){
                 $scope.entries = data.data;
                 $scope.journal_name = data.journal_name;
                 $scope.journal_date_created = data.journal_date_created;
@@ -326,7 +336,7 @@
         $scope.getEntries();
 
         $scope.updateEntry = function(){
-            journalFactory.getEntries(update_entry_url,  {entry_id: $scope.entry_id}).then(function(data){
+            journalFactory.getData(update_entry_url,  {entry_id: $scope.entry_id}).then(function(data){
                 $scope.data.title = data.data.data.title;
                 $scope.data.description = data.data.data.description;
                 $scope.getEntries();
@@ -338,7 +348,7 @@
         $scope.saveEntry = function(){
             console.log('Saving data');
             console.log($scope.data);
-            journalFactory.getEntries(save_entry_url,  $scope.data).then(function(data){
+            journalFactory.postData(update_entry_url,  $scope.data).then(function(data){
                 $scope.entry = data;
                 $scope.getEntries();
                 console.log(data);
@@ -402,7 +412,7 @@
 
         $scope.getEntries = function(){
             $scope.data = {journal_id: $scope.journal_id};
-            journalFactory.getEntries(url, $scope.data).then(function(data){
+            journalFactory.postData(url, $scope.data).then(function(data){
                 $scope.entries = data.data;
                 $scope.gridOptions.data = data.data;
                 $scope.journal_name = data.journal_name;
@@ -419,7 +429,7 @@
             angular.forEach($scope.selected_cols, function(data){
                 entry_id_list.push(data.id);
             });
-            journalFactory.getEntries(delete_entry_url,  {entry_id: entry_id_list}).then(function(data){
+            journalFactory.postData(delete_entry_url,  {entry_id: entry_id_list}).then(function(data){
                 $scope.getEntries();
                 $scope.selected_cols = [];
             });
@@ -464,7 +474,7 @@
 
         $scope.getEntries = function(){
             var entry_data = {journal_id: $scope.journal_id};
-            journalFactory.getEntries(url, entry_data).then(function(data){
+            journalFactory.postData(url, entry_data).then(function(data){
                 $scope.entries = data.data;
                 $scope.journal_name = data.journal_name;
                 $scope.journal_date_created = data.journal_date_created;
@@ -490,7 +500,7 @@
         $scope.saveEntry = function(){
             console.log('Saving data');
             console.log($scope.data);
-            journalFactory.getEntries(save_entry_url,  $scope.data).then(function(data){
+            journalFactory.postData(save_entry_url,  $scope.data).then(function(data){
                 $scope.entry = data;
                 $scope.getEntries();
                 console.log(data);
