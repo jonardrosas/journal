@@ -5,7 +5,6 @@ from django.contrib.auth.models import User
 # Create your models here.
 
 class Journal(models.Model):
-
     name = models.CharField(max_length=120, unique=True)
     description = models.CharField(max_length=500)
     created_by = models.ForeignKey(User, related_name='+')

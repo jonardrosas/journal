@@ -14,22 +14,24 @@
 .form-control {
     display: block;
     max-width:100%;
-    width: 75%;
-    height: 35px;
+    width: 100%;
+    height: 50px;
+    text-align: center;
     padding: 8px 10px;
     line-height: 1.4em;
-    color: #1f9bc9;
+    font-size: 17px;
+    color: grey;
     background-color: #ffffff;
     background-image: none;
-    border: 1px solid #cccccc;
-    border-radius: 4px;
-    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.090);
+    border: 0px solid #FFFFFF;
+    border-bottom: 1px solid grey;
+    border-radius: 0px;
+    box-shadow: none;
     transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
-    font-family: "Open Sans","lucida grande","Segoe UI",arial,verdana,"lucida sans unicode",tahoma,sans-serif;
-    font-size: 13px;
-    color: #3d464d;
+    font-family: Courier New, Courier, monospace;
     font-weight: normal;
 }
+
 
 .table > thead > tr > td, .table > tbody > tr > td, .table > tfoot > tr > td {
     padding: 8px;

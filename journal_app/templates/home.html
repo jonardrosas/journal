@@ -23,16 +23,38 @@
     </div>
     <div class="row">
         <div class="col-md-12">
-            <div ng-repeat="o in journals track by $index" class="col-md-4">
+            <div ng-repeat="o in journals track by $index" class="col-md-5">
                 <div class="col-md-12" align="center" style="font-family: Courier New, Courier, monospace;">
-                    <div class="col-md-12" style="background-color: #c1c1c1">
-                        <h3><b>{{ o.name }}</b></h3>
+                    <div class="col-md-12" style="background-color: #FFFFFF">
+                        <div class="col-md-12">
+                            <div class="col-md-12" style="height: 30px;">
+                                <img src="{{ pinImg }}" width="40" height="40" alt="">
+                            </div>
+                            <h1><b>{{ o.name }}</b></h1>
+                            <h4>{{ o.description }}</h4><br>
+                        </div>
+                        <div class="col-md-12" style="height: 25px;"></div>
+
+                        <div class="col-md-12">
+                            <a href="#journal/{{ o.id }}/" class="btn btn-info btn-xs">
+                                <i class="glyphicon glyphicon-th-list"></i>
+                                View entries</a>
+                            <a href="#create/1" class="btn btn-success btn-xs">
+                                <i class="glyphicon glyphicon-plus"></i>
+                            Create new entry</a>
+                            <a href="#journal/{{ o.id }}/" class="btn btn-warning btn-xs">
+                                <i class="glyphicon glyphicon-pencil"></i>
+                                Update Journal</a>
+                        </div>
+                        <div class="col-md-12" style="height: 20px;" align="left"></div>
+                        <div class="col-md-12" style="height: 25px;font-size: 15px;color: grey" align="left">
+                            {{ o.date_modified|date:M }}
+                        </div>
                     </div>
                     <div class="col-md-12" style="border: solid 1px">{{ o.description }}</div>
                     <div class="col-md-12" align="right"><a href="#journal/{{ o.id }}/">View</a></div>
                 </div>
                 <div class="col-md-12" style="height: 25px;"></div>
-
             </div>
         </div>
     </div>
@@ -48,24 +70,24 @@
 
 <!------------------ Pop up ------------------->
 <script type="text/ng-template" id="createJournal.html">
-    <div class="modal-header" align="center" style="background-color:#f8de00;font-family: Courier New, Courier, monospace;">
+    <div class="modal-header" align="center" style="background-color:#5bc0de;
+    font-family: Courier New, Courier, monospace;color: white">
         <h3 class="modal-title" id="modal-title">Create your Journal</h3>
     </div>
-    <div class="modal-body" id="modal-body">
+    <div class="modal-body" id="modal-body" align="center">
         <div class="row" ng-repeat="(f, v) in form_fields">
             <div class="col-md-12 custom-padding-5">
-                <label>{{ f }}</label><br/>
-                <input class="form-control" ng-if="v.type!='select'" type="{{ v.type }}" ng-model="data[f]" class="form-control" placeholder="{{ f }}" >
-                <select ng-if="v.type=='select'" ng-model="data[f]" class="form-control" ><option ng-repeat="x in v.val">{{ x.name }}</option></select>
+                <input class="form-control" ng-if="v.type!='select'" type="{{ v.type }}"
+                       ng-model="data[f]" class="form-control" placeholder="{{ f }}" >
             </div>
         </div>
     </div>
     <div class="modal-footer">
-        <button class="btn btn-primary" ng-click="saveJournal()" type="button">Save</button>
-        <button class="btn btn-primary" ng-click="cancel()" type="button">Cancel</button>
+        <button class="btn btn-success" ng-click="saveJournal()" type="button">Save</button>
+        <button class="btn btn-grey" ng-click="cancel()" type="button">Cancel</button>
     </div>
 </script>
-<!------------------ Pop up ------------------->
+<!------------------ End Pop up ------------------->
 
 
 
@@ -324,6 +346,7 @@
 
          var url = "{% url 'journal_vew' %}";
          $scope.plusImg = "{% static 'img/add.png' %}"
+         $scope.pinImg = "{% static 'img/pin.png' %}"
          $scope.journals = [];
 
         $scope.initData = function(){
