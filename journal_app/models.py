@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 # Create your models here.
 
 class Journal(models.Model):
-    name = models.CharField(max_length=120, unique=True)
+    name = models.CharField(max_length=120)
     description = models.CharField(max_length=500)
     created_by = models.ForeignKey(User, related_name='+')
     date_created = models.DateTimeField(auto_now=False, auto_now_add=True)
@@ -13,6 +13,7 @@ class Journal(models.Model):
 
     def __unicode__(self):
         return (self.name)
+
 
 
 class Journal_entry(models.Model):

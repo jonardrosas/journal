@@ -57,43 +57,125 @@ class JournalView(JSONResponseMixin, View):
 class SaveJournalView(JSONResponseMixin, View):
     response_data ={}
 
+
+
     def post(self, request, *args, **kwargs):
         response_data ={}
+        status = "error"
         post_body = json.loads(self.request.body)
         name = post_body['name']
         description = post_body['description']
         if not name or not description:
             response_data = {'msg': 'Name cannot be empty', 'status': 'error'}
         else:
-            journal_qlist = Journal.objects.create(
-                created_by=self.request.user,
-                name=name,
-                description = description
-            )
-            response_data = {'msg': 'Successfully Created', 'status': 'success'}
+            if Journal.objects.filter(name=name, created_by=self.request.user).exists():
+                msg = "Journal Already Exists!"
+            else:
+                journal_qlist = Journal.objects.create(
+                    created_by=self.request.user,
+                    name=name,
+                    description = description
+                )
+                msg = "Successfully Created"
+                status = "success"
+            response_data = {'msg': msg, 'status': status}
+        return self.render_to_json_response(dict(response_data))
+
+
+class EditJournalView(JSONResponseMixin, View):
+    response_data ={}
+
+    def get(self, request, *args, **kwargs):
+        response_data ={}
+        status = "error"
+        data = None
+        journal_id = self.request.GET['journal_id']
+        try:
+            journal_ins = Journal.objects.get(id=int(journal_id))
+        except Journal.DoesNotExist:
+            msg = "Journal Already Exists!"
+        else:
+            msg = "Successfully Retreived!"
+            status = "success"
+            data = model_to_dict(journal_ins)
+        response_data = {'msg': msg, 'status': status, 'data': data}
+        return self.render_to_json_response(dict(response_data))
+
+
+    def post(self, request, *args, **kwargs):
+        response_data ={}
+        status = "error"
+        post_body = json.loads(self.request.body)
+        journal_id = post_body['journal_id']
+        name = post_body['name']
+        description = post_body['description']
+        if not name or not description:
+            response_data = {'msg': 'Name cannot be empty', 'status': 'error'}
+        else:
+            try:
+                journal_ins = Journal.objects.get(id=int(journal_id))
+            except Journal.DoesNotExist:
+                msg = "Journal Does not exist!"
+            else:
+                journal_ins.name = name
+                journal_ins.description = description
+                journal_ins.save()
+                msg = "Successfully Updated!"
+                status = "success"
+            response_data = {'msg': msg, 'status': status}
+        return self.render_to_json_response(dict(response_data))
+
+
+class DeleteJournalView(JSONResponseMixin, View):
+    response_data ={}
+
+    def post(self, request, *args, **kwargs):
+        response_data ={}
+        status = "error"
+        post_body = json.loads(self.request.body)
+        journal_id = post_body['journal_id']
+        try:
+            journal_ins = Journal.objects.get(id=int(journal_id))
+        except Journal.DoesNotExist:
+            msg = "Journal Does not exist!"
+        else:
+            journal_ins.delete()
+            msg = "Successfully Deleted!"
+            status = "success"
+        response_data = {'msg': msg, 'status': status}
         return self.render_to_json_response(dict(response_data))
 
 
 class JournalEntryDetailView(JSONResponseMixin, View):
 
     def post(self, request, *args, **kwargs):
-        context_dict = {}
+        context_dict = {'status': 'error'}
+        status = 'error'
         post_body = json.loads(self.request.body)
         journal_id = post_body['journal_id']
-        journal_ins = Journal.objects.get(id=int(journal_id))
-        entries = journal_ins.journal_entry.values()
-        final_list = []
-        for entry in entries:
-            initial_data = {}
-            for k, v in entry.items():
-                if k in ['date_created', 'date_modified']:
-                    initial_data[k] = str(datetime.datetime.strftime(v, '%c'))
-                else:
-                    initial_data[k] = str(v)
-            final_list.append(initial_data)
-        context_dict['data'] = final_list
-        context_dict['journal_name'] = journal_ins.name;
-        context_dict['journal_date_created'] = str(datetime.datetime.strftime(journal_ins.date_created, '%c'));
+        try:
+            journal_ins = Journal.objects.get(id=int(journal_id))
+        except Journal.DoesNotExist:
+            context_dict['msg'] = "Journal Does not exists!"
+        else:
+            if journal_ins.created_by != self.request.user:
+                context_dict['msg'] = "Not allowed to view other users, journal!"
+            else:
+                entries = journal_ins.journal_entry.values()
+                final_list = []
+                for entry in entries:
+                    initial_data = {}
+                    for k, v in entry.items():
+                        if k in ['date_created', 'date_modified']:
+                            initial_data[k] = str(datetime.datetime.strftime(v, '%c'))
+                        else:
+                            initial_data[k] = str(v)
+                    final_list.append(initial_data)
+                context_dict['status'] = 'success'
+                context_dict['data'] = final_list
+                context_dict['msg'] = "Successfully Pulled Entries!"
+                context_dict['journal_name'] = journal_ins.name;
+                context_dict['journal_date_created'] = str(datetime.datetime.strftime(journal_ins.date_created, '%c'));
         return self.render_to_json_response(context_dict)
 
 
@@ -119,9 +201,11 @@ class JournalEntryCreateView(JSONResponseMixin, View):
                     title=title,
                     description=description
                 )
+                print description
                 data = model_to_dict(entry_ins)
                 msg = 'Successfully Created Entry'
                 status = 'success'
+        print description
         context_dict['data'] = {
             'msg': msg,
             'data': data,
