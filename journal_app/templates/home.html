@@ -18,7 +18,7 @@
 <script type="text/ng-template" id="homeCtrl.html" >
     <div class="row row-break">
         <div class="col-md-12" align="right">
-            <a href="#/" ng-click="createJournal()"><img src="{{ plusImg }}" width="50" height="50" alt=""></a>
+            <a href="#/" ng-click="createJournal()"><img src="{{ plusImg }}" width="55" height="50" alt=""></a>
         </div>
     </div>
     <div class="row">
@@ -39,7 +39,7 @@
                             <a href="#journal/{{ o.id }}/" class="btn btn-info btn-xs">
                                 <i class="glyphicon glyphicon-th-list"></i>
                                 View entries</a>
-                            <a href="#create/1" class="btn btn-success btn-xs">
+                            <a href="#create/{{ o.id }}/" class="btn btn-success btn-xs">
                                 <i class="glyphicon glyphicon-plus"></i>
                             Create new entry</a>
                             <a href="#journal/{{ o.id }}/" class="btn btn-warning btn-xs">
