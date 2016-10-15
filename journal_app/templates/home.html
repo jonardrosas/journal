@@ -23,16 +23,21 @@
     </div>
     <div class="row">
         <div class="col-md-12">
-            <div ng-repeat="o in journals track by $index" class="col-md-5 row-break">
-                <div class="col-md-12" align="center" style="font-family: Courier New, Courier, monospace;">
-                    <div class="col-md-12" style="background-color: #FFFFFF">
-                        <div class="col-md-12">
-                            <div class="col-md-12" style="height: 30px;">
-                                <img src="{{ pinImg }}" width="40" height="40" alt="">
-                            </div>
+            <div ng-repeat="o in journals track by $index" class="col-md-4 row-break"
+                 style="font-family: Courier New, Courier, monospace;max-height: 50px;" align="center">
+                    <div class="col-md-12" style="background-color: #FFFFFF;">
+                            <div class="col-md-12" style="height: 30px;padding-top: 7px;">
+                                <div class="col-md-7" align="right">
+                                    <img src="{{ pinImg }}" width="40" height="40" alt="">
+                                </div>
+                                <div class="col-md-5" align="right" style="padding-right: 0px;">
+                                    <a ng-click="editJournal(o.id)" style="color: black;">
+                                    <i class="glyphicon glyphicon-pencil"></i></a>
+                                </div>
+
+                            </div><br>
                             <h1><b>{{ o.name }}</b></h1>
                             <h4>{{ o.description }}</h4><br>
-                        </div>
                         <div class="col-md-12" style="height: 25px;"></div>
 
                         <div class="col-md-12">
@@ -42,19 +47,16 @@
                             <a href="#create/{{ o.id }}" class="btn btn-success btn-xs">
                                 <i class="glyphicon glyphicon-plus"></i>
                             Create new entry</a>
-                            <button  ng-click="editJournal(o.id)" class="btn btn-warning btn-xs">
-                                <i class="glyphicon glyphicon-pencil"></i>
-                                Update Journal</button>
-                            <button  ng-click="deleteJournal(o.id)" class="btn btn-danger btn-xs">
-                                <i class="glyphicon glyphicon-trash"></i>
-                                Delete Journal</button>
                         </div>
+
                         <div class="col-md-12" style="height: 20px;" align="left"></div>
                         <div class="col-md-12" style="height: 25px;font-size: 15px;color: grey" align="left">
-                            {{ o.date_modified|date:M }}
+                            <div class="col-md-6" align="left">{{ o.date_modified|date:M }}</div>
+                            <div class="col-md-6" align="right">
+                                <a ng-click="deleteJournal(o.id)" style="color: black;"><i class="glyphicon glyphicon-trash"></i></a>
+                            </div>
                         </div>
                     </div>
-                </div>
             </div>
         </div>
     </div>
@@ -78,8 +80,8 @@
         <div class="alert alert-{{ alert.type }}" ng-repeat="alert in alerts" uib-alert>{{  alert.msg }}</div>
         <div class="row" ng-repeat="(f, v) in form_fields">
             <div class="col-md-12 custom-padding-5">
-                <input class="form-control" ng-if="v.type!='select'" type="{{ v.type }}"
-                       ng-model="data[f]" class="form-control" placeholder="{{ f }}" >
+                <input class="custom-form-control" ng-if="v.type!='select'" type="{{ v.type }}"
+                       ng-model="data[f]" class="custom-form-control" placeholder="{{ f }}" >
             </div>
         </div>
     </div>
@@ -97,47 +99,71 @@
     <div class="row row-break">
         <div class="row entries-list-container">
             <div class="container">
-                <div class="container" >
-                    <div class="col-md-12" ng-show="journal_name">
-                        <h2>{{ journal_name }} </h2>
-                        <span>{{ gridOptions.data.length }} total entries | Created on {{ journal_date_created }}</span>
-                        <a href="#create/{{ journal_id }}" class="btn btn-primary pull-right"><i class="glyphicon glyphicon-plus"></i> New Entry</a>
+                <div class="container">
+                    <div class="col-md-2"></div>
+                    <div class="col-md-8">
+                        <div class="col-md-12" ng-show="journal_name">
+                            <h2>{{ journal_name }} </h2>
+                            <span>{{ gridOptions.data.length }} total entries | Created on {{ journal_date_created }}</span>
+                        </div>
                     </div>
-                    <div class="col-md-12" ng-show="gridOptions.data.length > 0">
-                        <form class="form-inline">
-                          <div class="form-group">
-                            <label class="sr-only" for="exampleInputEmail3">Since</label>
-                            <select class="form-control">
-                                <option>All Time</option>
-                                <option>Today</option>
-                                <option>Yesterday</option>
-                                <option>Last Week</option>
-                                <option>This Month</option>
-                            </select>
-                          </div>
-                          <div class="form-group">
-                            <label class="sr-only" for="exampleInputPassword3">Entry Title</label>
-                            <input type="password" class="form-control" id="exampleInputPassword3" placeholder="Search Entry Title">
-                          </div>
-                        </form>
+                    <div class="col-md-2" style="padding-top: 60px;padding-bottom: 10px;">
+                        <div class="col-md-12">
+                            <a href="#create/{{ journal_id }}" class="btn btn-warning pull-right">
+                                <i class="glyphicon glyphicon-plus"></i> New Entry</a>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="container light-bg well">
-            <div class="col-md-12 well" ng-show="selected_cols.length > 0">
-                <div>
-                    <a ng-click="deleteEntry()" class="pull-right btn btn-danger" href="" title="Delete Selected"><i class="pull-right glyphicon glyphicon-trash"></i>Delete </a>
-                </div>
+        <div class="col-md-12 well" ng-show="selected_cols.length > 0" style="background-color:#3F454F;">
+            <div class="col-md-9" align="right">
+                <a ng-click="deleteEntry()" class="btn btn-danger" href=""
+                   title="Delete Selected">
+                    <i class="pull-right glyphicon glyphicon-trash"></i>
+                </a>
             </div>
+            <div class="col-md-3"></div>
+        </div>
+        <div class="col-md-9 light-bg">
             <div class="col-md-12">
-                <div >
+                <div>
                     <div class="panel-body">
                         <div class="alert alert-{{ alert.type }}" ng-repeat="alert in alerts" uib-alert>{{  alert.msg }}</div>
                         <div ui-grid="gridOptions" ui-grid-selection  class="myGrid" ng-if="gridOptions.data.length > 0"></div>
                         <div ng-hide="gridOptions.data.length > 0" class="alert alert-warning"> No Entries Available.</div>
                     </div>
                 </div>
+            </div>
+        </div>
+        <div class="col-md-3 light-bg" style="border-left: 1px solid #e1e1e1;">
+            <div class="col-md-12">
+
+                <h2><i class="glyphicon glyphicon-search"></i>&nbsp;&nbsp;Search</h2>
+                <div class="form-group">
+                    <label class="sr-only" for="exampleInputPassword3">Entry Title</label>
+                    <input type="text" class="form-control" id="exampleInputPassword3"
+                           placeholder="Search Entry Title">
+                </div>
+            </div>
+            <div class="col-md-12" style="height: 20px;"><hr></div>
+
+            <div class="col-md-12">
+                <h2><i class="glyphicon glyphicon-calendar"></i>&nbsp;&nbsp;View by</h2>
+            </div>
+            <div class="col-md-12">
+                <form class="form-inline">
+                  <div class="form-group">
+                    <label class="sr-only" for="exampleInputEmail3">Since</label>
+                    <select class="form-control">
+                        <option>All Time</option>
+                        <option>Today</option>
+                        <option>Yesterday</option>
+                        <option>Last Week</option>
+                        <option>This Month</option>
+                    </select>
+                  </div>
+                </form>
             </div>
         </div>
     </div>
@@ -151,15 +177,19 @@
         <div class="col-md-2 col-sm-2">
             <div class="side-bar">
                 <div class="panel-body">
-                    <div class="row" align="center">
-                        <h3 style="color:white;">{{ journal_name }} </h3>
-                    </div><hr>
                     <ul class="list-group">
-                      <li class="list-group-item"><a href="#/journal/{{ journal_id }}"><i class="glyphicon glyphicon-home"></i> JOURNAL HOME </a></li>
+                      <li class="list-group-item"><a href="#/journal/{{ journal_id }}">
+                          <i class="glyphicon glyphicon-home"></i> HOME </a></li>
+                    </ul><hr>
+                    <ul class="list-group">
+                      <li class="list-group-item"><a class="btn btn-primary" href="#create/{{ journal_id }}">
+                          <i class="glyphicon glyphicon-plus"></i> ADD ENTRY </a></li>
                     </ul>
+
                     <ul class="list-group">
                       <li class="list-group-item"><i class="glyphicon glyphicon-list"></i> ENTRIES </li>
-                      <li class="list-group-item" ng-repeat="entry in entries"><a href="#/journal_id/{{ journal_id }}/edit/{{ entry.id }}">{{ entry.title }}</a></li>
+                      <li class="list-group-item" ng-repeat="entry in entries">
+                          <a href="#/journal_id/{{ journal_id }}/edit/{{ entry.id }}">{{ entry.title }}</a></li>
                     </ul>
                 </div>
             </div>
@@ -174,15 +204,13 @@
                     <div class="alert alert-{{ alert.type }}" ng-repeat="alert in alerts" uib-alert>{{  alert.msg }}</div>
                     <form >
                       <div class="form-group">
-                        <label for="title">Title:</label><br/>
-                        <input type="text" ng-model="data.title" class="form-control col-md-2" id="title" name="title">
+                        <input type="text" ng-model="data.title" class="custom-form-control col-md-2" id="title"
+                               name="title" placeholder="Entry Title">
                       </div><br/><br/>
-                      <div class="form-group">
-                            <label for="description">Description:</label<br/>
+                      <div class="form-group"><br>
                             <textarea ng-change="descriptionChange()" ui-tinymce="tinymceOptions" ng-model="data.description" class="tiny-mce" rows="20"></textarea>
                       </div>
-                      <div class="checkbox">
-                      <button ng-click="saveEntry()"  class="btn btn-default">Save</button>
+                      <button ng-click="saveEntry()"  class="btn btn-success pull-right">Save</button>
                     </form>
                 </div>
             </div>
@@ -197,12 +225,10 @@
         <div class="col-md-2 col-sm-2">
             <div class="side-bar">
                 <div class="panel-body">
-                    <div class="row" align="center">
-                        <h3 style="color:white;">{{ journal_name }} </h3>
-                    </div><hr>
                     <ul class="list-group">
-                      <li class="list-group-item"><a href="#/journal/{{ journal_id }}"><i class="glyphicon glyphicon-home"></i> JOURNAL HOME </a></li>
-                    </ul>
+                      <li class="list-group-item"><a href="#/journal/{{ journal_id }}">
+                          <i class="glyphicon glyphicon-home"></i> HOME </a></li>
+                    </ul><hr>
                     <ul class="list-group">
                       <li class="list-group-item"><a class="btn btn-primary" href="#create/{{ journal_id }}"><i class="glyphicon glyphicon-plus"></i> ADD ENTRY </a></li>
                     </ul>
@@ -591,7 +617,8 @@
         $scope.tinymceOptions = {
             plugins: 'link image code',
             toolbar: 'undo redo | bold italic | alignleft aligncenter alignright | code',
-            width: '200%'
+            width: '100%',
+            height: '100%'
         };
 
 
