@@ -99,40 +99,33 @@
     <div class="row row-break">
         <div class="row entries-list-container">
             <div class="container">
-                <div class="container">
-                    <div class="col-md-2"></div>
-                    <div class="col-md-8">
-                        <div class="col-md-12" ng-show="journal_name">
-                            <h2>{{ journal_name }} </h2>
-                            <span>{{ gridOptions.data.length }} total entries | Created on {{ journal_date_created }}</span>
-                        </div>
+                <div class="col-md-10" align="left">
+                    <div class="col-md-12" ng-show="journal_name">
+                        <h2>{{ journal_name }} </h2>
+                        <span>{{ gridOptions.data.length }} total entries | Created on {{ journal_date_created }}</span>
                     </div>
-                    <div class="col-md-2" style="padding-top: 60px;padding-bottom: 10px;">
-                        <div class="col-md-12">
-                            <a href="#create/{{ journal_id }}" class="btn btn-warning pull-right">
-                                <i class="glyphicon glyphicon-plus"></i> New Entry</a>
-                        </div>
+                </div>
+                <div class="col-md-2" style="padding-top: 60px;padding-bottom: 10px;">
+                    <div class="col-md-12">
+                        <a href="#create/{{ journal_id }}" class="btn btn-warning pull-right">
+                            <i class="glyphicon glyphicon-plus"></i> New Entry</a>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-12 well" ng-show="selected_cols.length > 0" style="background-color:#3F454F;">
-            <div class="col-md-9" align="right">
+        <div class="col-md-9 light-bg">
+            <br>
+            <div class="col-md-12" align="right" ng-show="selected_cols.length > 0" style="padding-right: 30px;">
                 <a ng-click="deleteEntry()" class="btn btn-danger" href=""
                    title="Delete Selected">
                     <i class="pull-right glyphicon glyphicon-trash"></i>
                 </a>
             </div>
-            <div class="col-md-3"></div>
-        </div>
-        <div class="col-md-9 light-bg">
             <div class="col-md-12">
-                <div>
-                    <div class="panel-body">
-                        <div class="alert alert-{{ alert.type }}" ng-repeat="alert in alerts" uib-alert>{{  alert.msg }}</div>
-                        <div ui-grid="gridOptions" ui-grid-selection  class="myGrid" ng-if="gridOptions.data.length > 0"></div>
-                        <div ng-hide="gridOptions.data.length > 0" class="alert alert-warning"> No Entries Available.</div>
-                    </div>
+                <div class="panel-body">
+                    <div class="alert alert-{{ alert.type }}" ng-repeat="alert in alerts" uib-alert>{{  alert.msg }}</div>
+                    <div ui-grid="gridOptions" ui-grid-selection  class="myGrid" ng-if="gridOptions.data.length > 0"></div>
+                    <div ng-hide="gridOptions.data.length > 0" class="alert alert-warning"> No Entries Available.</div>
                 </div>
             </div>
         </div>
@@ -182,6 +175,9 @@
                     </ul><hr>
                     <ul class="list-group">
                       <li class="list-group-item"><i class="glyphicon glyphicon-list"></i> ENTRIES </li>
+                      <li class="list-group-item"><a class="btn btn-primary" href="#create/{{ journal_id }}">
+                          <i class="glyphicon glyphicon-plus"></i> Add new entry </a></li>
+                    </ul>
                       <li class="list-group-item" ng-repeat="entry in entries">
                           <a href="#/journal_id/{{ journal_id }}/edit/{{ entry.id }}">{{ entry.title }}</a></li>
                     </ul>
@@ -224,18 +220,19 @@
                           <i class="glyphicon glyphicon-home"></i> HOME </a></li>
                     </ul><hr>
                     <ul class="list-group">
-                      <li class="list-group-item"><a class="btn btn-primary" href="#create/{{ journal_id }}"><i class="glyphicon glyphicon-plus"></i> ADD ENTRY </a></li>
+                      <li class="list-group-item"><a class="btn btn-primary" href="#create/{{ journal_id }}">
+                          <i class="glyphicon glyphicon-plus"></i> Add new entry </a></li>
                     </ul>
 
                     <ul class="list-group">
-                      <li class="list-group-item"><i class="glyphicon glyphicon-list"></i> ENTRIES </li>
+                      <li class="list-group-item"><i class="glyphicon glyphicon-list"></i> Entries </li>
                       <li class="list-group-item" ng-repeat="entry in entries"><a href="#/journal_id/{{ journal_id }}/edit/{{ entry.id }}">{{ entry.title }}</a></li>
                     </ul>
                 </div>
             </div>
         </div>
         <div class="well col-md-8 main-section col-sm-5 col-md-offset-1 col-sm-offset-2">
-            <div class="row well text-align">
+            <div class="row custom-well text-align">
                 <div>
                     <h2>{{ journal_name }} </h2>
                     <span>{{ entries.length }} total entries | Created on {{ journal_date_created }}</span>
