@@ -148,78 +148,33 @@
                 $http.defaults.headers.common["X-CSRFTOKEN"] = allCookies.csrftoken;
             });
 
+            {{ ngapp }}.factory('focus', function($timeout, $window) {
+                return function(id) {
+                  // timeout makes sure that it is invoked after any other event has been triggered.
+                  // e.g. click events that need to run before the focus or
+                  // inputs elements that are in a disabled state but are enabled when those events
+                  // are triggered.
+                  $timeout(function() {
+                    var element = $window.document.getElementById(id);
+                    if(element)
+                      element.focus();
+                  });
+                };
+            });
 
-            {{ ngapp }}.directive('ckEditor', [function () {
-                  return {
-                      require: '?ngModel',
-                      restrict: 'C',
-                      link: function (scope, elm, attr, model) {
-                          var isReady = false;
-                          var data = [];
-                          config = {
-                              'toolbar': 'Custom',
-                              'toolbar_Custom': [
-                                  ['Bold', 'Italic', 'Underline'],
-                                  ['Image', 'NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock'],
-                                  ['Link', 'Unlink'],
-                                  ['RemoveFormat', 'Source'],
-                                  ['Font', 'FontSize', 'FontColor', 'TextColor', 'Format', 'CodeSnippet'],
-                                  ['Maximize', 'ShowBlocks'],
-                                ],
-                              'extraPlugins': 'uploadimage,image2,autogrow,codesnippet',
-                          };
-                          var ck = CKEDITOR.replace(elm[0], config);
-                          function setData() {
-                              if (!data.length) {
-                                  return;
-                              }
+            {{ ngapp}}.directive('eventFocus', function(focus) {
+               return function(scope, elem, attr) {
+                 elem.on(attr.eventFocus, function() {
+                   focus(attr.eventFocusId);
+                 });
 
-                              var d = data.splice(0, 1);
-                              ck.setData(d[0] || '<span></span>', function () {
-                                  setData();
-                                  isReady = true;
-                              });
-                          }
-
-                          ck.on('instanceReady', function (e) {
-                              if (model) {
-                                  setData();
-                              }
-                          });
-
-                          elm.bind('$destroy', function () {
-                              ck.destroy(false);
-                          });
-
-                          if (model) {
-                              ck.on('change', function () {
-                                  scope.$apply(function () {
-                                      var data = ck.getData();
-                                      if (data == '<span></span>') {
-                                          data = null;
-                                      }
-                                      model.$setViewValue(data);
-                                  });
-                              });
-
-                              model.$render = function (value) {
-                                  if (model.$viewValue === undefined) {
-                                      model.$setViewValue(null);
-                                      model.$viewValue = null;
-                                  }
-
-                                  data.push(model.$viewValue);
-
-                                  if (isReady) {
-                                      isReady = false;
-                                      setData();
-                                  }
-                              };
-                          }
-
-                      }
-                  };
-              }]);
+                 // Removes bound events in the element itself
+                 // when the scope is destroyed
+                 scope.$on('$destroy', function() {
+                   elem.off(attr.eventFocus);
+                 });
+               };
+             });
 
 
             {% block extrascript %}
