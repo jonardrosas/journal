@@ -1,6 +1,7 @@
 from journal_app.forms import *
 import datetime
 import pdb
+from django.db.models import Q
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
 from django.views.decorators.csrf import csrf_protect
@@ -49,7 +50,6 @@ class JournalView(JSONResponseMixin, View):
         for journal in journal_qlist:
             journal_list.append(journal)
         response_data['data'] = journal_list
-        print response_data
         return self.render_to_json_response(dict(response_data))
 
 
@@ -153,15 +153,26 @@ class JournalEntryDetailView(JSONResponseMixin, View):
         status = 'error'
         post_body = json.loads(self.request.body)
         journal_id = post_body['journal_id']
+        date_created = post_body.get('date_created')
+        date_modified = post_body.get('date_modified')
+        keyword_search = post_body.get('keyword_search')
+        today = datetime.datetime.today().replace(hour=0, minute=0, second=0)
+
         try:
             journal_ins = Journal.objects.get(id=int(journal_id))
         except Journal.DoesNotExist:
             context_dict['msg'] = "Journal Does not exists!"
         else:
             if journal_ins.created_by != self.request.user:
-                context_dict['msg'] = "Not allowed to view other users, journal!"
+                context_dict['msg'] = "Not allowed to view other users journal!"
             else:
-                entries = journal_ins.journal_entry.values()
+                entries = journal_ins.journal_entry.all()
+                if keyword_search:
+                    entries = entries.filter(Q(title__icontains=keyword_search) | Q(description__icontains=keyword_search))
+                if date_created:
+                    from_data = today - datetime.timedelta(days=int(date_created))
+                    entries = entries.filter(date_created__gte=from_data)
+                entries = entries.values()
                 final_list = []
                 for entry in entries:
                     initial_data = {}
@@ -189,23 +200,24 @@ class JournalEntryCreateView(JSONResponseMixin, View):
         description = post_body['description']
         data = None
         status = 'error'
-        try:
-            journal_ins = Journal.objects.get(id=int(journal_id))
-        except Journal.DoesNotExist:
-            msg = "The Entry Does Exists!"
+        if not self.request.user.is_authenticated():
+            msg = "Please login!"
         else:
-            if journal_ins.journal_entry.filter(title=title).exists():
-                msg = "The entry title already exists!"
+            try:
+                journal_ins = Journal.objects.get(id=int(journal_id))
+            except Journal.DoesNotExist:
+                msg = "The Journal Does Exists!"
             else:
-                entry_ins = journal_ins.journal_entry.create(
-                    title=title,
-                    description=description
-                )
-                print description
-                data = model_to_dict(entry_ins)
-                msg = 'Successfully Created Entry'
-                status = 'success'
-        print description
+                if journal_ins.journal_entry.filter(title=title).exists():
+                    msg = "The entry title already exists!"
+                else:
+                    entry_ins = journal_ins.journal_entry.create(
+                        title=title,
+                        description=description
+                    )
+                    data = model_to_dict(entry_ins)
+                    msg = 'Successfully Created Entry'
+                    status = 'success'
         context_dict['data'] = {
             'msg': msg,
             'data': data,
@@ -219,16 +231,24 @@ class JournalEntryEditView(JSONResponseMixin, View):
     def get(self, request, *args, **kwargs):
         context_dict = {}
         status = "error"
+        data = None
         entry_id = self.request.GET['entry_id']
-        try:
-            entry_ins = Journal_entry.objects.get(id=int(entry_id))
-        except Journal_entry.DoesNotExist:
-            msg = 'The Entry was already deleted!'
+        if not self.request.user.is_authenticated():
+            msg = "Please login!"
         else:
-            msg = "Pulled succesfully!"
-            status = "error"
+            try:
+                entry_ins = Journal_entry.objects.get(id=int(entry_id))
+            except Journal_entry.DoesNotExist:
+                msg = 'The entry is either deleted or does not exists!'
+            else:
+                if entry_ins.journal_id.created_by != self.request.user:
+                    msg = "Not Authorized!"
+                else:
+                    msg = "Pulled succesfully!"
+                    status = "success"
+                    data = model_to_dict(entry_ins)
         context_dict['data'] = {
-            'data': model_to_dict(entry_ins),
+            'data': data,
             'msg': msg,
             'status': status
 
@@ -238,24 +258,36 @@ class JournalEntryEditView(JSONResponseMixin, View):
     def post(self, request, *args, **kwargs):
         context_dict = {}
         status = 'error'
+        data = None
         post_body = json.loads(self.request.body)
-        entry_id = post_body['entry_id']
-        print entry_id
-        title = post_body['title']
-        description = post_body['description']
-        try:
-            entry_ins = Journal_entry.objects.get(id=int(entry_id))
-        except Journal_entry.DoesNotExist:
-            msg = 'The Entry was already deleted!'
-        else:
 
-                entry_ins.title = title
-                entry_ins.description = description
-                entry_ins.save()
-                msg = "Successfully updated!"
-                status = 'success'
+        if not self.request.user.is_authenticated():
+            msg = "Please login!"
+        else:
+            entry_id = post_body.get('entry_id')
+            if not entry_id:
+                msg = "Entry Id does not exists!"
+            else:
+                title = post_body['title']
+                description = post_body['description']
+                try:
+                    entry_ins = Journal_entry.objects.get(id=int(entry_id))
+                except Journal_entry.DoesNotExist:
+                    msg = 'You are editing an invalid entry!'
+                else:
+                    if entry_ins.journal_id.created_by != self.request.user:
+                        msg = "Not Authorized!"
+                    elif entry_ins.title != title and Journal_entry.objects.filter(title=title).exists():
+                        msg = "The entry title already exists!"
+                    else:
+                        entry_ins.title = title
+                        entry_ins.description = description
+                        entry_ins.save()
+                        data = model_to_dict(entry_ins)
+                        msg = "Successfully updated!"
+                        status = 'success'
         context_dict['data'] = {
-            'data': model_to_dict(entry_ins),
+            'data': data,
             'msg': msg,
             'status': status
         }
@@ -267,85 +299,21 @@ class JournalEntryDeleteView(JSONResponseMixin, View):
     def post(self, request, *args, **kwargs):
         context_dict = {}
         msg = ""
-        print "this is a delete"
         post_body = json.loads(self.request.body)
         entry_list = post_body['entry_id']
-        entry_list = [int(entry_id) for entry_id in entry_list]
-        entry_qset = Journal_entry.objects.filter(id__in=entry_list)
-        if entry_qset:
-            entry_qset.delete()
-            msg = "Successfully Deleted."
+        status = "error"
+        if not self.request.user.is_authenticated():
+            msg = "Please login!"
+        else:
+            entry_list = [int(entry_id) for entry_id in entry_list]
+            entry_qset = Journal_entry.objects.filter(id__in=entry_list)
+            if entry_qset:
+                entry_qset.delete()
+                msg = "Successfully Deleted."
+                status = "success"
         context_dict['data'] = {
-            'msg': msg
+            'msg': msg,
+            'status': status
         }
         return self.render_to_json_response(context_dict)
 
-
-# To get all journal entries
-@login_required
-def get_all_journal_entries(request, journal_id=1):
-    x=''
-    journal = Journal.objects.filter(id=journal_id).values_list('name', flat=True).distinct()
-    for journal_name in journal:
-        x = journal_name
-
-    args = {'journal_entries':Journal_entry.objects.distinct().filter(journal_id__created_by=request.user, journal_id_id=journal_id).order_by('-date_modified')
-                      , 'user': request.user,
-                    'journal_name':x}
-
-    args.update(csrf(request))
-
-    return render_to_response('journal_entries.html', args)
-
-
-# To get one single journal entry
-@login_required
-def get_journal_entry(request, journal_entry_id=1):
-    return render_to_response('update_journal_entry.html',
-                              {'journal_entry':Journal_entry.objects.get(id=journal_entry_id),
-                               'user': request.user})
-
-
-@login_required
-def create_journal_entry(request, journal_id=None):
-    if request.POST:
-        form = JournalEntryForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return HttpResponseRedirect('/home/') #Should redirect to entries page
-    else:
-        form = JournalEntryForm(request.POST)
-    args = {'user': request.user,}
-    args.update(csrf(request))
-    args['form']=form
-
-    return render_to_response('create_journal_entry.html', args)
-
-
-class JournalEntryUpdateView(JSONResponseMixin, View):
-
-    def post(self, request, *args, **kwargs):
-        post_body= json.loads(self.request.body)
-        title = post_body['title']
-        description = post_body['description']
-        journal_entry_id = post_body['journal_id']
-
-        try:
-            journal_entry_object = Journal_entry.objects.get(id=journal_entry_id)
-        except:
-            journal_entry_object=[]
-        else:
-            journal_entry_object.title = title
-            journal_entry_object.description=description
-            journal_entry_object.save()
-
-
-@login_required
-def search_titles(request):
-    if request.method == "POST":
-        search_text = request.POST['search_text']
-    else:
-        search_text = ''
-    journal_entries = Journal_entry.objects.filter(title__contains=search_text)
-
-    return render_to_response('ajax_search.html', {'journal_entries': journal_entries})

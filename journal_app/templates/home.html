@@ -141,9 +141,8 @@
 
                 <h2><i class="glyphicon glyphicon-search"></i>&nbsp;&nbsp;Search</h2>
                 <div class="form-group">
-                    <label class="sr-only" for="exampleInputPassword3">Entry Title</label>
-                    <input type="text" class="form-control" id="exampleInputPassword3"
-                           placeholder="Search Entry Title">
+                    <label class="sr-only" >Entry Title</label>
+                    <input ng-change="getEntries()" type="text" class="form-control" ng-model="data.keyword_search" placeholder="Search Entry Title">
                 </div>
             </div>
             <div class="col-md-12" style="height: 20px;"><hr></div>
@@ -155,12 +154,12 @@
                 <form class="form-inline">
                   <div class="form-group">
                     <label class="sr-only" for="exampleInputEmail3">Since</label>
-                    <select class="form-control">
-                        <option>All Time</option>
-                        <option>Today</option>
-                        <option>Yesterday</option>
-                        <option>Last Week</option>
-                        <option>This Month</option>
+                    <select ng-change="getEntries()" class="form-control" ng-model="data.date_created">
+                        <option value="">All Time</option>
+                        <option value=0>Today</option>
+                        <option value=1>Yesterday</option>
+                        <option value=7>Last Week</option>
+                        <option value=30>This Month</option>
                     </select>
                   </div>
                 </form>
@@ -182,11 +181,6 @@
                           <i class="glyphicon glyphicon-home"></i> HOME </a></li>
                     </ul><hr>
                     <ul class="list-group">
-                      <li class="list-group-item"><a class="btn btn-primary" href="#create/{{ journal_id }}">
-                          <i class="glyphicon glyphicon-plus"></i> ADD ENTRY </a></li>
-                    </ul>
-
-                    <ul class="list-group">
                       <li class="list-group-item"><i class="glyphicon glyphicon-list"></i> ENTRIES </li>
                       <li class="list-group-item" ng-repeat="entry in entries">
                           <a href="#/journal_id/{{ journal_id }}/edit/{{ entry.id }}">{{ entry.title }}</a></li>
@@ -200,15 +194,15 @@
                     <span>{{ entries.length }} total entries | Created on {{ journal_date_created }}</span>
             </div>
             <div class="row">
-                <div class="container-fluid">
-                    <div class="alert alert-{{ alert.type }}" ng-repeat="alert in alerts" uib-alert>{{  alert.msg }}</div>
+                <div class="alert alert-{{ alert.type }}" ng-repeat="alert in alerts" uib-alert>{{  alert.msg }}</div>
+                <div class="container-fluid" ng-if="journal_name">
                     <form >
                       <div class="form-group">
                         <input type="text" ng-model="data.title" class="custom-form-control col-md-2" id="title"
                                name="title" placeholder="Entry Title">
                       </div><br/><br/>
                       <div class="form-group"><br>
-                            <textarea ng-change="descriptionChange()" ui-tinymce="tinymceOptions" ng-model="data.description" class="tiny-mce" rows="20"></textarea>
+                            <textarea ui-tinymce="tinymceOptions" ng-model="data.description" class="tiny-mce" rows="20"></textarea>
                       </div>
                       <button ng-click="saveEntry()"  class="btn btn-success pull-right">Save</button>
                     </form>
@@ -248,15 +242,15 @@
                 </div>
             </div>
             <div class="row">
-                <div class="container-fluid">
-                    <div class="alert alert-{{ alert.type }}" ng-repeat="alert in alerts" uib-alert>{{  alert.msg }}</div>
+                <div class="alert alert-{{ alert.type }}" ng-repeat="alert in alerts" uib-alert>{{  alert.msg }}</div>
+                <div class="container-fluid" ng-if="data.entry_id">
                     <form >
                       <div class="form-group">
                         <input type="text" ng-model="data.title" class="custom-form-control col-md-2"
-                               id="title" name="title" placeholder="Title">
+                               id="title" placeholder="Title">
                       </div><br/><br/>
                       <div class="form-group">
-                            <textarea ng-change="descriptionChange()" ui-tinymce="tinymceOptions"
+                            <textarea ui-tinymce="tinymceOptions"
                                       ng-model="data.description" class="tiny-mce" rows="20"></textarea>
                       </div>
                       <div class="checkbox">
@@ -505,9 +499,10 @@
         var delete_entry_url = "{% url 'delete_entry_url' %}";
 
         $scope.journal_id = $routeParams.journal_id;
+        $scope.data = {journal_id: $scope.journal_id};
 
         $scope.getEntries = function(){
-            $scope.data = {journal_id: $scope.journal_id};
+            $scope.alerts = [];
             journalFactory.postData(url, $scope.data).then(function(data){
                 console.log(data);
                 if(data.status == 'success'){
@@ -518,7 +513,7 @@
                     $scope.alerts.push({msg: data.msg, type: 'danger'});
                 }
             });
-        }
+        };
 
         $scope.getEntries();
 
@@ -581,9 +576,13 @@
         $scope.getEntries = function(){
             var entry_data = {journal_id: $scope.journal_id};
             journalFactory.postData(url, entry_data).then(function(data){
-                $scope.entries = data.data;
-                $scope.journal_name = data.journal_name;
-                $scope.journal_date_created = data.journal_date_created;
+                if(data.status == 'success'){
+                    $scope.entries = data.data;
+                    $scope.journal_name = data.journal_name;
+                    $scope.journal_date_created = data.journal_date_created;
+                }else{
+                    $scope.alerts.push({msg: data.msg, type: 'danger'});
+                }
             });
         }
         $scope.getEntries();
@@ -636,23 +635,31 @@
         $scope.getEntries = function(){
             var entry_data = {journal_id: $scope.journal_id};
             journalFactory.postData(url, entry_data).then(function(data){
-                $scope.entries = data.data;
-                $scope.journal_name = data.journal_name;
-                $scope.journal_date_created = data.journal_date_created;
+                if(data.status == 'success'){
+                    $scope.entries = data.data;
+                    $scope.journal_name = data.journal_name;
+                    $scope.journal_date_created = data.journal_date_created;
+                    $scope.updateEntry();
+                }else{
+                    $scope.alerts.push({msg: data.msg, type: 'danger'});
+                }
             });
         }
         $scope.getEntries();
 
         $scope.updateEntry = function(){
             journalFactory.getData(update_entry_url,  {entry_id: $scope.entry_id}).then(function(data){
-                $scope.data.title = data.data.data.title;
-                $scope.data.entry_id = data.data.data.id;
-                $scope.data.description = data.data.data.description;
-                $scope.getEntries();
+                if(data.data.status == 'success'){
+                    $scope.data.title = data.data.data.title;
+                    $scope.data.entry_id = data.data.data.id;
+                    $scope.data.description = data.data.data.description;
+                    //$scope.getEntries();
+                }else{
+                    $scope.alerts.push({msg: data.data.msg, type: 'danger'});
+                }
             });
 
         };
-        $scope.updateEntry();
 
         $scope.saveEntry = function(){
             journalFactory.postData(update_entry_url,  $scope.data).then(function(data){
