@@ -6,19 +6,70 @@
 {% verbatim %}
 
 <div class="row" ng-controller="LoginCtrl">
-    <div class="col-md-12">
-        <div class="col-md-4"></div>
-        <div class="col-md-4"></div>
-        <div class="col-md-4 well custom-margin-top">
-            <div class="row">
-                <div class="col-md-12" align="center">
-                    <h3 class="h3_class">Log in</h3>
-                </div>
+    <div class="container-fluid">
+        <div class="col-md-4 padding-10  white-bg pull-right custom-margin-top">
+            <div class="col-md-12" align="center">
+                <div ng-view></div>
             </div>
+        </div>
+    </div>
 
+
+    <!-- This is a reset password template -->
+    <script type="text/ng-template" id="resetPassword.html">
+        <h3 class="h3_class">{{ header }}</h3>
         <div class="row">
             <div class="col-md-12">
-                <div class="alert alert-warning" uib-alert ng-repeat="alert in alerts" close="closeAlert($index)">{{alert.msg}}</div>
+                <div class="alert alert-warning" uib-alert ng-repeat="alert in alerts" close="closeAlert($index)">{{alert.msg|trusted}}</div>
+
+                <div class="row-break">
+                    <p>Please specify your email address to receive instructions for resetting it.</p>
+                </div>
+                <div class="row row-break">
+                    <label for="email">Emaill Address:</label><br/>
+                    <input id="email" type="email" ng-model="data.email" class="form-control" placeholder="email address">
+                </div>
+                <div class="row row-break">
+                   <input type="submit" value="Reset" ng-click="resetPassword()" class="btn btn-success pull-right" style="width: 100%;font-size: 17px;" value="Login" />
+                </div>
+            </div>
+        </div>
+    </script>
+    <!-- End of reset Password -->
+
+    <!-- This is a confirmResetPassword  template -->
+    <script type="text/ng-template" id="confirmResetPassword.html">
+        <h3 class="h3_class">{{ header }}</h3>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="alert alert-warning" uib-alert ng-repeat="alert in alerts" close="closeAlert($index)">{{alert.msg|trusted}}</div>
+
+                <div class="row-break">
+                    <p>Please specify your old and new password!</p>
+                </div>
+                <div class="row row-break">
+                    <label for="new_password">New Password:</label><br/>
+                    <input id="new_password" type="password" ng-model="data.new_password" class="form-control" placeholder="New password">
+                </div>
+                <div class="row row-break">
+                    <label for="confirm_password">Confirm Password:</label><br/>
+                    <input id="confirm_password" type="password" ng-model="data.confirm_password" class="form-control" placeholder="confirm password">
+                </div>
+                <div class="row row-break">
+                   <input type="submit" value="Reset" ng-click="confirm()" class="btn btn-success pull-right" style="width: 100%;font-size: 17px;" value="Login" />
+                </div>
+            </div>
+        </div>
+    </script>
+    <!-- End of confirmResetPassword -->
+
+
+
+    <script type="text/ng-template" id="login.html">
+        <h3 class="h3_class">{{ header }}</h3>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="alert alert-{{ alert.type }}" uib-alert ng-repeat="alert in alerts" close="closeAlert($index)">{{alert.msg}}</div>
                 <table class="table">
                     <tr>
                         <td><input id="id_username" ng-model="data.username" type="text" class="form-control" placeholder="Username"
@@ -32,12 +83,17 @@
             </div>
         </div>
         <div class="row">
+            <div class="col-md-11">
+                <a class="pull-right" href="#/reset_passord"> Forgotten your Password?</a>
+            </div>
+        </div>
+        <div class="row row-break">
             <div class="col-md-12">
                <input type="submit" value="Login" ng-click="login ()" class="btn btn-success pull-right" style="width: 100%;font-size: 17px;" value="Login" />
             </div>
         </div>
+    </script>
 
-    </div>
 </div>
 {% endverbatim %}
 {% endblock %}
@@ -45,8 +101,80 @@
 
 {% block extrascript %}
 
+{{ ngapp }}.config(['$routeProvider', function($routeProvider){
+    $routeProvider
+        .when('/',{
+            templateUrl: 'login.html',
+            controller: 'LoginCtrl'
+        })
+        .when('/reset_passord', {
+            templateUrl: 'resetPassword.html',
+            controller: 'ResetPasswordCtrl'
+        })
+        .when('/confirm_reset', {
+            templateUrl: 'confirmResetPassword.html',
+            controller: 'ConfirmResetCtrl'
+        })
+        .otherwise({redirectTo:'/'});
+}]);
+
+
+{{ ngapp }}.controller('ConfirmResetCtrl', function($scope, $routeParams, $http){
+    var url = '{{ reset_password_confirm }}',
+        uid64 = '{{ uid64 }}',
+        token = '{{ token }}';
+
+    $scope.alerts = [];
+    $scope.data = {uid64: uid64, token: token};
+
+    $scope.confirm = function(){
+        $scope.alerts = [];
+        $http.post(url, $scope.data).then(
+            function(response){
+                if(response.data.status == 'success'){
+                    $scope.alerts.push({msg: response.data.msg, type: 'success'})
+                }else{
+                    $scope.alerts.push({msg: response.data.msg, type: 'danger'})
+                }
+                console.log(response);
+            }, function(){
+                alert('Internal Error');
+            }
+        );
+
+
+    }
+
+});
+
+{{ ngapp }}.controller('ResetPasswordCtrl', function($scope, $window, $cookies, $http){
+    console.log('this is a reset password CTRL');
+    var reset_password_url = "{%  url 'reset_password' %}";
+    $scope.header = "Reset Password!";
+    $scope.data = {};
+    $scope.alerts = [];
+
+    $scope.resetPassword = function(){
+        $scope.alerts = [];
+        $http.post(reset_password_url, $scope.data).then(
+            function(response){
+                if(response.data.status == 'success'){
+                    $scope.alerts.push({msg: response.data.msg, type: 'success'})
+                }else{
+                    $scope.alerts.push({msg: response.data.msg})
+                }
+                console.log(response);
+            }, function(){
+                alert('Internal Error');
+            }
+        );
+    };
+
+});
+
 {{ ngapp }}.controller('LoginCtrl', function($scope, $http, $window, $cookies){
 
+    $scope.header = "Log in";
     $scope.login_register = "{%  url 'login_register' %}";
     $scope.alerts = [];
     $scope.data = {

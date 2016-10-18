@@ -4,30 +4,40 @@ import re
 import string
 
 from django.shortcuts import render
+from django.core.mail import EmailMultiAlternatives
+from django.core.mail import send_mail
 from django.views.generic import TemplateView, View
-from django.contrib.auth.views import login as django_login
+from django.contrib.auth.views import login as django_login, logout
 from django.contrib.auth.forms import authenticate
 from django.contrib.auth import get_user_model
 from django.contrib.auth import login as login3
+from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.template.loader import get_template
+from django.core.urlresolvers import reverse
+from django.contrib.auth.tokens import default_token_generator
+from django.utils.encoding import force_bytes
+
 
 import enchant
 
 from utils.views import JSONResponseMixin
 
 
-def login(request):
-    extra_context = {
-        'ngapp': 'loginMod'
-    }
-    return django_login(request, template_name="login.html", extra_context=extra_context)
-
-
 class HomePage(TemplateView):
     template_name = "login.html"
 
     def get_context_data(self, **kwargs):
+        print "it goues to home"
+        uid64 = self.request.GET.get('uid64')
+        token = self.request.GET.get('token')
         context = super(HomePage, self).get_context_data(**kwargs)
+        logout(self.request)
         context['ngapp'] = "homeMod"
+        if uid64 and token:
+            context['uid64'] = uid64
+            context['token'] = token
+            context['reset_password_confirm'] = reverse('reset_password_confirm', args=[uid64, token])
         return context
 
 
@@ -232,6 +242,15 @@ class AuthenticationBase(JSONResponseMixin, View):
             }
         return context_dict
 
+    def is_email_taken(self, email):
+        context_dict = {}
+        if get_user_model().objects.filter(email__icontains=email).exists():
+            context_dict['email'] = {
+                'status': 'error',
+                'msg': 'Email address already in use!',
+            }
+        return context_dict
+
 
 class Authentincate(AuthenticationBase):
 
@@ -255,6 +274,8 @@ class Authentincate(AuthenticationBase):
             context_dict.update(self.is_valid_email(email))
         elif self.is_exist_user(username):
             context_dict.update(self.is_exist_user(username))
+        elif self.is_email_taken(email):
+            context_dict.update(self.is_email_taken(email))
         else:
             self.create_user(username, email, password, last_name=last_name, first_name=first_name)
             context_dict['msg'] = {
@@ -288,6 +309,8 @@ class Authentincate2(AuthenticationBase):
             context_dict.update(self.is_valid_email(email))
         elif self.is_exist_user(username):
             context_dict.update(self.is_exist_user(username))
+        elif self.is_email_taken(email):
+            context_dict.update(self.is_email_taken(email))
         elif self.password_strength(password) and not self.process_create:
             context_dict.update(self.password_strength(password))
         else:
@@ -313,6 +336,108 @@ class Authentincate3(AuthenticationBase):
             # if self.password_validation_criteria(password):
             context_dict.update(self.password_validation_criteria(password))
             context_dict.update(self.password_strength(password))
+        return self.render_to_json_response(context_dict)
+
+
+class PasswordResetConfirmView(JSONResponseMixin, View):
+
+    def post(self, request, *args, **kwargs):
+        """
+        View that checks the hash in a password reset link and presents a
+        form for entering a new password.
+        """
+        context_dict = {}
+        post_body = json.loads(self.request.body)
+        uidb64 = post_body['uid64']
+        new_password = post_body['new_password']
+        confirm_password = post_body['confirm_password']
+        token = post_body['token']
+        data = None
+        status = 'error'
+        UserModel = get_user_model()
+        print post_body
+        #form = self.form_class(request.POST)
+        assert uidb64 is not None and token is not None  # checked by URLconf
+        try:
+            uid = urlsafe_base64_decode(uidb64)
+            user = UserModel._default_manager.get(pk=uid)
+        except (TypeError, ValueError, OverflowError, UserModel.DoesNotExist):
+            user = None
+
+        if user is not None and default_token_generator.check_token(user, token):
+            if new_password == confirm_password:
+                user.set_password(new_password)
+                user.save()
+                status = 'success'
+                msg = 'Password has been reset!'
+            else:
+                msg = 'Password reset has not been unsuccessful.'
+        else:
+            msg = 'The reset password link is no longer valid.'
+
+        context_dict = {
+            'data': data,
+            'msg': msg,
+            'status': status
+        }
+        return self.render_to_json_response(context_dict)
+
+
+class ResetPasswordView(JSONResponseMixin, View):
+
+    def send_email(self, to_email):
+        uid = urlsafe_base64_encode(force_bytes(self.user.pk))
+        token = default_token_generator.make_token(self.user)
+
+        data = {
+            'site_name': 'testasite',
+            'domain': self.request.META['HTTP_HOST'],
+            'url': "%s?uid64=%s&token=%s#/confirm_reset" % (reverse('login'), uid, token),
+            'user': self.user,
+        }
+        subject, from_email, to = 'hello', '',  to_email
+        template = """
+                <p>
+                You're receiving this email because you requested a
+                password reset for your user account at {site_name}.
+
+                Please go to the following page and choose a new password:
+                </p><br/>
+                {domain}{url}
+        """.format(**data)
+        msg = EmailMultiAlternatives(subject, template, from_email, [to])
+        msg.attach_alternative(template, "text/html")
+        msg.send()
+
+    def post(self, request, *args, **kwargs):
+        post_body = json.loads(self.request.body)
+        email = post_body.get('email')
+        status = "error"
+        context_dict = {}
+        data = None
+        print email
+        if not email:
+            msg = "Valid email address is required!"
+        else:
+            try:
+                user_ins = get_user_model().objects.get(email__icontains=email)
+            except ObjectDoesNotExist:
+                msg = "We could not find a user with that email address. Please try again."
+            except MultipleObjectsReturned:
+                msg = "The email address have multiple username"
+            else:
+                self.user = user_ins
+                msg = """
+                      We've e-mailed you instructions for setting your password to the e-mail address
+                      you submitted. You should be receiving it shortly"""
+                status = "success"
+                email = user_ins.email
+                self.send_email(email)
+        context_dict = {
+            'data': data,
+            'msg': msg,
+            'status': status
+        }
         return self.render_to_json_response(context_dict)
 
 

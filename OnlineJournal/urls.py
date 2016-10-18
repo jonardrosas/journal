@@ -1,6 +1,6 @@
 from django.conf.urls import patterns, include, url
 from django.contrib.auth.views import logout
-from accounts.views import HomePage, UserLoginView, login, SignUp, Authentincate, Authentincate2, Authentincate3
+from accounts.views import HomePage, UserLoginView, SignUp, Authentincate, Authentincate2, Authentincate3
 from journal_app.views import JournalHomveView
 from django.contrib import admin
 from django.core.urlresolvers import reverse_lazy
@@ -9,8 +9,9 @@ from django.core.urlresolvers import reverse_lazy
 urlpatterns = patterns('',
     url(r'^admin/', admin.site.urls),
     url(r'^journal_app/', include('journal_app.urls')),
+    url(r'^accounts/', include('accounts.urls')),
     url(r'^$', JournalHomveView.as_view(), name="home"),
-    url(r'^accounts/login/$', HomePage.as_view(), name='login'),
+    #  url(r'^accounts/login/$', HomePage.as_view(), name='login'),
     url(r'^accounts/authenticate/$', UserLoginView.as_view(), name='login_authenticate'),
     url(r'^accounts/register/$', SignUp.as_view(), name='login_register'),
     url(r'^accounts/signup/$', Authentincate.as_view(), name='signup_authenticate'),
