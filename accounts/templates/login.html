@@ -26,11 +26,11 @@
                     <p>Please specify your email address to receive instructions for resetting it.</p>
                 </div>
                 <div class="row row-break">
-                    <label for="email">Emaill Address:</label><br/>
+                    <label for="email">Email Address:</label><br/>
                     <input id="email" type="email" ng-model="data.email" class="form-control" placeholder="email address">
                 </div>
                 <div class="row row-break">
-                   <input type="submit" value="Reset" ng-click="resetPassword()" class="btn btn-success pull-right" style="width: 100%;font-size: 17px;" value="Login" />
+                   <input type="submit" value="Reset" ng-click="resetPassword()" class="btn btn-success pull-right" style="width: 100%;font-size: 17px;"/>
                 </div>
             </div>
         </div>
@@ -39,13 +39,13 @@
 
     <!-- This is a confirmResetPassword  template -->
     <script type="text/ng-template" id="confirmResetPassword.html">
-        <h3 class="h3_class">{{ header }}</h3>
+        <h3 class="h3_class">Reset Password</h3>
         <div class="row">
             <div class="col-md-12">
                 <div class="alert alert-warning" uib-alert ng-repeat="alert in alerts" close="closeAlert($index)">{{alert.msg|trusted}}</div>
 
                 <div class="row-break">
-                    <p>Please specify your old and new password!</p>
+                    <p>Please specify your new password!</p>
                 </div>
                 <div class="row row-break">
                     <label for="new_password">New Password:</label><br/>

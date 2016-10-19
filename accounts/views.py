@@ -371,7 +371,7 @@ class PasswordResetConfirmView(JSONResponseMixin, View):
                 status = 'success'
                 msg = 'Password has been reset!'
             else:
-                msg = 'Password reset has not been unsuccessful.'
+                msg = 'Password reset has not been successful!'
         else:
             msg = 'The reset password link is no longer valid.'
 
