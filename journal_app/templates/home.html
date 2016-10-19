@@ -334,7 +334,6 @@
 
     {{ ngapp }}.filter('trusted', function($sce){
       return function(text){
-            console.log(text);
           return $sce.trustAsHtml(text);
       }
     });
@@ -505,7 +504,8 @@
                 if(data.status == 'success'){
                     $scope.gridOptions.data = data.data;
                     $scope.journal_name = data.journal_name;
-                    $scope.journal_date_created = data.journal_date_created;
+
+                    $scope.journal_date_created = new Date(data.journal_date_created + 'UTC');
                 }else{
                     $scope.alerts.push({msg: data.msg, type: 'danger'});
                 }
@@ -576,7 +576,7 @@
                 if(data.status == 'success'){
                     $scope.entries = data.data;
                     $scope.journal_name = data.journal_name;
-                    $scope.journal_date_created = data.journal_date_created;
+                    $scope.journal_date_created = new Date(data.journal_date_created + 'UTC').toString();
                 }else{
                     $scope.alerts.push({msg: data.msg, type: 'danger'});
                 }
@@ -635,7 +635,7 @@
                 if(data.status == 'success'){
                     $scope.entries = data.data;
                     $scope.journal_name = data.journal_name;
-                    $scope.journal_date_created = data.journal_date_created;
+                    $scope.journal_date_created = new Date(data.journal_date_created + 'UTC').toString();
                     $scope.updateEntry();
                 }else{
                     $scope.alerts.push({msg: data.msg, type: 'danger'});
