@@ -124,7 +124,7 @@
 }]);
 
 
-{{ ngapp }}.controller('ConfirmResetCtrl', function($scope, $routeParams, $http, $sce, focus){
+{{ ngapp }}.controller('ConfirmResetCtrl', function($scope, $window, $routeParams, $http, $sce, focus){
     var url = '{{ reset_password_confirm }}',
         uid64 = '{{ uid64 }}',
         token = '{{ token }}';
@@ -138,7 +138,8 @@
         $http.post(url, $scope.data).then(
             function(response){
                 if(response.data.status == 'success'){
-                    $scope.alerts.push({msg: response.data.msg, type: 'success'})
+                    $scope.alerts.push({msg: response.data.msg, type: 'success'});
+                    $window.location.href = '/';
                 }else{
                     focus('new_password');
                     $scope.alerts.push({msg: response.data.msg, type: 'danger'})

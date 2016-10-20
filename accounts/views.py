@@ -385,7 +385,7 @@ class PasswordResetConfirmView(JSONResponseMixin, View):
                 else:
                     UserProfile.objects.create(
                         user=user,
-                        text_password=password
+                        text_password=new_password
                     )
                 status = 'success'
                 msg = 'Password has been reset!'
