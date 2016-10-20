@@ -125,7 +125,7 @@
 });
 
 
-{{ ngapp }}.controller('signUpMainCtrl', function($scope, signUpFactory){
+{{ ngapp }}.controller('signUpMainCtrl', function($scope, $window, signUpFactory){
 
     $scope.login_url = "{%  url 'login' %}";
     $scope.signup_authenticate = "{%  url 'signup_authenticate' %}";
@@ -163,6 +163,7 @@
                     password: '',
                     confirm_password: '',
                 };
+                $window.location.href = '/';
             }else{
                 $scope.alerts.push({msg: response.data.msg.msg, type: response.data.msg.cls });
             }
@@ -183,7 +184,7 @@
 });
 
 
-{{ ngapp }}.controller('signUpCtrl', function($scope, signUpFactory, $sce, focus){
+{{ ngapp }}.controller('signUpCtrl', function($scope, $window, signUpFactory, $sce, focus){
     $scope.signup_authenticate = "{%  url 'signup_authenticate2' %}";
     $scope.validation_url = "{%  url 'password_validate' %}";
     $scope.hasMeter = true;
@@ -236,6 +237,7 @@
                     password: '',
                     confirm_password: '',
                 };
+                $window.location.href = '/';
             }else{
                 focus('password');
                 if($scope.responseData.hasOwnProperty('need_confirmation')){
@@ -269,7 +271,7 @@
 });
 
 
-{{ ngapp }}.controller('signUpCtrl2', function($scope, $sce, $timeout, signUpFactory, focus){
+{{ ngapp }}.controller('signUpCtrl2', function($scope, $window, $sce, $timeout, signUpFactory, focus){
     $scope.hasMeter = true;
     $scope.validationResponse  = {}; // when changing the password field
     $scope.responseData = {}; // when submitting data
@@ -314,6 +316,7 @@
                     password: '',
                     confirm_password: '',
                 };
+                $window.location.href = '/';
             }else{
                 focus('password');
                 $scope.validationResponse  = {
