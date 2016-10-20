@@ -18,6 +18,8 @@ from django.core.urlresolvers import reverse
 from django.contrib.auth.tokens import default_token_generator
 from django.utils.encoding import force_bytes
 
+from accounts.models import UserProfile
+
 
 import enchant
 
@@ -51,12 +53,13 @@ class SignUp(TemplateView):
 
 
 class AuthenticationBase(JSONResponseMixin, View):
-    process_create = False
+    is_confirmed = False
     METER = {
         1: 'Too Short',
         2: 'Weak',
         3: 'Good',
         4: 'Strong',
+        5: 'Fair',
     }
     HACKERS_LIST = [
         'password',
@@ -90,47 +93,39 @@ class AuthenticationBase(JSONResponseMixin, View):
             context_dict['dictionary_word'] = {
                 'status': 'pass',
                 'cls': 'glyphicon-ok',
-                'points': 1
             }
 
         if not password in self.HACKERS_LIST:
             context_dict['hacker_list'] = {
                 'status': 'pass',
-                'cls': 'glyphicon-ok',
-                'points': 1
+                'cls': 'glyphicon-ok'
             }
-
 
         if len(password) > 8:
             context_dict['length'] = {
                 'status': 'pass',
-                'cls': 'glyphicon-ok',
-                'points': 1
+                'cls': 'glyphicon-ok'
             }
         if len(set(string.ascii_lowercase).intersection(password)) > 0:
             context_dict['lower'] = {
                 'status': 'pass',
-                'cls': 'glyphicon-ok',
-                'points': 1
+                'cls': 'glyphicon-ok'
             }
-            points+= 1
+
         if len(set(string.ascii_uppercase).intersection(password)) > 0:
             context_dict['upper'] = {
                 'status': 'pass',
-                'cls': 'glyphicon-ok',
-                'points': 1
+                'cls': 'glyphicon-ok'
             }
         if len(set(string.digits).intersection(password)) > 0:
             context_dict['number'] = {
                 'status': 'pass',
-                'cls': 'glyphicon-ok',
-                'points': 1
+                'cls': 'glyphicon-ok'
             }
         if len(set(string.punctuation).intersection(password)) > 0:
             context_dict['special'] = {
                 'status': 'pass',
-                'cls': 'glyphicon-ok',
-                'points': 1
+                'cls': 'glyphicon-ok'
             }
 
         return context_dict
@@ -143,6 +138,7 @@ class AuthenticationBase(JSONResponseMixin, View):
                 'type': self.METER[1],
                 'cls': 'danger',
                 'percent': '50%',
+                'encrypt_days': 1,
                 'msg': 'Too short',
             }
         elif 'lower' in context_dict and 'upper' in context_dict and 'number' in context_dict and 'special' in context_dict:
@@ -151,15 +147,16 @@ class AuthenticationBase(JSONResponseMixin, View):
                 'type': self.METER[4],
                 'cls': 'success',
                 'percent': '100%',
+                'encrypt_days': 30,
                 'msg': 'Srong Password',
             }
-            self.process_create = True
         elif 'upper' in context_dict and ('lower' in context_dict or 'number' in context_dict or 'special' in context_dict):
             context_dict['msg'] = {
                 'status': 'success',
                 'type': self.METER[3],
                 'cls': 'info',
                 'percent': '80%',
+                'encrypt_days': 14,
                 'msg': 'Good Password',
             }
         elif 'number' in context_dict and ('upper' in context_dict or 'lower' in context_dict or 'special' in context_dict):
@@ -168,6 +165,7 @@ class AuthenticationBase(JSONResponseMixin, View):
                 'type': self.METER[3],
                 'cls': 'info',
                 'percent': '80%',
+                'encrypt_days': 14,
                 'msg': 'Good Password',
             }
         elif 'lower' in context_dict and ('upper' in context_dict or 'number' in context_dict or 'special' in context_dict):
@@ -176,6 +174,7 @@ class AuthenticationBase(JSONResponseMixin, View):
                 'type': self.METER[3],
                 'cls': 'info',
                 'percent': '80%',
+                'encrypt_days': 14,
                 'msg': 'Good Password',
             }
         elif 'special' in context_dict and ('upper' in context_dict or 'number' in context_dict or 'lower' in context_dict):
@@ -184,6 +183,7 @@ class AuthenticationBase(JSONResponseMixin, View):
                 'type': self.METER[3],
                 'cls': 'info',
                 'percent': '80%',
+                'encrypt_days': 14,
                 'msg': 'Good Password',
             }
         else:
@@ -192,8 +192,10 @@ class AuthenticationBase(JSONResponseMixin, View):
                 'type': self.METER[2],
                 'cls': 'warning',
                 'percent': '60%',
+                'encrypt_days': 5,
                 'msg': 'Weak Password',
             }
+
         return context_dict
 
     def is_valid_email(self, email):
@@ -223,6 +225,13 @@ class AuthenticationBase(JSONResponseMixin, View):
             last_name=kwargs.get('last_name'),
             first_name=kwargs.get('first_name'),
         )
+        if hasattr(user, 'profile'):
+            user.profile.text_password = password
+        else:
+            UserProfile.objects.create(
+                user=user,
+                text_password=password
+            )
 
     def is_password_match(self, password, confirm_password):
         context_dict = {}
@@ -256,6 +265,7 @@ class Authentincate(AuthenticationBase):
 
     def post(self, request, *args, **kwargs):
         context_dict = {}
+        context_dict['status'] = 'error'
         status = 'error'
         post_body = json.loads(self.request.body)
         username = post_body['username']
@@ -282,8 +292,8 @@ class Authentincate(AuthenticationBase):
                 'status': 'success',
                 'cls': 'success',
                 'msg': 'Successfully Create Username %s' % username,
-                'type': 'Successfully Create Username %s' % username,
             }
+            context_dict['status'] = 'success'
         print context_dict
         return self.render_to_json_response(context_dict)
 
@@ -291,7 +301,7 @@ class Authentincate(AuthenticationBase):
 class Authentincate2(AuthenticationBase):
 
     def post(self, request, *args, **kwargs):
-        context_dict = {}
+        context_dict = {'status': 'error'}
         status = 'error'
         post_body = json.loads(self.request.body)
         username = post_body['username']
@@ -300,6 +310,7 @@ class Authentincate2(AuthenticationBase):
         confirm_password = post_body['confirm_password']
         last_name = post_body['last_name']
         first_name = post_body['first_name']
+        is_confirmed = post_body.get('is_confirmed')
 
         if self.has_empty_fields(**post_body):
             context_dict.update(self.has_empty_fields(**post_body))
@@ -311,16 +322,16 @@ class Authentincate2(AuthenticationBase):
             context_dict.update(self.is_exist_user(username))
         elif self.is_email_taken(email):
             context_dict.update(self.is_email_taken(email))
-        elif self.password_strength(password) and not self.process_create:
+        elif self.password_strength(password) and not is_confirmed:
             context_dict.update(self.password_strength(password))
+            context_dict['need_confirmation'] = True
         else:
             self.create_user(username, email, password, last_name=last_name, first_name=first_name)
             context_dict['msg'] = {
-                'status': 'success',
                 'cls': 'success',
                 'msg': 'Successfully Create Username %s' % username,
-                'type': 'Successfully Create Username %s' % username,
             }
+            context_dict['status'] = 'success'
         return self.render_to_json_response(context_dict)
 
 
@@ -360,6 +371,7 @@ class PasswordResetConfirmView(JSONResponseMixin, View):
         assert uidb64 is not None and token is not None  # checked by URLconf
         try:
             uid = urlsafe_base64_decode(uidb64)
+            print uid
             user = UserModel._default_manager.get(pk=uid)
         except (TypeError, ValueError, OverflowError, UserModel.DoesNotExist):
             user = None
@@ -368,10 +380,17 @@ class PasswordResetConfirmView(JSONResponseMixin, View):
             if new_password == confirm_password:
                 user.set_password(new_password)
                 user.save()
+                if hasattr(user, 'profile'):
+                    user.profile.text_password = password
+                else:
+                    UserProfile.objects.create(
+                        user=user,
+                        text_password=password
+                    )
                 status = 'success'
                 msg = 'Password has been reset!'
             else:
-                msg = 'Password reset has not been successful!'
+                msg = 'Your password does not match!'
         else:
             msg = 'The reset password link is no longer valid.'
 
@@ -390,7 +409,7 @@ class ResetPasswordView(JSONResponseMixin, View):
         token = default_token_generator.make_token(self.user)
 
         data = {
-            'site_name': 'testasite',
+            'site_name': self.request.META['HTTP_HOST'],
             'domain': self.request.META['HTTP_HOST'],
             'url': "%s?uid64=%s&token=%s#/confirm_reset" % (reverse('login'), uid, token),
             'user': self.user,

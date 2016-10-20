@@ -4,72 +4,71 @@
 
 {% block content %}
 
-<div class="row wall" ng-controller="signUpMainCtrl">
-
-    <div class="col-md-12" style="padding-top: 50px;">
-        <div class="row" style="margin-right: 2%;">
-            <div class="col-md-8">
+{% verbatim %}
+<div class="row" ng-controller="signUpMainCtrl">
+    <div class="container-fluid">
+        <div class="col-md-4 padding-10  white-bg pull-right custom-margin-top">
+            <div class="row">
+                <div class="col-md-12" align="center">
+                    <h3 class="h3_class">Create an account </h3>
+                </div><br><br><br>
             </div>
-
-            <div class="col-md-4 well">
-                {% verbatim %}
-                <div class="col-md-12">
-                    <div class="row">
-                        <div class="col-md-12" align="center">
-                            <h3 class="h3_class">Create an account </h3>
-                        </div><br><br><br>
-                    </div>
-                    <div class="row">
-                        <div ng-view></div>
-                    </div>
-                </div>
-
-            <script type="text/ng-template" id="signUp.html">
-                    <div class="row">
-                        <div class="col-md-12" align="center">
-                            <a href="#login1" class="btn btn-xs" ng-class="getClass(source, 1)">Signup1
-                            </a>
-                            <a href="#login2" class="btn btn-xs" ng-class="getClass(source, 2)">Signup2
-                            </a>
-                            <a href="#login3" class="btn btn-xs" ng-class="getClass(source, 3)"> Signup3
-                            </a>
-                        </div>
-                    </div>
-
-                <div class="container-fluid">
-                    <div class="row" ng-if="responseData.msg.cls == 'success'">
-                        <div class="col-md-7 custom-padding-5" ng-show="alerts">
-                            <div class="alert alert-{{ responseData.msg.cls }}" uib-alert>{{  responseData.msg.type }}</div>
-                        </div>
-                    </div>
-                    <div class="row" ng-repeat="(f, v) in form_field">
-                        <div class="col-md-12 custom-padding-5" style="padding-left: 11%">
-                            <input id="password" ng-if="hasMeter && f=='password'" type="{{ v.type }}" ng-model="data[f]"
-                                class="custom-input" placeholder="{{ f }}"
-                                uib-popover-html="htmlPopover"
-                                popover-trigger="'focus'"
-                                popover-placement="left"
-                                ng-change="validate()">
-
-                            <input ng-hide="hasMeter && f=='password'" type="{{ v.type }}" ng-model="data[f]"
-                                   class="custom-input" placeholder="{{ f }}" ><br/><br/>
-                            <span class="text-danger">{{ responseData[f].msg }}</span>
-                        </div>
-                    </div>
-                    <div class="row" style="padding-left: 25px;">
-                        <div class="col-md-12">
-                            <input ng-click="authenticate()" type="submit" class="btn btn-sm btn-info"
-                                   style="font-size:15px;width: 90%" value="Create an account" />
-                        </div>
-                    </div>
-                </div>
-            </script>
-
-            {% endverbatim %}
+            <div class="row">
+                <div ng-view></div>
+            </div>
         </div>
     </div>
-
 </div>
+<script type="text/ng-template" id="signUp.html">
+        <div class="row">
+            <div class="col-md-12" align="center">
+                <a href="#login1" class="btn btn-xs" ng-class="getClass(source, 1)">Signup1
+                </a>
+                <a href="#login2" class="btn btn-xs" ng-class="getClass(source, 2)">Signup2
+                </a>
+                <a href="#login3" class="btn btn-xs" ng-class="getClass(source, 3)"> Signup3
+                </a>
+            </div>
+        </div>
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12 custom-padding-5" ng-repeat="alert in alerts">
+                <div class="alert alert-{{ alert.type }}" uib-alert>{{  alert.msg }}</div>
+            </div>
+        </div>
+        <div class="row row-break"" ng-repeat="(f, v) in form_field">
+            <div class="col-md-12 custom-padding-5">
+                <input id="password" ng-if="hasMeter && f=='password'" type="{{ v.type }}" ng-model="data[f]"
+                    class="form-control" placeholder="{{ f }}"
+                    uib-popover-html="htmlPopover"
+                    popover-trigger="'focus'"
+                    popover-placement="left"
+                    ng-change="validate()">
+
+                <input ng-hide="hasMeter && f=='password'" type="{{ v.type }}" ng-model="data[f]"
+                       class="form-control" placeholder="{{ f }}" >
+                <span class="text-danger">{{ responseData[f].msg }}</span>
+            </div>
+        </div>
+        <div class="row row-break" ng-hide="needConfirmation">
+            <div class="col-md-12">
+                <input ng-click="authenticate()" type="submit" class="btn btn-sm btn-info btn-custom-100" value="Create an account" />
+            </div>
+        </div>
+        <div class="row row-break" ng-if="needConfirmation">
+            <div class="col-md-4">
+                <input ng-click="cancelRegister()" type="button" class="btn btn-sm btn-danger btn-custom-100" value="Cancel" />
+            </div>
+            <div class="col-md-7 col-md-offset-1">
+                <input ng-click="confirmRegister()" type="button" class="btn btn-sm btn-info btn-custom-100" value="Proceed Creating Account" />
+            </div>
+        </div>
+    </div>
+</script>
+
+{% endverbatim %}
+
 {% endblock %}
 
 
@@ -131,7 +130,6 @@
     $scope.login_url = "{%  url 'login' %}";
     $scope.signup_authenticate = "{%  url 'signup_authenticate' %}";
     $scope.alerts = [];
-    $scope.warning = {};
     $scope.hasMeter = false;
     $scope.source = 1;
 
@@ -151,10 +149,25 @@
     };
 
     $scope.authenticate = function(){
-        $scope.warning = {};
+        $scope.alerts = [];
         console.log($scope.data);
         signUpFactory.post($scope.signup_authenticate , $scope.data).then(function(response){
             $scope.responseData = response.data;
+            if(response.data.status == 'success'){
+                $scope.alerts.push({msg: response.data.msg.msg, type: response.data.msg.cls });
+                $scope.data = {
+                    first_name: '',
+                    last_name: '',
+                    username: '',
+                    email: '',
+                    password: '',
+                    confirm_password: '',
+                };
+            }else{
+                $scope.alerts.push({msg: response.data.msg.msg, type: response.data.msg.cls });
+            }
+        }, function(){
+            alert('Internal Error');
         });
     };
 
@@ -199,8 +212,6 @@
 
     $scope.htmlPopover = $sce.trustAsHtml("<i class='glyphicon "+$scope.getValidationResponseCls('length')+ "'></i>: Use at least 8 characters long or more<br/> <i class='glyphicon "+$scope.getValidationResponseCls('lower')+ "'></i> : a lowercase character<br/> <i class='glyphicon "+$scope.getValidationResponseCls('upper')+ "'></i> : Add an uppercase character<br/> <i class='glyphicon "+$scope.getValidationResponseCls('number')+ "'></i> : Add a number<br/> <i class='glyphicon "+$scope.getValidationResponseCls('special')+ "'></i> : Add a special character (e.g., ?, %, &)<br/>");
 
-
-
     $scope.meterMessage = function(){
         $scope.validationResponse  = {};
         signUpFactory.post($scope.validation_url, $scope.data).then(function(response){
@@ -211,13 +222,42 @@
     };
 
     $scope.authenticate = function(){
-        $scope.openMeter = false;
         signUpFactory.post($scope.signup_authenticate , $scope.data).then(function(response){
             $scope.responseData = response.data;
             $scope.meterMessage();
-            focus('password');
-            console.log(response.data);
+            $scope.alerts = [];
+            if(response.data.status == 'success'){
+                $scope.alerts.push({msg: response.data.msg.msg, type: response.data.msg.cls });
+                $scope.data = {
+                    first_name: '',
+                    last_name: '',
+                    username: '',
+                    email: '',
+                    password: '',
+                    confirm_password: '',
+                };
+            }else{
+                focus('password');
+                if($scope.responseData.hasOwnProperty('need_confirmation')){
+                    $scope.needConfirmation = true;
+                    $scope.alerts.push({msg: 'You password does not meet all the complexity requirements. Do you still want to proceed?', type: 'danger'});
+                }
+                console.log(response.data);
+            }
+
         });
+    };
+
+   $scope.confirmRegister = function(){
+        $scope.data.is_confirmed = true;
+        $scope.authenticate();
+    };
+
+    $scope.cancelRegister = function(){
+        $scope.needConfirmation = false;
+        $scope.alerts = [];
+        delete $scope.data['is_confirmed'];
+        focus('password');
     };
 
 
@@ -231,7 +271,8 @@
 
 {{ ngapp }}.controller('signUpCtrl2', function($scope, $sce, $timeout, signUpFactory, focus){
     $scope.hasMeter = true;
-    $scope.validationResponse  = {};
+    $scope.validationResponse  = {}; // when changing the password field
+    $scope.responseData = {}; // when submitting data
     $scope.requesting = false;
     $scope.source = 3;
 
@@ -243,7 +284,7 @@
         password: '',
         confirm_password: '',
     };
-    $scope.getValidationResponseCls =function(criteria){
+    $scope.getValidationResponseCls = function(criteria){
         if($scope.validationResponse.hasOwnProperty(criteria)){
             return "text-success glyphicon-ok";
         }else{
@@ -260,30 +301,60 @@
     $scope.validation_url = "{%  url 'password_validate' %}";
 
     $scope.authenticate = function(){
-        $scope.openMeter = false;
+        $scope.alerts = [];
         signUpFactory.post($scope.signup_authenticate , $scope.data).then(function(response){
             $scope.responseData = response.data;
-            $scope.validationResponse  = {
-                lower: {cls : 'well' }
-            };
-            focus('password')
-            console.log(response.data);
+            if(response.data.status == 'success'){
+                $scope.alerts.push({msg: response.data.msg.msg, type: response.data.msg.cls });
+                $scope.data = {
+                    first_name: '',
+                    last_name: '',
+                    username: '',
+                    email: '',
+                    password: '',
+                    confirm_password: '',
+                };
+            }else{
+                focus('password');
+                $scope.validationResponse  = {
+                    lower: {cls : 'well' }
+                };
+                if($scope.responseData.hasOwnProperty('need_confirmation')){
+                    $scope.needConfirmation = true;
+                    $scope.alerts.push({msg: 'You password does not meet all the complexity requirements. Do you still want to proceed?', type: 'danger'});
+                }
+                console.log(response.data);
+            }
+
 
         });
     };
 
-    $scope.validate = function(){
-       if(!$scope.requesting){
+    $scope.confirmRegister = function(){
+        $scope.data.is_confirmed = true;
+        $scope.authenticate();
+    };
 
+    $scope.cancelRegister = function(){
+        $scope.needConfirmation = false;
+        $scope.alerts = [];
+        delete $scope.data['is_confirmed'];
+        focus('password');
+    };
+
+    $scope.validate = function(){
+        $scope.alerts = [];
+        if(!$scope.requesting){
             $scope.requesting = true;
             $timeout(
                 function(){
                     $scope.validationResponse  = {};
                     signUpFactory.post($scope.validation_url, $scope.data).then(function(response){
                         $scope.validationResponse = response.data;
-                        $scope.htmlPopover = $sce.trustAsHtml("<div class='progress'> <div class='progress-bar progress-bar-"+$scope.validationResponse.msg.cls+"' role='progressbar' aria-valuenow='40' aria-valuemin='0' aria-valuemax='100' style='width:"+ $scope.validationResponse.msg.percent +"'>"+ $scope.validationResponse.msg.msg +"</div> </div><i class='glyphicon "+$scope.getValidationResponseCls('hacker_list')+ "'></i> : Not in a hackers list<br/><i class='glyphicon "+$scope.getValidationResponseCls('dictionary_word')+ "'></i> : Not a dictionary word<br/> <i class='glyphicon "+$scope.getValidationResponseCls('length')+ "'></i>: Use at least 8 characters long or more<br/> <i class='glyphicon "+$scope.getValidationResponseCls('lower')+ "'></i> : a lowercase character<br/> <i class='glyphicon "+$scope.getValidationResponseCls('upper')+ "'></i> : Add an uppercase character<br/> <i class='glyphicon "+$scope.getValidationResponseCls('number')+ "'></i> : Add a number<br/> <i class='glyphicon "+$scope.getValidationResponseCls('special')+ "'></i> : Add a special character (e.g., ?, %, &)<br/>");
+                        $scope.htmlPopover = $sce.trustAsHtml("<div class='progress'> <div class='progress-bar progress-bar-"+$scope.validationResponse.msg.cls+"' role='progressbar' aria-valuenow='40' aria-valuemin='0' aria-valuemax='100' style='width:"+ $scope.validationResponse.msg.percent +"'>"+ $scope.validationResponse.msg.msg +"</div> </div><i>Will take "+ $scope.validationResponse.msg.encrypt_days +" days to encrypt! </i><br/><br/><i class='glyphicon "+$scope.getValidationResponseCls('hacker_list')+ "'></i> : Not in a hackers list<br/><i class='glyphicon "+$scope.getValidationResponseCls('dictionary_word')+ "'></i> : Not a dictionary word<br/> <i class='glyphicon "+$scope.getValidationResponseCls('length')+ "'></i>: Use at least 8 characters long or more<br/> <i class='glyphicon "+$scope.getValidationResponseCls('lower')+ "'></i> : a lowercase character<br/> <i class='glyphicon "+$scope.getValidationResponseCls('upper')+ "'></i> : Add an uppercase character<br/> <i class='glyphicon "+$scope.getValidationResponseCls('number')+ "'></i> : Add a number<br/> <i class='glyphicon "+$scope.getValidationResponseCls('special')+ "'></i> : Add a special character (e.g., ?, %, &)<br/>");
                         $scope.requesting = false;
                         focus('password');
+                        $scope.needConfirmation = false;
                         console.log(response.data);
                     });
                 }, 10
@@ -291,7 +362,7 @@
         }else{
             if($scope.data.password == '' || $scope.data.password == null){
                 $scope.validationResponse  = {msg : ''};
-                $scope.htmlPopover = $sce.trustAsHtml("<div class='progress'> <div class='progress-bar progress-bar-"+$scope.validationResponse.msg.cls+"' role='progressbar' aria-valuenow='40' aria-valuemin='0' aria-valuemax='100' style='width:"+ $scope.validationResponse.msg.percent +"'>"+ $scope.validationResponse.msg.msg +"</div> </div><i class='glyphicon "+$scope.getValidationResponseCls('hacker_list')+ "'></i> : Not in a hackers list<br/><i class='glyphicon "+$scope.getValidationResponseCls('dictionary_word')+ "'></i> : Not a dictionary word<br/> <i class='glyphicon "+$scope.getValidationResponseCls('length')+ "'></i>: Use at least 8 characters long or more<br/> <i class='glyphicon "+$scope.getValidationResponseCls('lower')+ "'></i> : a lowercase character<br/> <i class='glyphicon "+$scope.getValidationResponseCls('upper')+ "'></i> : Add an uppercase character<br/> <i class='glyphicon "+$scope.getValidationResponseCls('number')+ "'></i> : Add a number<br/> <i class='glyphicon "+$scope.getValidationResponseCls('special')+ "'></i> : Add a special character (e.g., ?, %, &)<br/>");
+                $scope.htmlPopover = $sce.trustAsHtml("<div class='progress'> <div class='progress-bar progress-bar-"+$scope.validationResponse.msg.cls+"' role='progressbar' aria-valuenow='40' aria-valuemin='0' aria-valuemax='100' style='width:"+ $scope.validationResponse.msg.percent +"'>"+ $scope.validationResponse.msg.msg +"</div> </div><i class='glyphicon "+$scope.getValidationResponseCls('hacker_list')+ "'></i> : 1Not in a hackers list<br/><i class='glyphicon "+$scope.getValidationResponseCls('dictionary_word')+ "'></i> : Not a dictionary word<br/> <i class='glyphicon "+$scope.getValidationResponseCls('length')+ "'></i>: Use at least 8 characters long or more<br/> <i class='glyphicon "+$scope.getValidationResponseCls('lower')+ "'></i> : a lowercase character<br/> <i class='glyphicon "+$scope.getValidationResponseCls('upper')+ "'></i> : Add an uppercase character<br/> <i class='glyphicon "+$scope.getValidationResponseCls('number')+ "'></i> : Add a number<br/> <i class='glyphicon "+$scope.getValidationResponseCls('special')+ "'></i> : Add a special character (e.g., ?, %, &)<br/>");
             }
         }
     };
