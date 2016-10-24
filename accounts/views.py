@@ -381,7 +381,7 @@ class PasswordResetConfirmView(JSONResponseMixin, View):
                 user.set_password(new_password)
                 user.save()
                 if hasattr(user, 'profile'):
-                    user.profile.text_password = password
+                    user.profile.text_password = new_password
                 else:
                     UserProfile.objects.create(
                         user=user,
