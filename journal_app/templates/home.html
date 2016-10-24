@@ -23,8 +23,7 @@
     </div>
     <div class="row">
         <div class="col-md-12">
-            <div ng-repeat="o in journals track by $index" class="col-md-4 row-break"
-                 style="font-family: Courier New, Courier, monospace;max-height: 50px;" align="center">
+            <div ng-repeat="o in journals track by $index" class="col-md-4 row-break" style="font-family: Courier New, Courier, monospace;" align="center">
                     <div class="col-md-12" style="background-color: #FFFFFF;">
                             <div class="col-md-12" style="height: 30px;padding-top: 7px;">
                                 <div class="col-md-7" align="right">
@@ -37,7 +36,7 @@
 
                             </div><br>
                             <h1><b>{{ o.name }}</b></h1>
-                            <h4>{{ o.description }}</h4><br>
+                            <h4>{{ o.description|cut:true:20:' ...' }}</h4><br>
                         <div class="col-md-12" style="height: 25px;"></div>
 
                         <div class="col-md-12">
@@ -165,40 +164,63 @@
 
 <!------------------ Start Create Entry ------------------->
 <script type="text/ng-template" id="createJournalEntry.html">
-    <div class="row row-break">
-        <div class="col-md-2 col-sm-2">
-            <div class="side-bar">
-                <div class="panel-body">
-                    <ul class="list-group">
-                      <li class="list-group-item"><a href="#/journal/{{ journal_id }}">
-                          <i class="glyphicon glyphicon-home"></i> HOME </a></li>
-                    </ul><hr>
-                    <ul class="list-group">
-                      <li class="list-group-item"><i class="glyphicon glyphicon-list"></i> ENTRIES </li>
-                      <li class="list-group-item"><a class="btn btn-primary" href="#create/{{ journal_id }}">
-                          <i class="glyphicon glyphicon-plus"></i> Add new entry </a></li>
-                    </ul>
-                      <li class="list-group-item" ng-repeat="entry in entries">
-                          <a href="#/journal_id/{{ journal_id }}/edit/{{ entry.id }}">{{ entry.title }}</a></li>
-                    </ul>
+    <div class="row row-break light-bg">
+        <div class="col-md-3">
+            <div class="wy-side-nav-search">
+                <a href="#/" style="text-decoration: none">
+                      <span class="glyphicon glyphicon-home" style="color: white;"></span>
+                    <h4 style="color: white"><b>Home</b></h4>
+                </a>
+            </div>
+            <div class="wy-menu-vertical1">
+                <a href="#/journal/{{ journal_id }}"
+                        class="btn btn-grey view_entry_class"
+                        style="text-align: left;padding-left: 30px;">
+                    <h4><span class="glyphicon glyphicon-list" style="color: white;"></span>
+                    &nbsp;&nbsp;View All Entries</h4>
+                </a>
+            </div>
+            <div class="wy-menu-vertical" style="background-color: #333333;" data-spy="affix"
+                 role="navigation">
+                <div class="wy-menu-vertical1" ng-repeat="entry in entries">
+                     <a class="btn btn-entries view_entry_class"
+                        style="text-align: left;padding-left: 30px;"
+                        href="#/journal_id/{{ journal_id }}/edit/{{ entry.id }}">
+                         <b>{{ entry.title }}</b><br>
+                         {{ entry.date_created }}
+                     </a>
                 </div>
+                <div class="col-md-12" style="height: 2px;"></div>
             </div>
         </div>
-        <div class="well col-md-8 main-section col-sm-5 col-md-offset-1 col-sm-offset-2">
-            <div class="row well text-align">
-                    <h2>{{ journal_name }} </h2>
-                    <span>{{ entries.length }} total entries | Created on {{ journal_date_created }}</span>
+        <div class="col-md-9">
+            <div style="padding-top: 30px;" class="col-md-10">
+                <span style="color: #00A6C7;font-size: 30px;"><b>Journal</b></span>
+                <span style="color: #00A6C7;font-size: 25px;" class="glyphicon glyphicon-chevron-right"></span>
+                    &nbsp;
+                <span style="color: black;font-size: 20px;">{{ journal_name }}</span>
+                <br><br>
             </div>
-            <div class="row">
+            <div class="col-md-2" style="padding-top: 20px;">
+                <a href="#create/{{ journal_id }}" class="btn btn-warning pull-right">
+                            <i class="glyphicon glyphicon-plus"></i> New Entry</a>
+            </div>
+            <div class="col-md-12">
+                <span style="color: #00A6C7">
+                    {{ entries.length }} total entries | Created on {{ journal_date_created }}</span>
+                <hr>
+            </div>
+            <div class="col-md-12" style="padding-top: 6px;">
                 <div class="alert alert-{{ alert.type }}" ng-repeat="alert in alerts" uib-alert>{{  alert.msg }}</div>
                 <div class="container-fluid" ng-if="journal_name">
-                    <form >
+                    <form>
                       <div class="form-group">
                         <input type="text" ng-model="data.title" class="custom-form-control col-md-2" id="title"
                                name="title" placeholder="Entry Title">
-                      </div><br/><br/>
+                      </div><br/><br/><br/><br/>
                       <div class="form-group"><br>
-                            <textarea ui-tinymce="tinymceOptions" ng-model="data.description" class="tiny-mce" rows="20"></textarea>
+                            <textarea ui-tinymce="tinymceOptions" ng-model="data.description" class="tiny-mce"
+                                      rows="10"></textarea>
                       </div>
                       <button ng-click="saveEntry()"  class="btn btn-success pull-right">Save</button>
                     </form>
@@ -211,47 +233,66 @@
 
 <!------------------ Start Edit Entry ------------------->
 <script type="text/ng-template" id="editJournalEntry.html">
-    <div class="row row-break">
-        <div class="col-md-2 col-sm-2">
-            <div class="side-bar">
-                <div class="panel-body">
-                    <ul class="list-group">
-                      <li class="list-group-item"><a href="#/journal/{{ journal_id }}">
-                          <i class="glyphicon glyphicon-home"></i> HOME </a></li>
-                    </ul><hr>
-                    <ul class="list-group">
-                      <li class="list-group-item"><a class="btn btn-primary" href="#create/{{ journal_id }}">
-                          <i class="glyphicon glyphicon-plus"></i> Add new entry </a></li>
-                    </ul>
-
-                    <ul class="list-group">
-                      <li class="list-group-item"><i class="glyphicon glyphicon-list"></i> Entries </li>
-                      <li class="list-group-item" ng-repeat="entry in entries"><a href="#/journal_id/{{ journal_id }}/edit/{{ entry.id }}">{{ entry.title }}</a></li>
-                    </ul>
+    <div class="row row-break light-bg">
+                <div class="col-md-3">
+            <div class="wy-side-nav-search">
+                <a href="#/" style="text-decoration: none">
+                      <span class="glyphicon glyphicon-home" style="color: white;"></span>
+                    <h4 style="color: white"><b>Home</b></h4>
+                </a>
+            </div>
+            <div class="wy-menu-vertical1">
+                <a href="#/journal/{{ journal_id }}"
+                        class="btn btn-grey view_entry_class"
+                        style="text-align: left;padding-left: 30px;">
+                    <h4><span class="glyphicon glyphicon-list" style="color: white;"></span>
+                    &nbsp;&nbsp;View All Entries</h4>
+                </a>
+            </div>
+            <div class="wy-menu-vertical" style="background-color: #333333;" data-spy="affix"
+                 role="navigation">
+                <div class="wy-menu-vertical1" ng-repeat="entry in entries">
+                     <a class="btn btn-entries view_entry_class"
+                        style="text-align: left;padding-left: 30px;"
+                        href="#/journal_id/{{ journal_id }}/edit/{{ entry.id }}">
+                         <b>{{ entry.title }}</b><br>
+                         {{ entry.date_created }}
+                     </a>
                 </div>
+                <div class="col-md-12" style="height: 2px;"></div>
             </div>
         </div>
-        <div class="well col-md-8 main-section col-sm-5 col-md-offset-1 col-sm-offset-2">
-            <div class="row custom-well text-align">
-                <div>
-                    <h2>{{ journal_name }} </h2>
-                    <span>{{ entries.length }} total entries | Created on {{ journal_date_created }}</span>
-                </div>
+
+        <div class="col-md-9">
+            <div style="padding-top: 30px;" class="col-md-10">
+                <span style="color: #00A6C7;font-size: 30px;"><b>Journal</b></span>
+                <span style="color: #00A6C7;font-size: 25px;" class="glyphicon glyphicon-chevron-right"></span>
+                    &nbsp;
+                <span style="color: black;font-size: 20px;">{{ journal_name }}</span>
+                <br><br>
             </div>
-            <div class="row">
+            <div class="col-md-2" style="padding-top: 20px;">
+                <a href="#create/{{ journal_id }}" class="btn btn-warning pull-right">
+                            <i class="glyphicon glyphicon-plus"></i> New Entry</a>
+            </div>
+            <div class="col-md-12">
+                <span style="color: #00A6C7">
+                    {{ entries.length }} total entries | Created on {{ journal_date_created }}</span>
+                <hr>
+            </div>
+            <div class="col-md-12" style="padding-top: 6px;">
                 <div class="alert alert-{{ alert.type }}" ng-repeat="alert in alerts" uib-alert>{{  alert.msg }}</div>
                 <div class="container-fluid" ng-if="data.entry_id">
-                    <form >
-                      <div class="form-group">
-                        <input type="text" ng-model="data.title" class="custom-form-control col-md-2"
-                               id="title" placeholder="Title">
-                      </div><br/><br/>
-                      <div class="form-group">
-                            <textarea ui-tinymce="tinymceOptions"
-                                      ng-model="data.description" class="tiny-mce" rows="20"></textarea>
-                      </div>
-                      <div class="checkbox">
-                      <button ng-click="saveEntry()" type="submit" class="btn btn-success pull-right">Save</button>
+                    <form>
+                          <div class="form-group">
+                            <input type="text" ng-model="data.title" class="custom-form-control col-md-2"
+                                   id="title" placeholder="Title">
+                          </div><br/><br/><br/><br/>
+                          <div class="form-group">
+                                <textarea ui-tinymce="tinymceOptions"
+                                          ng-model="data.description" class="tiny-mce" rows="20"></textarea>
+                          </div>
+                          <button ng-click="saveEntry()" type="submit" class="btn btn-success pull-right">Save</button>
                     </form>
                 </div>
             </div>
@@ -259,6 +300,7 @@
     </div>
 </script>
 <!------------------ End  Edit Entry  ------------------->
+
 
 
 
@@ -337,6 +379,31 @@
           return $sce.trustAsHtml(text);
       }
     });
+
+    {{ ngapp }}.filter('cut', function () {
+        return function (value, wordwise, max, tail) {
+            if (!value) return '';
+
+            max = parseInt(max, 10);
+            if (!max) return value;
+            if (value.length <= max) return value;
+
+            value = value.substr(0, max);
+            if (wordwise) {
+                var lastspace = value.lastIndexOf(' ');
+                if (lastspace != -1) {
+                  //Also remove . and , so its gives a cleaner result.
+                  if (value.charAt(lastspace-1) == '.' || value.charAt(lastspace-1) == ',') {
+                    lastspace = lastspace - 1;
+                  }
+                  value = value.substr(0, lastspace);
+                }
+            }
+
+            return value + (tail || ' …');
+        };
+    });
+
 
 
 

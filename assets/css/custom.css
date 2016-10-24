@@ -33,23 +33,7 @@
 }
 
 
-.table > thead > tr > td, .table > tbody > tr > td, .table > tfoot > tr > td {
-    padding: 8px;
-    line-height: 1.42857143;
-    vertical-align: top;
-    border-top: 0px;
-}
-
-.table > thead > tr > th, .table > tbody > tr > th, .table > tfoot > tr > th, .table > thead > tr > td, .table > tbody > tr > td, .table > tfoot > tr > td {
-    padding: 8px;
-    line-height: 1.42857143;
-    vertical-align: top;
-    border-top: 1px solid rgb(255, 255, 255);
-}
-
-
 .a {
-
     text-decoration: none;
     font-family: Papyrus,fantasy;
 }
@@ -111,7 +95,6 @@ input { float: left }
     position: fixed;
     bottom: 0;
     width: 100%;
-    position: absolute;
 }
 
 
@@ -143,11 +126,6 @@ input { float: left }
     box-shadow: inset 0 1px 1px rgba(0, 0, 0, .05);
 }
 
-/*p::first-letter {
-    font-size: 100px;
-    font-family: Courier New, Courier, monospace;
-    color: #d43f3a;
-}*/
 
 .custom-p{
     font-family: Courier New, Courier, monospace;
@@ -176,3 +154,68 @@ input { float: left }
 
 
 
+div{
+    word-wrap: break-word;
+}
+
+.box {
+  height: 90px;
+  line-height: 50px;
+    padding-left: 10px;
+}
+
+.wy-side-nav-search {
+    display: block;
+    z-index: 200;
+    background-color: #2980B9;
+    text-align: center;
+    padding: 0.809em;
+}
+
+.wy-menu-vertical a {
+    line-height: 18px;
+    padding: 0.4045em 1.618em;
+    display: block;
+    position: relative;
+    font-size: 90%;
+}
+
+
+.wy-menu-vertical {
+    height: 82vh;
+}
+
+.view_entry_class{
+    width:100%;
+    height:100%;
+    border-radius: 0px;
+}
+
+.btn-grey{
+    background-color: #505050;
+    color: white;
+    text-decoration: none;
+}
+.btn-grey:hover{
+    color: whitesmoke;
+}
+
+.btn-entries{
+    background-color: #333333;
+    border-bottom: 1px solid grey;
+    color: grey;
+    text-decoration: none;
+}
+
+.btn-entries:hover{
+    color: whitesmoke;
+    background-color: #474747;
+}
+
+.wy-menu-vertical1 a {
+    line-height: 18px;
+    padding: 0.4045em 1.618em;
+    display: block;
+    position: relative;
+    font-size: 90%;
+}
