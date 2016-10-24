@@ -111,7 +111,7 @@
             </div>
             <ul class="nav navbar-nav navbar-right">
                 {% if user.is_authenticated %}
-                    <li><a href="#"> Welcome <b>{{ user }}</b></a></li>
+                    <li><a href=""> Welcome <b>{{ user }}</b></a></li>
                     <li><a href="{% url 'logout' %}">Logout <span class="glyphicon glyphicon-off"></span></a></li>
                 {% else %}
                     <li>
