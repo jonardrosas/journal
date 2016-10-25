@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html ng-app="{{ ngapp }}">
     <head>
+        <meta charset="utf-8" http-equiv="X-UA-Compatible" content="IE=edge">
 	{% load static staticfiles %}
         <link rel="icon" type="image/gif/png" href="{% static 'img/wed.png' %}">
 		<link href="{% static 'css/bootstrap.css' %}" rel="stylesheet" type="text/css">
@@ -73,7 +74,8 @@
             min-height: 100vh;
         }
         .white-bg {
-            background: #f5f5f5;
+            background: #e2e2;
+            border: 1px solid black;
         }
         .padding-10 {
             padding: 10px;
@@ -122,6 +124,7 @@
                         <span class="glyphicon glyphicon-log-in"></span>&nbsp;&nbsp;Login</a>
                     </li>
                 {% endif %}
+                    <li><a href="{% url 'admin:index' %}"> Admin Login</a></li>
              </ul>
           </div><!-- /.container-fluid -->
         </nav>

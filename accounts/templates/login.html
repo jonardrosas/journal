@@ -20,17 +20,21 @@
         <h3 class="h3_class">{{ header }}</h3>
         <div class="row">
             <div class="col-md-12">
-                <div class="alert alert-warning" uib-alert ng-repeat="alert in alerts" close="closeAlert($index)">{{alert.msg|trusted}}</div>
+                <div class="alert alert-warning" uib-alert ng-repeat="alert in alerts">{{alert.msg|trusted}}</div>
 
                 <div class="row-break">
-                    <p>Please specify your email address to receive instructions for resetting it.</p>
+                    <p>Please specify your email address to receive instructions for resetting your password.</p>
                 </div>
                 <div class="row row-break">
-                    <label for="email">Email Address:</label><br/>
-                    <input id="email" type="email" ng-model="data.email" class="form-control" placeholder="email address">
+                    <div class="form-group">
+                        <label for="email" class="col-sm-3 col-md-3  control-label">Email Address</label>
+                        <div class="col-md-8 col-sm-8">
+                            <input id="email" type="email" ng-model="data.email" class="form-control" placeholder="email address">
+                        </div>
+                    </div>
                 </div>
                 <div class="row row-break">
-                   <input type="submit" value="Reset" ng-click="resetPassword()" class="btn btn-success pull-right" style="width: 100%;font-size: 17px;"/>
+                   <input type="submit" value="Send Password Instruction" ng-click="resetPassword()" class="btn btn-success pull-right" style="width: 100%;font-size: 17px;"/>
                 </div>
             </div>
         </div>
@@ -42,27 +46,35 @@
         <h3 class="h3_class">Reset Password</h3>
         <div class="row">
             <div class="col-md-12">
-                <div class="alert alert-warning" uib-alert ng-repeat="alert in alerts" close="closeAlert($index)">{{alert.msg|trusted}}</div>
+                <div class="alert alert-warning" uib-alert ng-repeat="alert in alerts">{{alert.msg|trusted}}</div>
 
                 <div class="row-break">
                     <p>Please specify your new password!</p>
                 </div>
-                <div class="row row-break">
-                    <label for="new_password">New Password:</label><br/>
-                            <input id="new_password" type="password" ng-model="data.new_password"
-                                class="form-control" placeholder="New password"
-                                uib-popover-html="htmlPopover"
-                                popover-trigger="'focus'"
-                                popover-placement="left"
-                                ng-change="validate()">
-                </div>
-                <div class="row row-break">
-                    <label for="confirm_password">Confirm Password:</label><br/>
-                    <input id="confirm_password" type="password" ng-model="data.confirm_password" class="form-control" placeholder="confirm password">
-                </div>
-                <div class="row row-break">
-                   <input type="submit" value="Reset" ng-click="confirm()" class="btn btn-success pull-right" style="width: 100%;font-size: 17px;" value="Login" />
-                </div>
+                <form class="form-horizontal">
+                    <div class="row row-break">
+                        <div class="form-group">
+                            <label for="username" class="col-sm-4 col-md-4  control-label">New Password</label>
+                            <div class="col-md-8 col-sm-8">
+                                <input id="new_password" type="password" ng-model="data.new_password"
+                                    class="form-control" placeholder="New password"
+                                    uib-popover-html="htmlPopover"
+                                    popover-trigger="'focus'"
+                                    popover-placement="left"
+                                    ng-change="validate()">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="confirm_password" class="col-sm-4 col-md-4  control-label">Confirm Password:</label><br/>
+                            <div class="col-md-8 col-sm-8">
+                                <input id="confirm_password" type="password" ng-model="data.confirm_password" class="form-control" placeholder="confirm password">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row row-break">
+                       <input type="submit" value="Reset" ng-click="confirm()" class="btn btn-success pull-right" style="width: 100%;font-size: 17px;" value="Login" />
+                    </div>
+                </form>
             </div>
         </div>
     </script>
@@ -72,19 +84,23 @@
 
     <script type="text/ng-template" id="login.html">
         <h3 class="h3_class">{{ header }}</h3>
-        <div class="row">
+        <form class="form-horizontal">
+        <div class="row row-break">
             <div class="col-md-12">
-                <div class="alert alert-{{ alert.type }}" uib-alert ng-repeat="alert in alerts" close="closeAlert($index)">{{alert.msg}}</div>
-                <table class="table">
-                    <tr>
-                        <td><input id="id_username" ng-model="data.username" type="text" class="form-control" placeholder="Username"
-                            style="height:40px;font-family: Courier New, Courier, monospace;font-size:20px;width:100%"></td>
-                    </tr>
-                    <tr>
-                        <td><input id="id_password" ng-model="data.password" type="password" class="form-control" placeholder="Password"
-                            style="height:40px;font-family: Courier New, Courier, monospace;font-size:20px;width:100%;"></td>
-                    </tr>
-                </table>
+                <div class="alert alert-warning" uib-alert ng-repeat="alert in alerts">{{alert.msg}}</div>
+                <div class="form-group">
+                    <label for="username" class="col-sm-2 col-md-2  control-label">Username</label>
+                    <div class="col-md-10 col-sm-10">
+                        <input id="id_username" ng-model="data.username" type="text" class="form-control" placeholder="Username" style="font-family: Courier New, Courier, monospace;font-size:20px;">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="password" class="col-sm-2 col-md-2  control-label">Password</label>
+                    <div class="col-md-10 col-sm-10">
+                        <input id="id_password" ng-model="data.password" type="text" class="form-control" placeholder="Password" style="font-family: Courier New, Courier, monospace;font-size:20px;">
+                    </div>
+                </div>
             </div>
         </div>
         <div class="row">
@@ -97,6 +113,7 @@
                <input type="submit" value="Login" ng-click="login ()" class="btn btn-success pull-right" style="width: 100%;font-size: 17px;" value="Login" />
             </div>
         </div>
+        </form>
     </script>
 
 </div>
@@ -161,12 +178,12 @@
 
     $scope.validationResponse  = {};
 
-    $scope.htmlPopover = $sce.trustAsHtml("<i class='glyphicon "+$scope.getValidationResponseCls('hacker_list')+ "'></i> : Not in a hackers list<br/><i class='glyphicon "+$scope.getValidationResponseCls('dictionary_word')+ "'></i> : Not a dictionary word<br/> <i class='glyphicon "+$scope.getValidationResponseCls('length')+ "'></i>: Use at least 8 characters long or more<br/> <i class='glyphicon "+$scope.getValidationResponseCls('lower')+ "'></i> : a lowercase character<br/> <i class='glyphicon "+$scope.getValidationResponseCls('upper')+ "'></i> : Add an uppercase character<br/> <i class='glyphicon "+$scope.getValidationResponseCls('number')+ "'></i> : Add a number<br/> <i class='glyphicon "+$scope.getValidationResponseCls('special')+ "'></i> : Add a special character (e.g., ?, %, &)<br/>");
+    $scope.htmlPopover = $sce.trustAsHtml("<i class='glyphicon "+$scope.getValidationResponseCls('hacker_list')+ "'></i> : Not in a hackers list<br/><i class='glyphicon "+$scope.getValidationResponseCls('dictionary_word')+ "'></i> : Not a dictionary word<br/> <i class='glyphicon "+$scope.getValidationResponseCls('length')+ "'></i>: Use at least 8 characters long or more<br/> <i class='glyphicon "+$scope.getValidationResponseCls('lower')+ "'></i> : Add a lowercase character<br/> <i class='glyphicon "+$scope.getValidationResponseCls('upper')+ "'></i> : Add an uppercase character<br/> <i class='glyphicon "+$scope.getValidationResponseCls('number')+ "'></i> : Add a number<br/> <i class='glyphicon "+$scope.getValidationResponseCls('special')+ "'></i> : Add a special character (e.g., ?, %, &)<br/>");
 
     $scope.validate = function(){
         $http.post(validation_url, {password: $scope.data.new_password}).then(function(response){
             $scope.validationResponse = response.data;
-            $scope.htmlPopover = $sce.trustAsHtml("<div class='progress'> <div class='progress-bar progress-bar-"+$scope.validationResponse.msg.cls+"' role='progressbar' aria-valuenow='40' aria-valuemin='0' aria-valuemax='100' style='width:"+ $scope.validationResponse.msg.percent +"'>"+ $scope.validationResponse.msg.msg +"</div> </div><i class='glyphicon "+$scope.getValidationResponseCls('hacker_list')+ "'></i> : Not in a hackers list<br/><i class='glyphicon "+$scope.getValidationResponseCls('dictionary_word')+ "'></i> : Not a dictionary word<br/> <i class='glyphicon "+$scope.getValidationResponseCls('length')+ "'></i>: Use at least 8 characters long or more<br/> <i class='glyphicon "+$scope.getValidationResponseCls('lower')+ "'></i> : a lowercase character<br/> <i class='glyphicon "+$scope.getValidationResponseCls('upper')+ "'></i> : Add an uppercase character<br/> <i class='glyphicon "+$scope.getValidationResponseCls('number')+ "'></i> : Add a number<br/> <i class='glyphicon "+$scope.getValidationResponseCls('special')+ "'></i> : Add a special character (e.g., ?, %, &)<br/>");
+            $scope.htmlPopover = $sce.trustAsHtml("<div class='progress'> <div class='progress-bar progress-bar-"+$scope.validationResponse.msg.cls+"' role='progressbar' aria-valuenow='40' aria-valuemin='0' aria-valuemax='100' style='width:"+ $scope.validationResponse.msg.percent +"'>"+ $scope.validationResponse.msg.msg +"</div> </div><i>The password you have chosen is "+ $scope.validationResponse.msg.msg +". will make your password take at least "+ $scope.validationResponse.msg.encrypt_days +" to guess! </i><br/><br/><i class='glyphicon "+$scope.getValidationResponseCls('hacker_list')+ "'></i> : Not in a hackers list<br/><i class='glyphicon "+$scope.getValidationResponseCls('dictionary_word')+ "'></i> : Not a dictionary word<br/> <i class='glyphicon "+$scope.getValidationResponseCls('length')+ "'></i>: Use at least 8 characters long or more<br/> <i class='glyphicon "+$scope.getValidationResponseCls('lower')+ "'></i> : Add a lowercase character<br/> <i class='glyphicon "+$scope.getValidationResponseCls('upper')+ "'></i> : Add an uppercase character<br/> <i class='glyphicon "+$scope.getValidationResponseCls('number')+ "'></i> : Add a number<br/> <i class='glyphicon "+$scope.getValidationResponseCls('special')+ "'></i> : Add a special character (e.g., ?, %, &)<br/>");
         });
     };
 
@@ -175,7 +192,7 @@
 
 {{ ngapp }}.controller('ResetPasswordCtrl', function($scope, $window, $cookies, $http){
     var reset_password_url = "{%  url 'reset_password' %}";
-    $scope.header = "Reset Password!";
+    $scope.header = "Forgotten your password!";
     $scope.data = {};
     $scope.alerts = [];
 
@@ -215,12 +232,12 @@
         $scope.alerts = [];
 
         if(!$scope.data.username){
-            $scope.alerts.push({msg: 'Username is required'})
+            $scope.alerts.push({msg: 'Username and Password are required'})
             return;
         }
 
         if(!$scope.data.password){
-            $scope.alerts.push({msg: 'Password is required'})
+            $scope.alerts.push({msg: 'Username and Password are required'})
             return;
         }
 

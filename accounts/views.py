@@ -101,7 +101,7 @@ class AuthenticationBase(JSONResponseMixin, View):
                 'cls': 'glyphicon-ok'
             }
 
-        if len(password) > 8:
+        if len(password) >= 8:
             context_dict['length'] = {
                 'status': 'pass',
                 'cls': 'glyphicon-ok'
@@ -138,53 +138,40 @@ class AuthenticationBase(JSONResponseMixin, View):
                 'type': self.METER[1],
                 'cls': 'danger',
                 'percent': '50%',
-                'encrypt_days': 1,
+                'encrypt_days': '1 day',
                 'msg': 'Too short',
             }
-        elif 'lower' in context_dict and 'upper' in context_dict and 'number' in context_dict and 'special' in context_dict:
+        elif ('lower' in context_dict and 'upper' in context_dict and
+              'number' in context_dict and 'special' in context_dict and
+              'hacker_list' in context_dict and 'dictionary_word' in context_dict):
             context_dict['msg'] = {
                 'status': 'success',
                 'type': self.METER[4],
                 'cls': 'success',
                 'percent': '100%',
-                'encrypt_days': 30,
+                'encrypt_days': '1 year',
                 'msg': 'Srong Password',
             }
-        elif 'upper' in context_dict and ('lower' in context_dict or 'number' in context_dict or 'special' in context_dict):
+        elif ('lower' in context_dict and 'upper' in context_dict and
+              'number' in context_dict and 'special' in context_dict and
+              'hacker_list' in context_dict):
             context_dict['msg'] = {
                 'status': 'success',
-                'type': self.METER[3],
-                'cls': 'info',
+                'type': self.METER[4],
+                'cls': 'success',
                 'percent': '80%',
-                'encrypt_days': 14,
+                'encrypt_days': '6 months',
                 'msg': 'Good Password',
             }
-        elif 'number' in context_dict and ('upper' in context_dict or 'lower' in context_dict or 'special' in context_dict):
+        elif ('lower' in context_dict and 'upper' in context_dict and
+              'number' in context_dict and 'special' in context_dict):
             context_dict['msg'] = {
                 'status': 'success',
-                'type': self.METER[3],
-                'cls': 'info',
-                'percent': '80%',
-                'encrypt_days': 14,
-                'msg': 'Good Password',
-            }
-        elif 'lower' in context_dict and ('upper' in context_dict or 'number' in context_dict or 'special' in context_dict):
-            context_dict['msg'] = {
-                'status': 'success',
-                'type': self.METER[3],
-                'cls': 'info',
-                'percent': '80%',
-                'encrypt_days': 14,
-                'msg': 'Good Password',
-            }
-        elif 'special' in context_dict and ('upper' in context_dict or 'number' in context_dict or 'lower' in context_dict):
-            context_dict['msg'] = {
-                'status': 'success',
-                'type': self.METER[3],
-                'cls': 'info',
-                'percent': '80%',
-                'encrypt_days': 14,
-                'msg': 'Good Password',
+                'type': self.METER[5],
+                'cls': 'success',
+                'percent': '70%',
+                'encrypt_days': '1 month',
+                'msg': 'Fair Password',
             }
         else:
             context_dict['msg'] = {
@@ -192,10 +179,9 @@ class AuthenticationBase(JSONResponseMixin, View):
                 'type': self.METER[2],
                 'cls': 'warning',
                 'percent': '60%',
-                'encrypt_days': 5,
+                'encrypt_days': '1 week',
                 'msg': 'Weak Password',
             }
-
         return context_dict
 
     def is_valid_email(self, email):
@@ -213,7 +199,7 @@ class AuthenticationBase(JSONResponseMixin, View):
             if not kwargs[f]:
                 context_dict[f] = {
                     'status': 'error',
-                    'msg': '%s is required!' % f,
+                    'msg': '%s is required!' % f.replace("_", " "),
                 }
         return context_dict
 
@@ -256,7 +242,7 @@ class AuthenticationBase(JSONResponseMixin, View):
         if get_user_model().objects.filter(email__icontains=email).exists():
             context_dict['email'] = {
                 'status': 'error',
-                'msg': 'Email address already in use!',
+                'msg': 'Email already exists!',
             }
         return context_dict
 
@@ -359,40 +345,40 @@ class PasswordResetConfirmView(JSONResponseMixin, View):
         """
         context_dict = {}
         post_body = json.loads(self.request.body)
-        uidb64 = post_body['uid64']
-        new_password = post_body['new_password']
-        confirm_password = post_body['confirm_password']
-        token = post_body['token']
+        uidb64 = post_body.get('uid64')
+        new_password = post_body.get('new_password')
+        confirm_password = post_body.get('confirm_password')
+        token = post_body.get('token')
         data = None
         status = 'error'
         UserModel = get_user_model()
-        print post_body
-        #form = self.form_class(request.POST)
-        assert uidb64 is not None and token is not None  # checked by URLconf
-        try:
-            uid = urlsafe_base64_decode(uidb64)
-            print uid
-            user = UserModel._default_manager.get(pk=uid)
-        except (TypeError, ValueError, OverflowError, UserModel.DoesNotExist):
-            user = None
-
-        if user is not None and default_token_generator.check_token(user, token):
-            if new_password == confirm_password:
-                user.set_password(new_password)
-                user.save()
-                if hasattr(user, 'profile'):
-                    user.profile.text_password = new_password
-                else:
-                    UserProfile.objects.create(
-                        user=user,
-                        text_password=new_password
-                    )
-                status = 'success'
-                msg = 'Password has been reset!'
-            else:
-                msg = 'Your password does not match!'
+        if not new_password:
+            msg = "Password is required!"
         else:
-            msg = 'The reset password link is no longer valid.'
+            assert uidb64 is not None and token is not None  # checked by URLconf
+            try:
+                uid = urlsafe_base64_decode(uidb64)
+                print uid
+                user = UserModel._default_manager.get(pk=uid)
+            except (TypeError, ValueError, OverflowError, UserModel.DoesNotExist):
+                user = None
+            if user is not None and default_token_generator.check_token(user, token):
+                if new_password == confirm_password:
+                    user.set_password(new_password)
+                    user.save()
+                    if hasattr(user, 'profile'):
+                        user.profile.text_password = new_password
+                    else:
+                        UserProfile.objects.create(
+                            user=user,
+                            text_password=new_password
+                        )
+                    status = 'success'
+                    msg = 'Password has been reset!'
+                else:
+                    msg = 'Your password does not match!'
+            else:
+                msg = 'The reset password link is no longer valid.'
 
         context_dict = {
             'data': data,
@@ -414,14 +400,9 @@ class ResetPasswordView(JSONResponseMixin, View):
             'url': "%s?uid64=%s&token=%s#/confirm_reset" % (reverse('login'), uid, token),
             'user': self.user,
         }
-        subject, from_email, to = 'hello', '',  to_email
+        subject, from_email, to = 'Reset password instruction for WED', '',  to_email
         template = """
-                <p>
-                You're receiving this email because you requested a
-                password reset for your user account at {site_name}.
-
-                Please go to the following page and choose a new password:
-                </p><br/>
+                <p>You have requested to reset password. Please click on the link below.</p><br/><br/>
                 {domain}{url}
         """.format(**data)
         msg = EmailMultiAlternatives(subject, template, from_email, [to])
@@ -447,8 +428,8 @@ class ResetPasswordView(JSONResponseMixin, View):
             else:
                 self.user = user_ins
                 msg = """
-                      We've e-mailed you instructions for setting your password to the e-mail address
-                      you submitted. You should be receiving it shortly"""
+                      We have sent you reset password instructions. You should be receiving it
+                      shortly."""
                 status = "success"
                 email = user_ins.email
                 self.send_email(email)
