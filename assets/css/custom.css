@@ -219,3 +219,13 @@ div{
     position: relative;
     font-size: 90%;
 }
+
+.btn-blue{
+    color: white;
+    background-color: #076a96;
+    border-color: #06476f;
+}
+
+.btn-blue:hover{
+    color: white;
+}

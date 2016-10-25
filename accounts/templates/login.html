@@ -7,7 +7,7 @@
 
 <div class="row" ng-controller="LoginCtrl">
     <div class="container-fluid">
-        <div class="col-md-4 padding-10  white-bg pull-right custom-margin-top">
+        <div class="col-md-3 padding-10  white-bg pull-right custom-margin-top">
             <div class="col-md-12" align="center">
                 <div ng-view></div>
             </div>
@@ -103,17 +103,17 @@
                 </div>
             </div>
         </div>
-        <div class="row">
-            <div class="col-md-11">
-                <a class="pull-right" href="#/reset_passord"> Forgotten your Password?</a>
-            </div>
-        </div>
         <div class="row row-break">
             <div class="col-md-12">
                <input type="submit" value="Login" ng-click="login ()" class="btn btn-success pull-right" style="width: 100%;font-size: 17px;" value="Login" />
             </div>
         </div>
         </form>
+        <div class="row">
+            <div class="col-md-12" align="right">
+                <a class="pull-right" href="#/reset_passord" style="color:black;"> <u>Forget Password?</u></a>
+            </div>
+        </div>
     </script>
 
 </div>

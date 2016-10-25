@@ -74,8 +74,7 @@
             min-height: 100vh;
         }
         .white-bg {
-            background: #e2e2;
-            border: 1px solid black;
+            background: rgba(10, 10, 10, 0.15);
         }
         .padding-10 {
             padding: 10px;
@@ -114,17 +113,18 @@
             <ul class="nav navbar-nav navbar-right">
                 {% if user.is_authenticated %}
                     <li><a href=""> Welcome <b>{{ user }}</b></a></li>
+                    <li><a href="{% url 'admin:index' %}" style="color: white"> <span class="glyphicon glyphicon-log-in"></span>&nbsp;&nbsp;Admin Login</b></a></li>
                     <li><a href="{% url 'logout' %}">Logout <span class="glyphicon glyphicon-off"></span></a></li>
                 {% else %}
                     <li>
                         <a href="{% url 'login_register' %}#/" style="color: white">
                             <span class="glyphicon glyphicon-star"></span>&nbsp;&nbsp;Register</a>
                     </li>
+                    <li><a href="{% url 'admin:index' %}" style="color: white"> <span class="glyphicon glyphicon-log-in"></span>&nbsp;&nbsp;Admin Login</b></a></li>
                     <li><a href="{% url 'login' %}#/" style="color: white">
-                        <span class="glyphicon glyphicon-log-in"></span>&nbsp;&nbsp;Login</a>
+                        <span class="glyphicon glyphicon-log-in"></span>&nbsp;&nbsp;Student Login</a>
                     </li>
                 {% endif %}
-                    <li><a href="{% url 'admin:index' %}"> Admin Login</a></li>
              </ul>
           </div><!-- /.container-fluid -->
         </nav>

@@ -7,7 +7,7 @@
 {% verbatim %}
 <div class="row" ng-controller="signUpMainCtrl">
     <div class="container-fluid">
-        <div class="col-md-4 padding-10  well white-bg pull-right custom-margin-top">
+        <div class="col-md-3 padding-10  white-bg pull-right custom-margin-top">
             <div class="row">
                 <div class="col-md-12" align="center">
                     <h3 class="h3_class">Create an account </h3>
@@ -27,6 +27,7 @@
                 <a href="#login2" class="btn btn-xs" ng-class="getClass(source, 2)">Intermediate
                 </a>
                 <a href="#login3" class="btn btn-xs" ng-class="getClass(source, 3)"> Advanced
+
                 </a>
             </div>
         </div>
@@ -118,7 +119,7 @@
 
     data.getClass = function(val1, val2){
         if(val1 == val2){
-            return "btn-danger";
+            return "btn-blue";
         }else{
             return "btn-info";
         }
