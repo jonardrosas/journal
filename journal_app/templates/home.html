@@ -73,7 +73,7 @@
 <script type="text/ng-template" id="createJournal.html">
     <div class="modal-header" align="center" style="background-color:#5bc0de;
     font-family: Courier New, Courier, monospace;color: white">
-        <h3 class="modal-title" id="modal-title">Create your Journal</h3>
+        <h3 class="modal-title" id="modal-title">{{ journalHeading }}</h3>
     </div>
     <div class="modal-body" id="modal-body" align="center">
         <div class="alert alert-{{ alert.type }}" ng-repeat="alert in alerts" uib-alert>{{  alert.msg }}</div>
@@ -474,24 +474,39 @@
 
         };
 
-        $scope.deleteJournal = function(journal_id){
-            var can_delete = confirm('Are you sure?');
-            if(can_delete){
-                journalFactory.postData(delete_journal_url, {journal_id: journal_id}).then(function(data){
-                    if(data.status == 'success'){
-                        $scope.initData();
-                    }else{
-                        $scope.alerts.push({msg: data.data.msg, type: 'danger'});
+        $scope.deleteJournal = function (journal_id) {
+            var modalInstance = $uibModal.open({
+                templateUrl: 'createJournal.html',
+                controller: 'deleteJournalCtrl',
+                size: "sm",
+                windowClass: 'app-modal-window',
+                backdrop: 'static',
+                resolve: {
+                    journal_id: function(){
+                        return journal_id;
                     }
-                });
-            }
-        };
+                }
+            });
 
+            modalInstance.result.then(function (result) {
+                if(result == 'success'){
+                    $scope.initData();
+                    console.log(1);
+                }else{
+                    console.log(2);
+                }
+            }, function () {
+                $scope.hovering = false;
+                console.log(3);
+            });
+
+        };
 
     });
 
    {{ ngapp }}.controller('createJournalCtrl', function ($scope, $uibModalInstance, $http, $routeParams) {
 
+        $scope.journalHeading = 'Create Journal';
         $scope.data = {};
         $scope.alerts = [];
         var url = "{% url 'create_journal' %}";
@@ -509,7 +524,7 @@
                 if (response.data.status == 'success'){
                     $uibModalInstance.close('success');
                 }else{
-                    $scope.alerts.push({msg: data.data.msg, type: 'danger'});
+                    $scope.alerts.push({msg: response.data.msg, type: 'danger'});
                 }
              });
         };
@@ -522,6 +537,7 @@
 
     {{ ngapp }}.controller('editJournalCtrl', function ($scope, $uibModalInstance, $http, $routeParams, journalFactory, journal_id) {
 
+        $scope.journalHeading = 'Update Journal';
         $scope.data = {journal_id: journal_id};
         $scope.alerts = [];
         var url = "{% url 'edit_journal' %}";
@@ -554,6 +570,30 @@
           $uibModalInstance.dismiss('cancel');
         };
     });
+
+    {{ ngapp }}.controller('deleteJournalCtrl', function ($scope, $uibModalInstance, $http, $routeParams, journalFactory, journal_id) {
+
+        $scope.journalHeading = 'Delete Journal';
+        $scope.alerts = [
+            {msg: 'Are you sure you want to delete this journal?', type: 'info'}
+        ];
+        var delete_journal_url = "{% url 'delete_journal' %}";
+
+        $scope.saveJournal = function(){
+            journalFactory.postData(delete_journal_url, {journal_id: journal_id}).then(function(data){
+                if(data.status == 'success'){
+                    $uibModalInstance.close('success');
+                }else{
+                    $scope.alerts.push({msg: data.data.msg, type: 'danger'});
+                }
+            });
+        };
+
+        $scope.cancel = function () {
+          $uibModalInstance.dismiss('cancel');
+        };
+    });
+
 
     {{ ngapp }}.controller("journalDetailCtrl", function($scope, $http, $uibModal, $routeParams, $sce, journalFactory) {
 
@@ -655,8 +695,6 @@
             'Title': {val: '', type: 'text'},
             'Description': {val: '', type: 'textarea'}
         };
-
-        $scope.data.description = "";
 
         $scope.saveEntry = function(){
             console.log('Saving data');
