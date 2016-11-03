@@ -7,7 +7,7 @@
 {% verbatim %}
 <div class="row" ng-controller="signUpMainCtrl">
     <div class="container-fluid">
-        <div class="col-md-3 padding-10  white-bg pull-right custom-margin-top">
+        <div class="col-md-4 padding-10  white-bg pull-right custom-margin-top">
             <div class="row">
                 <div class="col-md-12" align="center">
                     <h3 class="h3_class">Create an account </h3>
@@ -367,7 +367,7 @@
                         $scope.needConfirmation = false;
                         console.log(response.data);
                     });
-                }, 10
+                }, 1000
             );
         }else{
             if($scope.data.password == '' || $scope.data.password == null){

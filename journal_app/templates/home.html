@@ -507,6 +507,7 @@
    {{ ngapp }}.controller('createJournalCtrl', function ($scope, $uibModalInstance, $http, $routeParams) {
 
         $scope.journalHeading = 'Create Journal';
+
         $scope.data = {};
         $scope.alerts = [];
         var url = "{% url 'create_journal' %}";
@@ -538,6 +539,7 @@
     {{ ngapp }}.controller('editJournalCtrl', function ($scope, $uibModalInstance, $http, $routeParams, journalFactory, journal_id) {
 
         $scope.journalHeading = 'Update Journal';
+
         $scope.data = {journal_id: journal_id};
         $scope.alerts = [];
         var url = "{% url 'edit_journal' %}";
