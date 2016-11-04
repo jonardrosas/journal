@@ -88,6 +88,13 @@
             font-size:15px;
             width: 100%;
         }
+        .stick-add {
+            width: 200px;
+            height: 200px;
+        }
+        .vertical-center-block{
+            margin-top: 50px;
+        }
 
 
     </style>
@@ -113,7 +120,6 @@
             <ul class="nav navbar-nav navbar-right">
                 {% if user.is_authenticated %}
                     <li><a href=""> Welcome <b>{{ user }}</b></a></li>
-                    <li><a href="{% url 'admin:index' %}" style="color: white"> <span class="glyphicon glyphicon-log-in"></span>&nbsp;&nbsp;Admin Login</b></a></li>
                     <li><a href="{% url 'logout' %}">Logout <span class="glyphicon glyphicon-off"></span></a></li>
                 {% else %}
                     <li>

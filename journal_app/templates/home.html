@@ -17,29 +17,25 @@
 <!------------------ Start of Main  ------------------->
 <script type="text/ng-template" id="homeCtrl.html" >
     <div class="row row-break">
-        <div class="col-md-12" align="right">
-            <a href="#/" ng-click="createJournal()"><img src="{{ plusImg }}" width="55" height="50" alt=""></a>
-        </div>
-    </div>
-    <div class="row">
         <div class="col-md-12">
             <div ng-repeat="o in journals track by $index" class="col-md-4 row-break" style="font-family: Courier New, Courier, monospace;" align="center">
                     <div class="col-md-12" style="background-color: #FFFFFF;">
                             <div class="col-md-12" style="height: 30px;padding-top: 7px;">
-                                <div class="col-md-7" align="right">
-                                    <img src="{{ pinImg }}" width="40" height="40" alt="">
+                                <div class="col-md-10" align="right">
+                                    <img class="center-block" src="{{ pinImg }}" width="40" height="40" alt="">
                                 </div>
-                                <div class="col-md-5" align="right" style="padding-right: 0px;">
+                                <div class="col-md-2" align="right" style="padding-right: 0px;">
                                     <a ng-click="editJournal(o.id)" style="color: black;">
-                                    <i class="glyphicon glyphicon-pencil"></i></a>
+                                    <i class="glyphicon glyphicon-pencil"></i></a> |
+                                    <a ng-click="deleteJournal(o.id)" style="color: black;"><i class="glyphicon glyphicon-trash"></i></a>
                                 </div>
 
                             </div><br>
-                            <h1><b>{{ o.name }}</b></h1>
+                            <h1><b>{{ o.name|cut:true:10: '...' }}</b></h1>
                             <h4>{{ o.description|cut:true:20:' ...' }}</h4><br>
-                        <div class="col-md-12" style="height: 25px;"></div>
+                        <div class="col-md-10" style="height: 25px;"></div>
 
-                        <div class="col-md-12">
+                        <div class="col-md-10">
                             <a href="#journal/{{ o.id }}/" class="btn btn-info btn-xs">
                                 <i class="glyphicon glyphicon-th-list"></i>
                                 View entries</a>
@@ -48,20 +44,19 @@
                             Create new entry</a>
                         </div>
 
-                        <div class="col-md-12" style="height: 20px;" align="left"></div>
-                        <div class="col-md-12" style="height: 25px;font-size: 15px;color: grey" align="left">
+                        <div class="col-md-10" style="height: 20px;" align="left"></div>
+                        <div class="col-md-10" style="height: 25px;font-size: 15px;color: grey" align="left">
                             <div class="col-md-6" align="left">{{ o.date_modified|date:M }}</div>
-                            <div class="col-md-6" align="right">
-                                <a ng-click="deleteJournal(o.id)" style="color: black;"><i class="glyphicon glyphicon-trash"></i></a>
-                            </div>
+
                         </div>
                     </div>
             </div>
         </div>
     </div>
-    <div class="row" ng-if="journals.length < 1">
-        <div class="col-md-7 custom-padding-5">
-            <div class="alert alert-warning" uib-alert close="closeAlert($index)">No Journals Available!</div>
+    <div class="row row-break" ng-if="journals.length < 1">
+        <div class="well text-center col-md-offset-1 col-md-2 custom-padding-5 stick-add">
+            <a  href="#/" ng-click="createJournal()"><img class="center-block vertical-center-block" src="{{ plusImg }}" width="55" height="50" alt=""></a>
+            <br/><br/><b>Add a new Journal</b>
         </div>
     </div>
 
@@ -610,9 +605,12 @@
                 console.log(data);
                 if(data.status == 'success'){
                     $scope.gridOptions.data = data.data;
+                    angular.forEach(data.data, function(v, k){
+                        v['date_modified'] = new Date(v['date_modified'] + 'UTC').toString().split(" ").slice(0, 5).join(" ");
+                        $scope.gridOptions.data.push(v);
+                    });
                     $scope.journal_name = data.journal_name;
-
-                    $scope.journal_date_created = new Date(data.journal_date_created + 'UTC');
+                    $scope.journal_date_created = new Date(data.journal_date_created + 'UTC').toString().split(" ").slice(0, 5).join(" ");
                 }else{
                     $scope.alerts.push({msg: data.msg, type: 'danger'});
                 }
@@ -651,7 +649,10 @@
                     cellTemplate: "<span ng-bind-html='row.entity[col.field]|trusted'></span>"
 
                 },
-                {field: 'date_modified', width: '200' },
+                {
+                    field: 'date_modified',
+                    width: '250'
+                },
             ],
             onRegisterApi: function(gridApi){
                 $scope.gridApi = gridApi;
@@ -683,7 +684,7 @@
                 if(data.status == 'success'){
                     $scope.entries = data.data;
                     $scope.journal_name = data.journal_name;
-                    $scope.journal_date_created = new Date(data.journal_date_created + 'UTC').toString();
+                    $scope.journal_date_created = new Date(data.journal_date_created + 'UTC').toString().split(" ").slice(0, 5).join(" ");
                 }else{
                     $scope.alerts.push({msg: data.msg, type: 'danger'});
                 }
@@ -716,6 +717,8 @@
         }
 
         $scope.tinymceOptions = {
+            menubar:false,
+            statusbar: false,
             plugins: 'link image code',
             toolbar: 'undo redo | bold italic | alignleft aligncenter alignright | code',
             width: '100%',
@@ -740,7 +743,7 @@
                 if(data.status == 'success'){
                     $scope.entries = data.data;
                     $scope.journal_name = data.journal_name;
-                    $scope.journal_date_created = new Date(data.journal_date_created + 'UTC').toString();
+                    $scope.journal_date_created = new Date(data.journal_date_created + 'UTC').toString().split(" ").slice(0, 5).join(" ");
                     $scope.updateEntry();
                 }else{
                     $scope.alerts.push({msg: data.msg, type: 'danger'});
@@ -780,6 +783,8 @@
         }
 
         $scope.tinymceOptions = {
+          menubar:false,
+          statusbar: false,
           plugins: 'link image code',
           toolbar: 'undo redo | bold italic | alignleft aligncenter alignright | code',
           width: '100%',
