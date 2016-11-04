@@ -152,9 +152,7 @@ class AuthenticationBase(JSONResponseMixin, View):
                 'encrypt_days': '1 year',
                 'msg': 'Srong Password',
             }
-        elif ('lower' in context_dict and 'upper' in context_dict and
-              'number' in context_dict and 'special' in context_dict and
-              'hacker_list' in context_dict):
+        elif ('lower' in context_dict and 'upper' in context_dict and 'number' in context_dict):
             context_dict['msg'] = {
                 'status': 'success',
                 'type': self.METER[4],
@@ -163,8 +161,7 @@ class AuthenticationBase(JSONResponseMixin, View):
                 'encrypt_days': '6 months',
                 'msg': 'Good Password',
             }
-        elif ('lower' in context_dict and 'upper' in context_dict and
-              'number' in context_dict and 'special' in context_dict):
+        elif ('lower' in context_dict and 'upper' in context_dict):
             context_dict['msg'] = {
                 'status': 'success',
                 'type': self.METER[5],

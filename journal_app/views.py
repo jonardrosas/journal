@@ -57,8 +57,6 @@ class JournalView(JSONResponseMixin, View):
 class SaveJournalView(JSONResponseMixin, View):
     response_data ={}
 
-
-
     def post(self, request, *args, **kwargs):
         response_data ={}
         status = "error"
@@ -316,4 +314,3 @@ class JournalEntryDeleteView(JSONResponseMixin, View):
             'status': status
         }
         return self.render_to_json_response(context_dict)
-
