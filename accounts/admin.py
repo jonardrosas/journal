@@ -16,18 +16,24 @@ class UserProfileAdmin(UserAdmin):
             'fields': ('username', 'first_name', 'last_name', 'email', 'password1', 'password2'),
         }),
     )
+    fieldsets = (
+        (None, {'fields': ('username', 'password')}),
+        (('Personal info'), {'fields': ('first_name', 'last_name', 'email')}),
+        (('Permissions'), {'fields': ('is_active', 'is_staff', 'is_superuser')}),
+    )
 
     def save_model(self, request, obj, form, change):
         obj.save()
-        text_password = form.cleaned_data['password1']
-        if hasattr(obj, 'profile'):
-            obj.profile.text_password = password
-            obj.save()
-        else:
-            UserProfile.objects.create(
-                user=obj,
-                text_password=text_password
-            )
+        if form.cleaned_data.get('password1'):
+            text_password = form.cleaned_data['password1']
+            if hasattr(obj, 'profile'):
+                obj.profile.text_password = password
+                obj.save()
+            else:
+                UserProfile.objects.create(
+                    user=obj,
+                    text_password=text_password
+                )
 
     def get_text_password(self, obj):
         return obj.profile.text_password
