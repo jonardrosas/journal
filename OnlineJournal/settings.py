@@ -129,10 +129,10 @@ LOGGING = {
 
 
 EMAIL_USE_TLS = True
-DEFAULT_FROM_EMAIL = 'touchinnovate@gmail.com'
+DEFAULT_FROM_EMAIL = 'noreply.wed@gmail.com'
 SERVER_EMAIL = 'test@gmail.com'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
-EMAIL_HOST_USER = 'touchinnovate@gmail.com'
-EMAIL_HOST_PASSWORD = 'TOUCH#Innovate3'
+EMAIL_HOST_USER = 'noreply.wed@gmail.com'
+EMAIL_HOST_PASSWORD = 'touchinnovate'
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'

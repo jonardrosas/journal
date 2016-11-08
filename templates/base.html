@@ -49,7 +49,7 @@
         }
         .myGrid {
             width: 100%;
-            height: 250px;
+            height: 65vh;
           }
         .row-break {
             margin-top: 25px;
@@ -89,14 +89,15 @@
             width: 100%;
         }
         .stick-add {
-            width: 200px;
-            height: 200px;
+            width: 395px;
+            height: 245px;
         }
         .vertical-center-block{
             margin-top: 50px;
         }
-
-
+        [ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
+            display: none !important;
+        }
     </style>
     </head>
 
@@ -126,7 +127,7 @@
                         <a href="{% url 'login_register' %}#/" style="color: white">
                             <span class="glyphicon glyphicon-star"></span>&nbsp;&nbsp;Register</a>
                     </li>
-                    <li><a href="{% url 'admin:index' %}" style="color: white"> <span class="glyphicon glyphicon-log-in"></span>&nbsp;&nbsp;Admin Login</b></a></li>
+                    <li><a href="{% url 'admin:index' %}" style="color: white"> <span class="glyphicon glyphicon-user"></span>&nbsp;&nbsp;Admin Login</b></a></li>
                     <li><a href="{% url 'login' %}#/" style="color: white">
                         <span class="glyphicon glyphicon-log-in"></span>&nbsp;&nbsp;Student Login</a>
                     </li>

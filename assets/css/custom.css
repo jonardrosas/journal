@@ -204,7 +204,6 @@ div{
     background-color: #333333;
     border-bottom: 1px solid grey;
     color: grey;
-    text-decoration: none;
 }
 
 .btn-entries:hover{
@@ -228,4 +227,47 @@ div{
 
 .btn-blue:hover{
     color: white;
+}
+
+[ng\:cloak], [ng-cloak], .ng-cloak {
+  display: none !important;
+}
+
+.modal-class3{
+    color: #fff;
+    background-color: #d9534f;
+    border-color: #d9534f;
+}
+
+.modal-class2{
+    color: #fff;
+    background-color: #5bc0de;
+    border-color: #5bc0de;
+}
+
+.modal-class1{
+    color: #fff;
+    background-color: #5cb85c;
+    border-color: #5cb85c;
+}
+
+
+.delete-button{
+    color: #fff;
+    background-color: #d9534f;
+    border-color: #d9534f;
+    text-decoration:None;
+}
+
+.update-button{
+    color: #fff;
+    background-color: #5bc0de;
+    border-color: #5bc0de;
+}
+
+.create-button{
+    color: #fff;
+    background-color: #5cb85c;
+    border-color: #5cb85c;
+    text-decoration:None;
 }

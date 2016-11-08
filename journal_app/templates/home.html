@@ -3,10 +3,10 @@
 {% load staticfiles %}
 {% block additional_styles %}
 <style>
-   body {
+    body {
         background-image: url({% static 'img/wall5.jpg'%});
         background-size: 100% 100vh;
-        background-repeat: no-repeat;
+        background-repeat: repeat-y;
        }
 </style>
 {% endblock %}
@@ -15,48 +15,52 @@
 {%  verbatim  %}
 
 <!------------------ Start of Main  ------------------->
-<script type="text/ng-template" id="homeCtrl.html" >
-    <div class="row row-break">
-        <div class="col-md-12">
-            <div ng-repeat="o in journals track by $index" class="col-md-4 row-break" style="font-family: Courier New, Courier, monospace;" align="center">
-                    <div class="col-md-12" style="background-color: #FFFFFF;">
-                            <div class="col-md-12" style="height: 30px;padding-top: 7px;">
-                                <div class="col-md-10" align="right">
-                                    <img class="center-block" src="{{ pinImg }}" width="40" height="40" alt="">
+<script type="text/ng-template" id="homeCtrl.html" ng-cloak>
+    <div class="row row-break" ng-cloak>
+        <div class="col-md-12" ng-cloak>
+            <div ng-repeat="o in journals track by $index" class="col-md-4 row-break"
+                style="font-family: Courier New, Courier, monospace;" align="center" ng-cloak>
+                    <div class="col-md-12" style="background-color: #FFFFFF;" ng-cloak>
+                            <div class="col-md-12" style="height: 30px;padding-top: 7px;" ng-cloak>
+                                <div class="col-md-3" ng-cloak></div>
+                                <div class="col-md-6" ng-cloak>
+                                    <img class="center-block" src="{{ pinImg }}" width="30" height="30" alt="" ng-cloak>
                                 </div>
-                                <div class="col-md-2" align="right" style="padding-right: 0px;">
-                                    <a ng-click="editJournal(o.id)" style="color: black;">
-                                    <i class="glyphicon glyphicon-pencil"></i></a> |
-                                    <a ng-click="deleteJournal(o.id)" style="color: black;"><i class="glyphicon glyphicon-trash"></i></a>
+                                <div class="col-md-3" align="right" style="padding-right: 0px;" ng-cloak>
+                                    <a ng-click="editJournal(o.id)" style="color: black;" ng-cloak>
+                                        <i class="glyphicon glyphicon-pencil"></i>
+                                    </a> |
+                                    <a ng-click="deleteJournal(o.id)" style="color: black;" ng-cloak>
+                                        <i class="glyphicon glyphicon-trash"></i>
+                                    </a>
                                 </div>
-
                             </div><br>
-                            <h1><b>{{ o.name|cut:true:10: '...' }}</b></h1>
-                            <h4>{{ o.description|cut:true:20:' ...' }}</h4><br>
-                        <div class="col-md-10" style="height: 25px;"></div>
-
-                        <div class="col-md-10">
+                            <div class="col-md-12" ng-cloak>
+                                <h1><b>{{ o.name|cut:true:10: '...' }}</b></h1>
+                                <h4>{{ o.description|cut:true:20:' ...' }}</h4><br>
+                            </div>
+                        <div class="col-md-12" style="height: 25px;" ng-cloak></div>
+                        <div class="col-md-12" ng-cloak>
                             <a href="#journal/{{ o.id }}/" class="btn btn-info btn-xs">
-                                <i class="glyphicon glyphicon-th-list"></i>
+                                <i class="glyphicon glyphicon-th-list" ng-cloak></i>
                                 View entries</a>
                             <a href="#create/{{ o.id }}" class="btn btn-success btn-xs">
-                                <i class="glyphicon glyphicon-plus"></i>
+                                <i class="glyphicon glyphicon-plus" ng-cloak></i>
                             Create new entry</a>
                         </div>
-
-                        <div class="col-md-10" style="height: 20px;" align="left"></div>
-                        <div class="col-md-10" style="height: 25px;font-size: 15px;color: grey" align="left">
-                            <div class="col-md-6" align="left">{{ o.date_modified|date:M }}</div>
-
+                        <div class="col-md-12" style="height: 20px;" ng-cloak></div>
+                        <div class="col-md-12" style="height: 25px;font-size: 15px;color: grey" align="left" ng-cloak>
+                            <div class="col-md-6" align="left" ng-cloak>{{ o.date_modified|date:M }}</div>
                         </div>
                     </div>
             </div>
-        </div>
-    </div>
-    <div class="row row-break" ng-if="journals.length < 1">
-        <div class="well text-center col-md-offset-1 col-md-2 custom-padding-5 stick-add">
-            <a  href="#/" ng-click="createJournal()"><img class="center-block vertical-center-block" src="{{ plusImg }}" width="55" height="50" alt=""></a>
-            <br/><br/><b>Add a new Journal</b>
+            <div class="col-md-4" style="padding-top:22px;" ng-cloak>
+                <div class="well text-center stick-add custom-padding-1" ng-cloak>
+                    <a  href="#/" ng-click="createJournal()" ng-cloak>
+                        <img class="center-block vertical-center-block" src="{{ plusImg }}" width="75" height="75" alt="" ng-cloak></a>
+                    <br/><br/><h4><b>Add a new Journal</b></h4>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -66,21 +70,20 @@
 
 <!------------------ Pop up ------------------->
 <script type="text/ng-template" id="createJournal.html">
-    <div class="modal-header" align="center" style="background-color:#5bc0de;
-    font-family: Courier New, Courier, monospace;color: white">
-        <h3 class="modal-title" id="modal-title">{{ journalHeading }}</h3>
+    <div class="{{journalclass}}" align="center" style="font-family: Courier New, Courier, monospace;color: white" ng-cloak>
+        <h3 class="modal-title" id="modal-title" ng-cloak>{{ journalHeading }}</h3>
     </div>
-    <div class="modal-body" id="modal-body" align="center">
-        <div class="alert alert-{{ alert.type }}" ng-repeat="alert in alerts" uib-alert>{{  alert.msg }}</div>
-        <div class="row" ng-repeat="(f, v) in form_fields">
-            <div class="col-md-12 custom-padding-5">
+    <div class="modal-body" id="modal-body" align="center" ng-cloak>
+        <div class="alert alert-{{ alert.type }}" ng-repeat="alert in alerts" uib-alert ng-cloak>{{  alert.msg }}</div>
+        <div class="row" ng-repeat="(f, v) in form_fields" ng-cloak>
+            <div class="col-md-12 custom-padding-5" ng-cloak>
                 <input class="custom-form-control" ng-if="v.type!='select'" type="{{ v.type }}"
                        ng-model="data[f]" class="custom-form-control" placeholder="{{ f }}" >
             </div>
         </div>
     </div>
-    <div class="modal-footer">
-        <button class="btn btn-success" ng-click="saveJournal()" type="button">Save</button>
+    <div class="modal-footer" ng-cloak>
+        <button class="{{popupclass}} btn" ng-click="saveJournal()" type="button">{{popupSaveButton}}</button>
         <button class="btn btn-grey" ng-click="cancel()" type="button">Cancel</button>
     </div>
 </script>
@@ -90,56 +93,55 @@
 
 <!------------------ Start of Entries list Page ------------------->
 <script type="text/ng-template" id="journal_detail.html">
-    <div class="row row-break">
-        <div class="row entries-list-container">
-            <div class="container">
-                <div class="col-md-10" align="left">
-                    <div class="col-md-12" ng-show="journal_name">
+    <div class="row row-break" ng-cloak>
+        <div class="row entries-list-container" ng-cloak>
+            <div class="container" ng-cloak>
+                <div class="col-md-10" align="left" ng-cloak>
+                    <div class="col-md-12" ng-show="journal_name" ng-cloak>
                         <h2>{{ journal_name }} </h2>
                         <span>{{ gridOptions.data.length }} total entries | Created on {{ journal_date_created }}</span>
                     </div>
                 </div>
-                <div class="col-md-2" style="padding-top: 60px;padding-bottom: 10px;">
-                    <div class="col-md-12">
-                        <a href="#create/{{ journal_id }}" class="btn btn-warning pull-right">
+                <div class="col-md-2" style="padding-top: 60px;padding-bottom: 10px;" ng-cloak>
+                    <div class="col-md-12" ng-cloak>
+                        <a href="#create/{{ journal_id }}" class="btn btn-warning pull-right" ng-cloak>
                             <i class="glyphicon glyphicon-plus"></i> New Entry</a>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-9 light-bg">
+        <div class="col-md-9 light-bg" ng-cloak>
             <br>
-            <div class="col-md-12" align="right" ng-show="selected_cols.length > 0" style="padding-right: 30px;">
+            <div class="col-md-12" align="right" ng-show="selected_cols.length > 0" style="padding-right: 30px;" ng-cloak>
                 <a ng-click="deleteEntry()" class="btn btn-danger" href=""
-                   title="Delete Selected">
+                   title="Delete Selected" ng-cloak>
                     <i class="pull-right glyphicon glyphicon-trash"></i>
                 </a>
             </div>
-            <div class="col-md-12">
-                <div class="panel-body">
-                    <div class="alert alert-{{ alert.type }}" ng-repeat="alert in alerts" uib-alert>{{  alert.msg }}</div>
-                    <div ui-grid="gridOptions" ui-grid-selection  class="myGrid" ng-if="gridOptions.data.length > 0"></div>
-                    <div ng-hide="gridOptions.data.length > 0" class="alert alert-warning"> No Entries Available.</div>
+            <div class="col-md-12" ng-cloak>
+                <div class="panel-body" ng-cloak>
+                    <div class="alert alert-{{ alert.type }}" ng-repeat="alert in alerts" uib-alert ng-cloak>{{  alert.msg }}</div>
+                    <div ui-grid="gridOptions" ui-grid-selection  class="myGrid" ng-if="gridOptions.data.length > 0" ng-cloak></div>
+                    <div ng-hide="gridOptions.data.length > 0" class="alert alert-warning" ng-cloak> No Entries Available.</div>
                 </div>
             </div>
         </div>
-        <div class="col-md-3 light-bg" style="border-left: 1px solid #e1e1e1;">
-            <div class="col-md-12">
-
+        <div class="col-md-3 light-bg" style="border-left: 1px solid #e1e1e1;" ng-cloak>
+            <div class="col-md-12" ng-cloak>
                 <h2><i class="glyphicon glyphicon-search"></i>&nbsp;&nbsp;Search</h2>
-                <div class="form-group">
-                    <label class="sr-only" >Entry Title</label>
+                <div class="form-group" ng-cloak>
+                    <label class="sr-only">Entry Title</label>
                     <input ng-change="getEntries()" type="text" class="form-control" ng-model="data.keyword_search" placeholder="Search Entry Title">
                 </div>
             </div>
-            <div class="col-md-12" style="height: 20px;"><hr></div>
+            <div class="col-md-12" style="height: 20px;" ng-cloak><hr></div>
 
-            <div class="col-md-12">
+            <div class="col-md-12" ng-cloak>
                 <h2><i class="glyphicon glyphicon-calendar"></i>&nbsp;&nbsp;View by</h2>
             </div>
-            <div class="col-md-12">
+            <div class="col-md-12" ng-cloak>
                 <form class="form-inline">
-                  <div class="form-group">
+                  <div class="form-group" ng-cloak>
                     <label class="sr-only" for="exampleInputEmail3">Since</label>
                     <select ng-change="getEntries()" class="form-control" ng-model="data.date_created">
                         <option value="">All Time</option>
@@ -159,28 +161,28 @@
 
 <!------------------ Start Create Entry ------------------->
 <script type="text/ng-template" id="createJournalEntry.html">
-    <div class="row row-break light-bg">
-        <div class="col-md-3">
-            <div class="wy-side-nav-search">
-                <a href="#/" style="text-decoration: none">
+    <div class="row row-break light-bg" ng-cloak>
+        <div class="col-md-3" ng-cloak>
+            <div class="wy-side-nav-search" ng-cloak>
+                <a href="#/" style="text-decoration: none" ng-cloak>
                       <span class="glyphicon glyphicon-home" style="color: white;"></span>
                     <h4 style="color: white"><b>Home</b></h4>
                 </a>
             </div>
-            <div class="wy-menu-vertical1">
+            <div class="wy-menu-vertical1" ng-cloak>
                 <a href="#/journal/{{ journal_id }}"
                         class="btn btn-grey view_entry_class"
-                        style="text-align: left;padding-left: 30px;">
+                        style="text-align: left;padding-left: 30px;" ng-cloak>
                     <h4><span class="glyphicon glyphicon-list" style="color: white;"></span>
                     &nbsp;&nbsp;View All Entries</h4>
                 </a>
             </div>
             <div class="wy-menu-vertical" style="background-color: #333333;" data-spy="affix"
-                 role="navigation">
-                <div class="wy-menu-vertical1" ng-repeat="entry in entries">
+                 role="navigation" ng-cloak>
+                <div class="wy-menu-vertical1" ng-repeat="entry in entries" ng-cloak>
                      <a class="btn btn-entries view_entry_class"
                         style="text-align: left;padding-left: 30px;"
-                        href="#/journal_id/{{ journal_id }}/edit/{{ entry.id }}">
+                        href="#/journal_id/{{ journal_id }}/edit/{{ entry.id }}" ng-cloak>
                          <b>{{ entry.title }}</b><br>
                          {{ entry.date_created }}
                      </a>
@@ -188,32 +190,32 @@
                 <div class="col-md-12" style="height: 2px;"></div>
             </div>
         </div>
-        <div class="col-md-9">
-            <div style="padding-top: 30px;" class="col-md-10">
+        <div class="col-md-9" ng-cloak>
+            <div style="padding-top: 30px;" class="col-md-10" ng-cloak>
                 <span style="color: #00A6C7;font-size: 30px;"><b>Journal</b></span>
                 <span style="color: #00A6C7;font-size: 25px;" class="glyphicon glyphicon-chevron-right"></span>
                     &nbsp;
                 <span style="color: black;font-size: 20px;">{{ journal_name }}</span>
                 <br><br>
             </div>
-            <div class="col-md-2" style="padding-top: 20px;">
+            <div class="col-md-2" style="padding-top: 20px;" ng-cloak>
                 <a href="#create/{{ journal_id }}" class="btn btn-warning pull-right">
                             <i class="glyphicon glyphicon-plus"></i> New Entry</a>
             </div>
-            <div class="col-md-12">
+            <div class="col-md-12" ng-cloak>
                 <span style="color: #00A6C7">
                     {{ entries.length }} total entries | Created on {{ journal_date_created }}</span>
                 <hr>
             </div>
-            <div class="col-md-12" style="padding-top: 6px;">
+            <div class="col-md-12" style="padding-top: 6px;" ng-cloak>
                 <div class="alert alert-{{ alert.type }}" ng-repeat="alert in alerts" uib-alert>{{  alert.msg }}</div>
-                <div class="container-fluid" ng-if="journal_name">
+                <div class="container-fluid" ng-if="journal_name" ng-cloak>
                     <form>
-                      <div class="form-group">
+                      <div class="form-group" ng-cloak>
                         <input type="text" ng-model="data.title" class="custom-form-control col-md-2" id="title"
                                name="title" placeholder="Entry Title">
                       </div><br/><br/><br/><br/>
-                      <div class="form-group"><br>
+                      <div class="form-group" ng-cloak><br>
                             <textarea ui-tinymce="tinymceOptions" ng-model="data.description" class="tiny-mce"
                                       rows="10"></textarea>
                       </div>
@@ -228,15 +230,15 @@
 
 <!------------------ Start Edit Entry ------------------->
 <script type="text/ng-template" id="editJournalEntry.html">
-    <div class="row row-break light-bg">
-                <div class="col-md-3">
-            <div class="wy-side-nav-search">
+    <div class="row row-break light-bg" ng-cloak>
+        <div class="col-md-3">
+            <div class="wy-side-nav-search" ng-cloak>
                 <a href="#/" style="text-decoration: none">
                       <span class="glyphicon glyphicon-home" style="color: white;"></span>
                     <h4 style="color: white"><b>Home</b></h4>
                 </a>
             </div>
-            <div class="wy-menu-vertical1">
+            <div class="wy-menu-vertical1" ng-cloak>
                 <a href="#/journal/{{ journal_id }}"
                         class="btn btn-grey view_entry_class"
                         style="text-align: left;padding-left: 30px;">
@@ -245,8 +247,8 @@
                 </a>
             </div>
             <div class="wy-menu-vertical" style="background-color: #333333;" data-spy="affix"
-                 role="navigation">
-                <div class="wy-menu-vertical1" ng-repeat="entry in entries">
+                 role="navigation" ng-cloak>
+                <div class="wy-menu-vertical1" ng-repeat="entry in entries" ng-cloak>
                      <a class="btn btn-entries view_entry_class"
                         style="text-align: left;padding-left: 30px;"
                         href="#/journal_id/{{ journal_id }}/edit/{{ entry.id }}">
@@ -258,7 +260,7 @@
             </div>
         </div>
 
-        <div class="col-md-9">
+        <div class="col-md-9" ng-cloak>
             <div style="padding-top: 30px;" class="col-md-10">
                 <span style="color: #00A6C7;font-size: 30px;"><b>Journal</b></span>
                 <span style="color: #00A6C7;font-size: 25px;" class="glyphicon glyphicon-chevron-right"></span>
@@ -266,16 +268,16 @@
                 <span style="color: black;font-size: 20px;">{{ journal_name }}</span>
                 <br><br>
             </div>
-            <div class="col-md-2" style="padding-top: 20px;">
+            <div class="col-md-2" style="padding-top: 20px;" ng-cloak>
                 <a href="#create/{{ journal_id }}" class="btn btn-warning pull-right">
                             <i class="glyphicon glyphicon-plus"></i> New Entry</a>
             </div>
-            <div class="col-md-12">
+            <div class="col-md-12" ng-cloak>
                 <span style="color: #00A6C7">
                     {{ entries.length }} total entries | Created on {{ journal_date_created }}</span>
                 <hr>
             </div>
-            <div class="col-md-12" style="padding-top: 6px;">
+            <div class="col-md-12" style="padding-top: 6px;" ng-cloak>
                 <div class="alert alert-{{ alert.type }}" ng-repeat="alert in alerts" uib-alert>{{  alert.msg }}</div>
                 <div class="container-fluid" ng-if="data.entry_id">
                     <form>
@@ -283,7 +285,7 @@
                             <input type="text" ng-model="data.title" class="custom-form-control col-md-2"
                                    id="title" placeholder="Title">
                           </div><br/><br/><br/><br/>
-                          <div class="form-group">
+                          <div class="form-group" ng-cloak>
                                 <textarea ui-tinymce="tinymceOptions"
                                           ng-model="data.description" class="tiny-mce" rows="20"></textarea>
                           </div>
@@ -405,7 +407,7 @@
     {{ ngapp }}.controller("mainCtrl", function($scope, $http, $uibModal, journalFactory) {
 
          var url = "{% url 'journal_vew' %}",
-             delete_journal_url = "{% url 'delete_journal' %}";
+         delete_journal_url = "{% url 'delete_journal' %}";
          $scope.plusImg = "{% static 'img/add.png' %}"
          $scope.pinImg = "{% static 'img/pin.png' %}"
          $scope.journals = [];
@@ -502,6 +504,9 @@
    {{ ngapp }}.controller('createJournalCtrl', function ($scope, $uibModalInstance, $http, $routeParams) {
 
         $scope.journalHeading = 'Create Journal';
+        $scope.journalclass = 'modal-class1 modal-header ';
+        $scope.popupclass = "create-button";
+        $scope.popupSaveButton = "Create Journal";
 
         $scope.data = {};
         $scope.alerts = [];
@@ -534,6 +539,9 @@
     {{ ngapp }}.controller('editJournalCtrl', function ($scope, $uibModalInstance, $http, $routeParams, journalFactory, journal_id) {
 
         $scope.journalHeading = 'Update Journal';
+        $scope.journalclass = 'modal-class2 modal-header';
+        $scope.popupclass = "update-button";
+        $scope.popupSaveButton = "Update Journal";
 
         $scope.data = {journal_id: journal_id};
         $scope.alerts = [];
@@ -571,8 +579,13 @@
     {{ ngapp }}.controller('deleteJournalCtrl', function ($scope, $uibModalInstance, $http, $routeParams, journalFactory, journal_id) {
 
         $scope.journalHeading = 'Delete Journal';
+        $scope.journalclass = "modal-class3 modal-header";
+        $scope.popupclass = "delete-button";
+        $scope.popupSaveButton = "Delete Journal";
+
+
         $scope.alerts = [
-            {msg: 'Are you sure you want to delete this journal?', type: 'info'}
+            {msg: 'Are you sure you want to delete this journal?', type: 'danger'}
         ];
         var delete_journal_url = "{% url 'delete_journal' %}";
 
@@ -609,7 +622,7 @@
                     $scope.gridOptions.data = data.data;
                     angular.forEach(data.data, function(v, k){
                         v['date_modified'] = new Date(v['date_modified'] + 'UTC').toString().split(" ").slice(0, 5).join(" ");
-                        $scope.gridOptions.data.push(v);
+                        //$scope.gridOptions.data.push(v);
                     });
                     $scope.journal_name = data.journal_name;
                     $scope.journal_date_created = new Date(data.journal_date_created + 'UTC').toString().split(" ").slice(0, 5).join(" ");
