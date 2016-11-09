@@ -284,7 +284,7 @@ class Authentincate(AuthenticationBase):
 class Authentincate2(AuthenticationBase):
 
     def post(self, request, *args, **kwargs):
-        context_dict = {'status': 'error'}
+        context_dict = {'status': 'error', 'msg': {'percent': '', 'msg': ''}}
         status = 'error'
         post_body = json.loads(self.request.body)
         username = post_body['username']
@@ -322,7 +322,8 @@ class Authentincate3(AuthenticationBase):
 
     def post(self, request, *args, **kwargs):
         post_body = json.loads(self.request.body)
-        context_dict = {'msg': ''}
+        # context_dict = {'msg': ''}
+        context_dict = {'status': 'error', 'msg': {'percent': '', 'msg': ''}}
         status = 'error'
         post_body = json.loads(self.request.body)
         password = post_body.get('password', None)
