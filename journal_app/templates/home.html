@@ -54,7 +54,7 @@
                         </div>
                     </div>
             </div>
-            <div class="col-md-4" style="padding-top:22px;" ng-cloak>
+            <div class="col-md-4" style="padding-top:22px;" ng-hide="!journals">
                 <div class="well text-center stick-add custom-padding-1" ng-cloak>
                     <a  href="#/" ng-click="createJournal()" ng-cloak>
                         <img class="center-block vertical-center-block" src="{{ plusImg }}" width="75" height="75" alt="" ng-cloak></a>
@@ -143,13 +143,7 @@
                 <form class="form-inline">
                   <div class="form-group" ng-cloak>
                     <label class="sr-only" for="exampleInputEmail3">Since</label>
-                    <select ng-change="getEntries()" class="form-control" ng-model="data.date_created">
-                        <option value="">All Time</option>
-                        <option value=0>Today</option>
-                        <option value=1>Yesterday</option>
-                        <option value=7>Last Week</option>
-                        <option value=30>This Month</option>
-                    </select>
+                    <input id="datepicker" type='text' class="form-control date-picker" ng-model="data.date_created">
                   </div>
                 </form>
             </div>
@@ -312,6 +306,15 @@
 
 {% endblock %}
 
+
+{% block js %}
+{{ block.super }}
+    <script type="text/javascript" src="{% static 'js/jquery-1.3.1.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/jquery-ui-1.7.1.custom.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/daterangepicker.jQuery.js' %}"></script>
+{% endblock %}
+
+
     {% block extrascript %}
 
 
@@ -406,16 +409,15 @@
 
     {{ ngapp }}.controller("mainCtrl", function($scope, $http, $uibModal, journalFactory) {
 
+         //$scope.journals = [];
          var url = "{% url 'journal_vew' %}",
          delete_journal_url = "{% url 'delete_journal' %}";
-         $scope.plusImg = "{% static 'img/add.png' %}"
          $scope.pinImg = "{% static 'img/pin.png' %}"
-         $scope.journals = [];
 
         $scope.initData = function(){
              $http.get(url).then(function(response){
                  $scope.journals = response.data.data;
-                 console.log($scope.journals);
+                 $scope.plusImg = "{% static 'img/add.png' %}";
              });
         };
         $scope.initData();
@@ -613,6 +615,21 @@
 
         $scope.journal_id = $routeParams.journal_id;
         $scope.data = {journal_id: $scope.journal_id};
+
+        $scope.applyDateFilter = function(){
+            $scope.data.date_created = $('#datepicker').val();
+            $scope.getEntries();
+        };
+
+
+        $('.date-picker').daterangepicker(
+            {
+                arrows: true,
+                onClose: $scope.applyDateFilter
+
+            }
+        );
+
 
         $scope.getEntries = function(){
             $scope.alerts = [];

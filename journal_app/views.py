@@ -155,7 +155,6 @@ class JournalEntryDetailView(JSONResponseMixin, View):
         date_modified = post_body.get('date_modified')
         keyword_search = post_body.get('keyword_search')
         today = datetime.datetime.today().replace(hour=0, minute=0, second=0)
-
         try:
             journal_ins = Journal.objects.get(id=int(journal_id))
         except Journal.DoesNotExist:
@@ -168,8 +167,15 @@ class JournalEntryDetailView(JSONResponseMixin, View):
                 if keyword_search:
                     entries = entries.filter(Q(title__icontains=keyword_search) | Q(description__icontains=keyword_search))
                 if date_created:
-                    from_data = today - datetime.timedelta(days=int(date_created))
-                    entries = entries.filter(date_created__gte=from_data)
+                    date_range = date_created.split('-')
+                    if len(date_range) == 2:
+                        from_date = datetime.datetime.combine(datetime.datetime.strptime(date_range[0].strip(), '%m/%d/%Y'), datetime.time.min)
+                        to_date = datetime.datetime.combine(datetime.datetime.strptime(date_range[1].strip(), '%m/%d/%Y'), datetime.time.max)
+                    else:
+                        from_date = datetime.datetime.combine(datetime.datetime.strptime(date_range[0].strip(), '%m/%d/%Y'), datetime.time.min)
+                        to_date = datetime.datetime.combine(datetime.datetime.strptime(date_range[0].strip(), '%m/%d/%Y'), datetime.time.max)
+                        from_date = datetime.datetime.strptime(date_range[0].strip(), '%m/%d/%Y')
+                    entries = entries.filter(date_created__range=(from_date, to_date))
                 entries = entries.values()
                 final_list = []
                 for entry in entries:
