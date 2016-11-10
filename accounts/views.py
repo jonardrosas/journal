@@ -328,8 +328,8 @@ class Authentincate3(AuthenticationBase):
         post_body = json.loads(self.request.body)
         password = post_body.get('password', None)
         if password:
-            # if self.password_validation_criteria(password):
-            context_dict.update(self.password_validation_criteria(password))
+            #context_dict.update(self.password_validation_criteria(password))
+            context_dict = {'status': 'success'}
             context_dict.update(self.password_strength(password))
         return self.render_to_json_response(context_dict)
 

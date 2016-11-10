@@ -210,10 +210,10 @@
                                name="title" placeholder="Entry Title">
                       </div><br/><br/><br/><br/>
                       <div class="form-group" ng-cloak><br>
-                            <textarea ui-tinymce="tinymceOptions" ng-model="data.description" class="tiny-mce"
+                            <textarea id="description" ui-tinymce="tinymceOptions" ng-model="data.description" class="tiny-mce"
                                       rows="10"></textarea>
                       </div>
-                      <button ng-click="saveEntry()"  class="btn btn-success pull-right">Save</button>
+                      <button type="button" ng-click="saveEntry()"  class="btn btn-success pull-right">Save</button>
                     </form>
                 </div>
             </div>
@@ -624,7 +624,6 @@
 
         $('.date-picker').daterangepicker(
             {
-                arrows: true,
                 onClose: $scope.applyDateFilter
 
             }
@@ -730,22 +729,21 @@
         };
 
         $scope.saveEntry = function(){
-            console.log('Saving data');
-            console.log($scope.data);
-            journalFactory.postData(save_entry_url,  $scope.data).then(function(data){
-
-                if(data.data.status == 'success'){
-                    $scope.entry = data;
-                    $scope.alerts.push({msg: data.data.msg, type: 'success'});
-                    $timeout(function(){
-                        $scope.alerts = [];
-                        $location.path('/journal_id/'+$scope.journal_id+'/edit/'+data.data.data.id);
-                        //$scope.getEntries();
-                    }, 2000);
-                }else{
-                    $scope.alerts.push({msg: data.data.msg, type: 'danger'})
-                };
-            });
+            $timeout(function(){
+                journalFactory.postData(save_entry_url,  $scope.data).then(function(data){
+                    if(data.data.status == 'success'){
+                        $scope.entry = data;
+                        $scope.alerts.push({msg: data.data.msg, type: 'success'});
+                        $timeout(function(){
+                            $scope.alerts = [];
+                            $location.path('/journal_id/'+$scope.journal_id+'/edit/'+data.data.data.id);
+                            //$scope.getEntries();
+                        }, 2000);
+                    }else{
+                        $scope.alerts.push({msg: data.data.msg, type: 'danger'})
+                    };
+                });
+            }, 1000);
         }
 
         $scope.tinymceOptions = {
