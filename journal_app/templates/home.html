@@ -16,7 +16,7 @@
 
 <!------------------ Start of Main  ------------------->
 <script type="text/ng-template" id="homeCtrl.html">
-    <div class="row row-break" ng-cloak>
+    <div class="row row-break" style="padding-bottom: 20px;" ng-cloak>
             <div class="container-fluid">
             <div ng-repeat="o in journals track by $index" class="custom-padding-5 row-break col-md-3 col-sm-5" style="margin-left: 5px; font-family: Courier New, Courier, monospace; background-color: #FFFFFF;">
                     <div class="row">
@@ -34,12 +34,12 @@
                     </div>
                     <div class="row">
                         <div class="col-md-11 col-sm-11 col-md-offset-1 col-sm-offset-1">
-                            <h1><b>{{ o.name|cut:true:10: '...' }}</b></h1>
+                            <h3><b>{{ o.name|cut:true:10: '...' }}</b></h3>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-md-11 col-sm-11 col-md-offset-1 col-sm-offset-1">
-                            <h4>{{ o.description|cut:true:20:' ...' }}</h4>
+                            <h5>{{ o.description|cut:true:15:' ...' }}</h5>
                         </div>
                     </div>
                     <div class="row">
@@ -54,7 +54,7 @@
                         </div>
                     </div>
             </div>
-            <div class="col-md-2 col-sm-2 custom-padding-5" style="margin-left: 5px;" ng-hide="!journals">
+            <div class="col-md-3 col-sm-5 custom-padding-5" style="margin-left: 5px;" ng-hide="!journals">
                 <div class="text-center stick-add well custom-padding-5" style="margin-top: 12px;">
                     <a  href="#/" ng-click="createJournal()">
                         <img class="center-block" src="{{ plusImg }}" width="50" height="50" alt=""></a>
