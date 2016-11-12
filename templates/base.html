@@ -30,14 +30,14 @@
     {% block additional_styles %}
         <style>
             .custom-margin-top {
-                margin: 10% auto 0px auto;
+                margin: 50% auto 0px auto;
             }
             .custom-padding-5 {
                 padding-top: 10px;
             }
             body {
                 background-image: url({% static 'img/wall6.jpg'%});
-                background-size: 100vw 100vh;
+                background-size: 100vw 120vh;
                 background-repeat: no-repeat;
            }
         </style>
@@ -88,14 +88,15 @@
         }
         .btn-custom-100 {
             font-size:15px;
-            width: 100%;
+            width: 95%;
         }
         .stick-add {
-            width: 395px;
-            height: 245px;
+            margin-top: 10px;
+            width: 200px;
+            height: 160px;
         }
         .vertical-center-block{
-            margin-top: 50px;
+            margin-top: 45px;
         }
         [ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
             display: none !important;
@@ -125,10 +126,6 @@
                     <li><a href=""> Welcome <b>{{ user }}</b></a></li>
                     <li><a href="{% url 'logout' %}">Logout <span class="glyphicon glyphicon-off"></span></a></li>
                 {% else %}
-                    <li>
-                        <a href="{% url 'login_register' %}#/" style="color: white">
-                            <span class="glyphicon glyphicon-star"></span>&nbsp;&nbsp;Register</a>
-                    </li>
                     <li><a href="{% url 'admin:index' %}" style="color: white"> <span class="glyphicon glyphicon-user"></span>&nbsp;&nbsp;Admin Login</b></a></li>
                     <li><a href="{% url 'login' %}#/" style="color: white">
                         <span class="glyphicon glyphicon-log-in"></span>&nbsp;&nbsp;Student Login</a>

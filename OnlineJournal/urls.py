@@ -5,6 +5,7 @@ from journal_app.views import JournalHomveView
 from django.contrib import admin
 from django.core.urlresolvers import reverse_lazy
 
+admin.autodiscover()
 
 urlpatterns = patterns('',
     url(r'^admin/', admin.site.urls),

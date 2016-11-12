@@ -15,52 +15,53 @@
 {%  verbatim  %}
 
 <!------------------ Start of Main  ------------------->
-<script type="text/ng-template" id="homeCtrl.html" ng-cloak>
+<script type="text/ng-template" id="homeCtrl.html">
     <div class="row row-break" ng-cloak>
-        <div class="col-md-12" ng-cloak>
-            <div ng-repeat="o in journals track by $index" class="col-md-4 row-break"
-                style="font-family: Courier New, Courier, monospace;" align="center" ng-cloak>
-                    <div class="col-md-12" style="background-color: #FFFFFF;" ng-cloak>
-                            <div class="col-md-12" style="height: 30px;padding-top: 7px;" ng-cloak>
-                                <div class="col-md-3" ng-cloak></div>
-                                <div class="col-md-6" ng-cloak>
-                                    <img class="center-block" src="{{ pinImg }}" width="30" height="30" alt="" ng-cloak>
-                                </div>
-                                <div class="col-md-3" align="right" style="padding-right: 0px;" ng-cloak>
-                                    <a ng-click="editJournal(o.id)" style="color: black;" ng-cloak>
-                                        <i class="glyphicon glyphicon-pencil"></i>
-                                    </a> |
-                                    <a ng-click="deleteJournal(o.id)" style="color: black;" ng-cloak>
-                                        <i class="glyphicon glyphicon-trash"></i>
-                                    </a>
-                                </div>
-                            </div><br>
-                            <div class="col-md-12" ng-cloak>
-                                <h1><b>{{ o.name|cut:true:10: '...' }}</b></h1>
-                                <h4>{{ o.description|cut:true:20:' ...' }}</h4><br>
-                            </div>
-                        <div class="col-md-12" style="height: 25px;" ng-cloak></div>
-                        <div class="col-md-12" ng-cloak>
-                            <a href="#journal/{{ o.id }}/" class="btn btn-info btn-xs">
-                                <i class="glyphicon glyphicon-th-list" ng-cloak></i>
-                                View entries</a>
-                            <a href="#create/{{ o.id }}" class="btn btn-success btn-xs">
-                                <i class="glyphicon glyphicon-plus" ng-cloak></i>
-                            Create new entry</a>
+            <div class="container-fluid">
+            <div ng-repeat="o in journals track by $index" class="custom-padding-5 row-break col-md-3 col-sm-5" style="margin-left: 5px; font-family: Courier New, Courier, monospace; background-color: #FFFFFF;">
+                    <div class="row">
+                        <div class="col-md-9 col-sm-9" ng-cloak>
+                            <img class="center-block" src="{{ pinImg }}" width="30" height="30" alt="">
                         </div>
-                        <div class="col-md-12" style="height: 20px;" ng-cloak></div>
-                        <div class="col-md-12" style="height: 25px;font-size: 15px;color: grey" align="left" ng-cloak>
-                            <div class="col-md-6" align="left" ng-cloak>{{ o.date_modified|date:M }}</div>
+                        <div class="col-md-3 col-sm-3 pull-right" style="padding-right: 0px;">
+                            <a ng-click="editJournal(o.id)" style="color: black;">
+                                <i class="glyphicon glyphicon-pencil"></i>
+                            </a> |
+                            <a ng-click="deleteJournal(o.id)" style="color: black;">
+                                <i class="glyphicon glyphicon-trash"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-11 col-sm-11 col-md-offset-1 col-sm-offset-1">
+                            <h1><b>{{ o.name|cut:true:10: '...' }}</b></h1>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-11 col-sm-11 col-md-offset-1 col-sm-offset-1">
+                            <h4>{{ o.description|cut:true:20:' ...' }}</h4>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12 col-sm-12">
+                            <a href="#journal/{{ o.id }}/" class="btn btn-info btn-xs"><i class="glyphicon glyphicon-th-list"></i>View entries</a>
+                             <a href="#create/{{ o.id }}" class="btn btn-success btn-xs"><i class="glyphicon glyphicon-plus"></i>Create new entry</a>
+                        </div>
+                    </div>
+                    <div class="row row-break">
+                        <div class="col-md-12 col-sm-12 style="font-size: 15px;color: grey">
+                            <div class="col-md-12" align="left" ng-cloak>{{ o.date_modified|date:M }}</div>
                         </div>
                     </div>
             </div>
-            <div class="col-md-4" style="padding-top:22px;" ng-hide="!journals">
-                <div class="well text-center stick-add custom-padding-1" ng-cloak>
-                    <a  href="#/" ng-click="createJournal()" ng-cloak>
-                        <img class="center-block vertical-center-block" src="{{ plusImg }}" width="75" height="75" alt="" ng-cloak></a>
-                    <br/><br/><h4><b>Add a new Journal</b></h4>
+            <div class="col-md-2 col-sm-2 custom-padding-5" style="margin-left: 5px;" ng-hide="!journals">
+                <div class="text-center stick-add well custom-padding-5" style="margin-top: 12px;">
+                    <a  href="#/" ng-click="createJournal()">
+                        <img class="center-block" src="{{ plusImg }}" width="50" height="50" alt=""></a>
+                    <br/><br/><b>Add a new Journal</b>
                 </div>
             </div>
+             </div>
         </div>
     </div>
 

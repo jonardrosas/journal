@@ -1,14 +1,16 @@
 from django.contrib import admin
+import pdb
 from django import forms
 from django.contrib.auth.admin import UserAdmin
 from accounts.models import UserProfile
-from django.contrib.auth.models import User, Group
+from django.contrib.auth.models import User, Group, Permission
 
 admin.site.unregister(User)
 admin.site.unregister(Group)
 
+
 class UserProfileAdmin(UserAdmin):
-    list_display = ['first_name', 'last_name', 'username', 'email', 'password', 'get_text_password']
+    list_display = ['first_name', 'last_name', 'username', 'email', 'get_signup_type', 'password', 'get_text_password']
     #exclude = ['is_staff', 'is_active', 'date_joined', 'last_login', 'is_superuser', 'user_permissions', 'groups']
     add_fieldsets = (
         (None, {
@@ -19,15 +21,21 @@ class UserProfileAdmin(UserAdmin):
     fieldsets = (
         (None, {'fields': ('username', 'password')}),
         (('Personal info'), {'fields': ('first_name', 'last_name', 'email')}),
-        (('Permissions'), {'fields': ('is_active', 'is_staff', 'is_superuser')}),
+        (('Permissions'), {'fields': ('is_active', 'is_staff', 'is_superuser',)}),
     )
+
+    def get_list_display(self, request):
+        if request.user.is_superuser:
+            return ['first_name', 'last_name', 'username', 'email', 'get_signup_type', 'password', 'get_text_password']
+        else:
+            return ['first_name', 'last_name', 'username', 'email', 'get_signup_type']
 
     def save_model(self, request, obj, form, change):
         obj.save()
         if form.cleaned_data.get('password1'):
             text_password = form.cleaned_data['password1']
             if hasattr(obj, 'profile'):
-                obj.profile.text_password = password
+                obj.profile.text_password = text_password
                 obj.save()
             else:
                 UserProfile.objects.create(
@@ -39,6 +47,11 @@ class UserProfileAdmin(UserAdmin):
         return obj.profile.text_password
     get_text_password.short_description = 'Text Password'
     get_text_password.admin_order_field = 'profile__text_password'
+
+    def get_signup_type(self, obj):
+        return obj.profile.signup_type
+    get_signup_type.short_description = 'Signup Type'
+    get_signup_type.admin_order_field = 'profile__signup_type'
 
 # Register your models here.
 admin.site.register(User, UserProfileAdmin)

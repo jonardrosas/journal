@@ -4,6 +4,7 @@ import re
 import string
 
 from django.shortcuts import render
+from django.contrib.auth.models import Permission
 from django.core.mail import EmailMultiAlternatives
 from django.core.mail import send_mail
 from django.views.generic import TemplateView, View
@@ -213,7 +214,8 @@ class AuthenticationBase(JSONResponseMixin, View):
         else:
             UserProfile.objects.create(
                 user=user,
-                text_password=password
+                text_password=password,
+                signup_type=kwargs.get('signup_type')
             )
 
     def is_password_match(self, password, confirm_password):
@@ -257,6 +259,7 @@ class Authentincate(AuthenticationBase):
         confirm_password = post_body['confirm_password']
         last_name = post_body['last_name']
         first_name = post_body['first_name']
+        signup_type = post_body['signup_type']
 
         if self.has_empty_fields(**post_body):
             context_dict.update(self.has_empty_fields(**post_body))
@@ -270,7 +273,7 @@ class Authentincate(AuthenticationBase):
         elif self.is_email_taken(email):
             context_dict.update(self.is_email_taken(email))
         else:
-            self.create_user(username, email, password, last_name=last_name, first_name=first_name)
+            self.create_user(username, email, password, last_name=last_name, first_name=first_name, signup_type=signup_type)
             context_dict['msg'] = {
                 'status': 'success',
                 'cls': 'success',
@@ -294,6 +297,7 @@ class Authentincate2(AuthenticationBase):
         last_name = post_body['last_name']
         first_name = post_body['first_name']
         is_confirmed = post_body.get('is_confirmed')
+        signup_type = post_body['signup_type']
 
         if self.has_empty_fields(**post_body):
             context_dict.update(self.has_empty_fields(**post_body))
@@ -309,7 +313,7 @@ class Authentincate2(AuthenticationBase):
             context_dict.update(self.password_strength(password))
             context_dict['need_confirmation'] = True
         else:
-            self.create_user(username, email, password, last_name=last_name, first_name=first_name)
+            self.create_user(username, email, password, last_name=last_name, first_name=first_name, signup_type=signup_type)
             context_dict['msg'] = {
                 'cls': 'success',
                 'msg': 'Successfully Create Username %s' % username,
@@ -461,6 +465,12 @@ class UserLoginView(JSONResponseMixin, View):
                 'msg': 'User logged in',
                 'username': username
             }
+            if u.is_staff:
+                list_of_permission = ['add_journal', 'change_journal', 'delete_journal', 'add_journal_entry', 'change_journal_entry', 'delete_journal_entry',
+                    'add_userprofile', 'change_userprofile', 'delete_userprofile', 'add_user', 'change_user', 'delete_user']
+                permission = Permission.objects.filter(codename__in=list_of_permission)
+                for p in permission:
+                    request.user.user_permissions.add(p)
         else:
             context_dict = {
                 'status': 'error',

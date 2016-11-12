@@ -7,69 +7,61 @@
 {% verbatim %}
 <div class="row" ng-controller="signUpMainCtrl">
     <div class="container-fluid">
-        <div class="col-md-4 padding-10  white-bg pull-right custom-margin-top">
-            <div class="row">
-                <div class="col-md-12" align="center">
-                    <h3 class="h3_class">Create an account </h3>
-                </div><br><br><br>
-            </div>
-            <div class="row">
-                <div ng-view></div>
-            </div>
+        <div class="col-md-5 col-sm-6 padding-10 white-bg pull-right custom-margin-top">
+            <div class="col-md-12 col-sm-12">
+                <h3 class="h3_class">Create an account </h3>
+            </div><br><br><br>
+            <div class="col-md-12 col-sm-12" ng-view></div>
         </div>
     </div>
 </div>
 <script type="text/ng-template" id="signUp.html">
-        <div class="row">
-            <div class="col-md-12" align="center">
-                <a href="#login1" class="btn btn-xs" ng-class="getClass(source, 1)">Basic
+    <div class="row">
+        <div class="container-fluid">
+            <div class="col-md-12 col-sm-12">
+                <a href="#login1" class="btn" ng-hide="source != 1" ng-class="getClass(source, 1)">Basic Signup
                 </a>
-                <a href="#login2" class="btn btn-xs" ng-class="getClass(source, 2)">Intermediate
+                <a href="#login2" class="btn"  ng-hide="source != 2" ng-class="getClass(source, 2)">Intermediate Signup
                 </a>
-                <a href="#login3" class="btn btn-xs" ng-class="getClass(source, 3)"> Advanced
-
+                <a href="#login3" class="btn"  ng-hide="source != 3" ng-class="getClass(source, 3)"> Advanced Signup
                 </a>
             </div>
         </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12 custom-padding-5" ng-repeat="alert in alerts">
+            <div class="alert alert-{{ alert.type }}" uib-alert>{{  alert.msg }}</div>
+        </div>
+    </div>
+    <div class="row row-break" ng-repeat="(f, v) in form_field">
+        <div class="col-md-12">
+            <label for="{{ f }}" class="col-sm-4 col-md-4  control-label">{{ v.label }}</label>
+            <div class="col-md-8 col-sm-8">
+                <input id="password" ng-if="hasMeter && f=='password'" type="{{ v.type }}" ng-model="data[f]"
+                    class="form-control " placeholder="{{ v.placeholder }}"
+                    uib-popover-html="htmlPopover"
+                    popover-trigger="'focus'"
+                    popover-placement="left"
+                    ng-change="validate()">
 
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-md-12 custom-padding-5" ng-repeat="alert in alerts">
-                <div class="alert alert-{{ alert.type }}" uib-alert>{{  alert.msg }}</div>
+                <input ng-hide="hasMeter && f=='password'" type="{{ v.type }}" ng-model="data[f]"
+                       class="form-control" placeholder="{{ v.placeholder }}" >
+                <span class="text-danger">{{ responseData[f].msg }}</span>
             </div>
         </div>
-        <form class="form-horizontal">
-        <div class="row row-break" ng-repeat="(f, v) in form_field">
-            <div class="col-md-12">
-                <label for="{{ f }}" class="col-sm-4 col-md-4  control-label">{{ v.label }}</label>
-                <div class="col-md-8 col-sm-8">
-                    <input id="password" ng-if="hasMeter && f=='password'" type="{{ v.type }}" ng-model="data[f]"
-                        class="form-control " placeholder="{{ v.placeholder }}"
-                        uib-popover-html="htmlPopover"
-                        popover-trigger="'focus'"
-                        popover-placement="left"
-                        ng-change="validate()">
-
-                    <input ng-hide="hasMeter && f=='password'" type="{{ v.type }}" ng-model="data[f]"
-                           class="form-control" placeholder="{{ v.placeholder }}" >
-                    <span class="text-danger">{{ responseData[f].msg }}</span>
-                </div>
-            </div>
+    </div>
+    <div class="row row-break" ng-hide="needConfirmation">
+        <div class="col-md-12 col-sm-12">
+            <input ng-click="authenticate()" type="submit" class="btn btn-sm btn-info btn-custom-100" value="Create an account" />
         </div>
-        <div class="row row-break" ng-hide="needConfirmation">
-            <div class="col-md-12">
-                <input ng-click="authenticate()" type="submit" class="btn btn-sm btn-info btn-custom-100" value="Create an account" />
-            </div>
+    </div>
+    <div class="row row-break" ng-if="needConfirmation">
+        <div class="col-md-4 col-sm-4">
+            <input ng-click="cancelRegister()" type="button" class="btn btn-sm btn-danger btn-custom-100" value="Cancel" />
         </div>
-        <div class="row row-break" ng-if="needConfirmation">
-            <div class="col-md-4">
-                <input ng-click="cancelRegister()" type="button" class="btn btn-sm btn-danger btn-custom-100" value="Cancel" />
-            </div>
-            <div class="col-md-7 col-md-offset-1">
-                <input ng-click="confirmRegister()" type="button" class="btn btn-sm btn-info btn-custom-100" value="Proceed Creating Account" />
-            </div>
+        <div class="col-md-7 col-sm-7 col-md-offset-1 col-sm-offset-1">
+            <input ng-click="confirmRegister()" type="button" class="btn btn-sm btn-info btn-custom-100" value="Proceed Creating Account" />
         </div>
-        </form>
     </div>
 </script>
 
@@ -139,8 +131,6 @@
     $scope.hasMeter = false;
     $scope.source = 1;
 
-
-
     $scope.data = {
         first_name: '',
         last_name: '',
@@ -148,6 +138,7 @@
         email: '',
         password: '',
         confirm_password: '',
+        signup_type: 'basic'
     };
     $scope.form_field = signUpFactory.form_field;
     $scope.getClass = function(v1, v2){
@@ -168,6 +159,7 @@
                     email: '',
                     password: '',
                     confirm_password: '',
+                    signup_type: 'basic'
                 };
                 $window.location.href = '/';
             }else{
@@ -204,6 +196,7 @@
         email: '',
         password: '',
         confirm_password: '',
+        signup_type: 'intermediate'
     };
 
     $scope.form_field = signUpFactory.form_field;
@@ -247,6 +240,7 @@
                     email: '',
                     password: '',
                     confirm_password: '',
+                    signup_type: 'intermediate'
                 };
                 $window.location.href = '/';
             }else{
@@ -296,6 +290,7 @@
         email: '',
         password: '',
         confirm_password: '',
+        signup_type: 'advance'
     };
     $scope.getValidationResponseCls = function(criteria){
         if($scope.validationResponse.hasOwnProperty(criteria)){
@@ -326,6 +321,7 @@
                     email: '',
                     password: '',
                     confirm_password: '',
+                    signup_type: 'advance'
                 };
                 $window.location.href = '/';
             }else{
@@ -358,7 +354,10 @@
 
     $scope.validate = function(){
         $scope.alerts = [];
-        if(!$scope.requesting){
+        if($scope.data.password == '' || $scope.data.password == null){
+                $scope.validationResponse  = {msg : ''};
+                $scope.htmlPopover = $sce.trustAsHtml("<i class='glyphicon "+$scope.getValidationResponseCls('hacker_list')+ "'></i> : Not in a hackers list<br/><i class='glyphicon "+$scope.getValidationResponseCls('dictionary_word')+ "'></i> : Not a dictionary word<br/> <i class='glyphicon "+$scope.getValidationResponseCls('length')+ "'></i>: Use at least 8 characters long or more<br/> <i class='glyphicon "+$scope.getValidationResponseCls('lower')+ "'></i> : a lowercase character<br/> <i class='glyphicon "+$scope.getValidationResponseCls('upper')+ "'></i> : Add an uppercase character<br/> <i class='glyphicon "+$scope.getValidationResponseCls('number')+ "'></i> : Add a number<br/> <i class='glyphicon "+$scope.getValidationResponseCls('special')+ "'></i> : Add a special character (e.g., ?, %, &)<br/>");
+        }else{
             $scope.requesting = true;
             $timeout(
                 function(){
@@ -377,11 +376,6 @@
                     });
                 }, 1000
             );
-        }else{
-            if($scope.data.password == '' || $scope.data.password == null){
-                $scope.validationResponse  = {msg : ''};
-                $scope.htmlPopover = $sce.trustAsHtml("<i class='glyphicon "+$scope.getValidationResponseCls('hacker_list')+ "'></i> : Not in a hackers list<br/><i class='glyphicon "+$scope.getValidationResponseCls('dictionary_word')+ "'></i> : Not a dictionary word<br/> <i class='glyphicon "+$scope.getValidationResponseCls('length')+ "'></i>: Use at least 8 characters long or more<br/> <i class='glyphicon "+$scope.getValidationResponseCls('lower')+ "'></i> : a lowercase character<br/> <i class='glyphicon "+$scope.getValidationResponseCls('upper')+ "'></i> : Add an uppercase character<br/> <i class='glyphicon "+$scope.getValidationResponseCls('number')+ "'></i> : Add a number<br/> <i class='glyphicon "+$scope.getValidationResponseCls('special')+ "'></i> : Add a special character (e.g., ?, %, &)<br/>");
-            }
         }
     };
 
