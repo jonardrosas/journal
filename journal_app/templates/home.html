@@ -180,7 +180,7 @@
                      <a class="btn btn-entries view_entry_class"
                         style="text-align: left;padding-left: 30px;"
                         href="#/journal_id/{{ journal_id }}/edit/{{ entry.id }}" ng-cloak>
-                         <b>{{ entry.title }}</b><br>
+                         <b>{{ entry.title|cut:true:10: '...' }}</b><br>
                          {{ entry.date_created }}
                      </a>
                 </div>
@@ -249,7 +249,7 @@
                      <a class="btn btn-entries view_entry_class"
                         style="text-align: left;padding-left: 30px;"
                         href="#/journal_id/{{ journal_id }}/edit/{{ entry.id }}">
-                         <b>{{ entry.title }}</b><br>
+                         <b>{{ entry.title|cut:true:10: '...' }}</b><br>
                          {{ entry.date_created }}
                      </a>
                 </div>
