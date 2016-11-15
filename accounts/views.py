@@ -54,7 +54,7 @@ class SignUp(TemplateView):
 
 
 class AuthenticationBase(JSONResponseMixin, View):
-    is_confirmed = False
+    # is_confirmed = False
     METER = {
         1: 'Too Short',
         2: 'Weak',
@@ -145,6 +145,7 @@ class AuthenticationBase(JSONResponseMixin, View):
         elif ('lower' in context_dict and 'upper' in context_dict and
               'number' in context_dict and 'special' in context_dict and
               'hacker_list' in context_dict and 'dictionary_word' in context_dict):
+            self.is_confirmed = True
             context_dict['msg'] = {
                 'status': 'success',
                 'type': self.METER[4],
@@ -296,7 +297,7 @@ class Authentincate2(AuthenticationBase):
         confirm_password = post_body['confirm_password']
         last_name = post_body['last_name']
         first_name = post_body['first_name']
-        is_confirmed = post_body.get('is_confirmed')
+        self.is_confirmed = post_body.get('is_confirmed')
         signup_type = post_body['signup_type']
 
         if self.has_empty_fields(**post_body):
@@ -309,7 +310,7 @@ class Authentincate2(AuthenticationBase):
             context_dict.update(self.is_exist_user(username))
         elif self.is_email_taken(email):
             context_dict.update(self.is_email_taken(email))
-        elif self.password_strength(password) and not is_confirmed:
+        elif self.password_strength(password) and not self.is_confirmed:
             context_dict.update(self.password_strength(password))
             context_dict['need_confirmation'] = True
         else:
