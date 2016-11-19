@@ -21,8 +21,18 @@ class UserProfileAdmin(UserAdmin):
     fieldsets = (
         (None, {'fields': ('username', 'password')}),
         (('Personal info'), {'fields': ('first_name', 'last_name', 'email')}),
-        (('Permissions'), {'fields': ('is_active', 'is_staff', 'is_superuser',)}),
+        (('Permissions'), {'fields': ('is_active', 'is_staff',)}),
     )
+
+    def get_fieldsets(self, request, obj):
+        if request.user.is_superuser:
+            return (
+                (None, {'fields': ('username', 'password')}),
+                (('Personal info'), {'fields': ('first_name', 'last_name', 'email')}),
+                (('Permissions'), {'fields': ('is_active', 'is_staff', 'is_superuser',)}),
+            )
+        else:
+            return self.fieldsets
 
     def get_list_display(self, request):
         if request.user.is_superuser:
@@ -30,7 +40,23 @@ class UserProfileAdmin(UserAdmin):
         else:
             return ['first_name', 'last_name', 'username', 'email', 'get_signup_type']
 
+    def response_change(self, request, obj):
+        print "this is a response change"
+        if obj.is_staff:
+            print "hes a staff"
+            list_of_permission = [
+                'add_journal', 'change_journal', 'delete_journal',
+                'add_journal_entry', 'change_journal_entry', 'delete_journal_entry',
+                'add_userprofile', 'change_userprofile', 'delete_userprofile',
+                'add_user', 'change_user', 'delete_user']
+            permission = Permission.objects.filter(codename__in=list_of_permission)
+            for p in permission:
+                obj.user_permissions.add(p)
+
+        return super(UserProfileAdmin, self).response_change(request, obj)
+
     def save_model(self, request, obj, form, change):
+        print obj
         obj.save()
         if form.cleaned_data.get('password1'):
             text_password = form.cleaned_data['password1']
