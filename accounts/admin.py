@@ -24,7 +24,9 @@ class UserProfileAdmin(UserAdmin):
         (('Permissions'), {'fields': ('is_active', 'is_staff',)}),
     )
 
-    def get_fieldsets(self, request, obj):
+    def get_fieldsets(self, request, obj=None):
+        if not obj:
+            return self.add_fieldsets
         if request.user.is_superuser:
             return (
                 (None, {'fields': ('username', 'password')}),
@@ -32,7 +34,7 @@ class UserProfileAdmin(UserAdmin):
                 (('Permissions'), {'fields': ('is_active', 'is_staff', 'is_superuser',)}),
             )
         else:
-            return self.fieldsets
+            return super(UserProfileAdmin, self).get_fieldsets(request, obj)
 
     def get_list_display(self, request):
         if request.user.is_superuser:
