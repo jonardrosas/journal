@@ -33,9 +33,8 @@
 }
 
 
-.a {
+a, u {
     text-decoration: none;
-    font-family: Papyrus,fantasy;
 }
 
 
@@ -178,6 +177,7 @@ div{
     display: block;
     position: relative;
     font-size: 90%;
+    color: whitesmoke;
 }
 
 
@@ -203,7 +203,7 @@ div{
 .btn-entries{
     background-color: #333333;
     border-bottom: 1px solid grey;
-    color: grey;
+    color: whitesmoke;
 }
 
 .btn-entries:hover{
@@ -270,4 +270,16 @@ div{
     background-color: #5cb85c;
     border-color: #5cb85c;
     text-decoration:None;
+}
+
+.btn {
+
+}
+
+.btn a{
+    color: white;
+}
+
+*:focus {
+    outline: none;
 }
