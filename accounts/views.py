@@ -2,6 +2,7 @@ import json
 import pdb
 import re
 import string
+from datetime import datetime, timedelta
 
 from django.shortcuts import render
 from django.contrib.auth.models import Permission
@@ -84,6 +85,78 @@ class AuthenticationBase(JSONResponseMixin, View):
         'jennifer',
         '111111',
     ]
+
+    def calculate_score(self, *args, **kwargs):
+        first_char_point = kwargs['point']
+        if len(args) >= 4:
+            final_points = first_char_point + 3 + 2 + 1
+        elif len(args) == 3:
+            final_points = first_char_point + 3 + 2
+        elif len(args) == 2:
+            final_points = first_char_point + 3
+        elif len(args) == 1:
+            final_points = first_char_point
+        elif len(args) == 0:
+            final_points = 0
+        return final_points
+
+    def convert_second_to_string(self, seconds):
+        seconds = timedelta(seconds=int(seconds))
+        total_time = []
+        d = datetime(1, 1, 1) + seconds
+        year = d.year - 1
+        month = d.month - 1
+        day = d.day - 1
+        hour = d.hour
+        minute = d.minute
+        second = d.second
+        if year != 0:
+            desc = 'years' if year > 1 else 'year'
+            total_time.append('%s %s' % (year, desc))
+        if month != 0:
+            desc = 'months' if month > 1 else 'month'
+            total_time.append('%s %s' % (month, desc))
+        if day != 0:
+            desc = 'days' if day > 1 else 'day'
+            total_time.append('%s %s' % (day, desc))
+        if hour != 0:
+            desc = 'hours' if hour > 1 else 'hour'
+            total_time.append('%s %s' % (hour, desc))
+        if minute != 0:
+            desc = 'minutes' if minute > 1 else 'minute'
+            total_time.append('%s %s' % (minute, desc))
+        if second != 0:
+            desc = 'seconds' if second > 1 else 'second'
+            total_time.append('%s %s' % (second, desc))
+        return ', '.join(total_time)
+
+    def get_crack_days(self, password):
+        points = 0
+        password_length = len(password)
+        unique_password = list(set(password))
+        group1 = []  # special
+        group2 = []  # number
+        group3 = []  # lower
+        group4 = []  # upper
+        for password in unique_password:
+            if len(set(string.ascii_lowercase).intersection(password)) > 0:
+                group3.append(password)
+            if len(set(string.ascii_uppercase).intersection(password)) > 0:
+                group4.append(password)
+            if len(set(string.digits).intersection(password)) > 0:
+                group2.append(password)
+            if len(set(string.punctuation).intersection(password)) > 0:
+                group1.append(password)
+        if group1:
+            points += self.calculate_score(*group1, **{'point': 5})
+        if group2:
+            points += self.calculate_score(*group2, **{'point': 3.322})
+        if group3:
+            points += self.calculate_score(*group3, **{'point': 4.5})
+        if group4:
+            points += self.calculate_score(*group3, **{'point': 4.7})
+        seconds = (points*2) + 3**password_length
+        return self.convert_second_to_string(seconds)
 
     def password_validation_criteria(self, password):
         context_dict = {}
@@ -181,6 +254,7 @@ class AuthenticationBase(JSONResponseMixin, View):
                 'encrypt_days': '1 week',
                 'msg': 'Weak Password',
             }
+        context_dict['msg']['encrypt_days'] = self.get_crack_days(password)
         return context_dict
 
     def is_valid_email(self, email):
