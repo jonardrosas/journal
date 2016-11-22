@@ -21,12 +21,12 @@
             <div ng-repeat="o in journals track by $index" class="custom-padding-5 row-break col-md-offset-1 col-md-3 col-sm-5" style="width: 300px; margin-left: 5px; font-family: Courier New, Courier, monospace; background-color: #FFFFFF;">
                     <div class="row">
                         <div class="col-md-9 col-sm-9" ng-cloak>
-                            <img class="center-block" src="{{ pinImg }}" width="30" height="30" alt="">
+                            <img class="center-block" src="{{ pinImg }}" width="30" height="30" alt="" style="margin-left: 110px;">
                         </div>
                         <div class="col-md-3 col-sm-3 pull-right" style="padding-right: 0px;">
                             <a ng-click="editJournal(o.id)" style="color: black;">
                                 <i class="glyphicon glyphicon-pencil"></i>
-                            </a> |
+                            </a>
                             <a ng-click="deleteJournal(o.id)" style="color: black;">
                                 <i class="glyphicon glyphicon-trash"></i>
                             </a>
