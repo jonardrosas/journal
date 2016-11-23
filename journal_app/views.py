@@ -61,9 +61,9 @@ class SaveJournalView(JSONResponseMixin, View):
         response_data ={}
         status = "error"
         post_body = json.loads(self.request.body)
-        name = post_body['name']
-        description = post_body['description']
-        if not name or not description:
+        name = post_body.get('name')
+        description = post_body.get('description', '')
+        if not name:
             response_data = {'msg': 'Name cannot be empty', 'status': 'error'}
         else:
             if Journal.objects.filter(name=name, created_by=self.request.user).exists():
