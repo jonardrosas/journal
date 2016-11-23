@@ -213,7 +213,7 @@ class AuthenticationBase(JSONResponseMixin, View):
                 'cls': 'danger',
                 'percent': '50%',
                 'encrypt_days': '1 day',
-                'msg': 'too short',
+                'msg': 'Too short password',
             }
         elif ('lower' in context_dict and 'upper' in context_dict and
               'number' in context_dict and 'special' in context_dict and
@@ -225,7 +225,7 @@ class AuthenticationBase(JSONResponseMixin, View):
                 'cls': 'success',
                 'percent': '100%',
                 'encrypt_days': '6 Months',
-                'msg': 'strong password',
+                'msg': 'Strong password',
             }
         elif ('lower' in context_dict and 'upper' in context_dict and 'number' in context_dict):
             context_dict['msg'] = {
@@ -234,7 +234,7 @@ class AuthenticationBase(JSONResponseMixin, View):
                 'cls': 'success',
                 'percent': '80%',
                 'encrypt_days': '3 months',
-                'msg': 'good password',
+                'msg': 'Good password',
             }
         elif ('lower' in context_dict and 'upper' in context_dict):
             context_dict['msg'] = {
@@ -243,7 +243,7 @@ class AuthenticationBase(JSONResponseMixin, View):
                 'cls': 'success',
                 'percent': '70%',
                 'encrypt_days': '1 month',
-                'msg': 'fair password',
+                'msg': 'Fair password',
             }
         else:
             context_dict['msg'] = {
@@ -252,7 +252,7 @@ class AuthenticationBase(JSONResponseMixin, View):
                 'cls': 'warning',
                 'percent': '60%',
                 'encrypt_days': '1 week',
-                'msg': 'weak password',
+                'msg': 'Weak password',
             }
         context_dict['msg']['encrypt_days'] = self.get_crack_days(password)
         return context_dict
